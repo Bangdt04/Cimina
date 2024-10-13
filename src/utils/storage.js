@@ -14,11 +14,10 @@ export const saveToken = (token) => {
 };
 
 export const getRoles = () => {
-    let token = JSON.parse(localStorage.getItem('token'));
-    if (!token) return;
+    let authInfo = JSON.parse(localStorage.getItem('token'));
+    if (!authInfo) return;
 
-    let jwtDecodeObj = jwtDecode(token.accessToken);
+    let jwtDecodeObj = jwtDecode(authInfo.token);
     let role = Object.keys(jwtDecodeObj).find((val) => val.includes('role'));
-    
     return jwtDecodeObj[role];
 };

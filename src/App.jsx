@@ -1,11 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HistoryRouter } from './components/HistoryRoute';
-
+import { HistoryRouter } from './components/HistoryRouter';
 import routes from './routes';
 import PrivateRoute from './components/PrivateRoute';
 import NotFound from './components/NotFound';
 import myHistory from './utils/myHistory';
-
 import "./style.css";
 
 function App() {
@@ -22,8 +20,7 @@ function App() {
                                 path={page.path}
                                 element={
                                     page.layout ? (
-                                        loginRequire ? 
-                                        (
+                                        loginRequire ? (
                                             <PrivateRoute roles={roles}>
                                                 <page.layout>
                                                     <page.component />

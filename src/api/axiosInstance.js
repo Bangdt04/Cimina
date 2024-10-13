@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import myHistory from '../utils/myHistory';
+import { notification } from 'antd';
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -24,7 +25,7 @@ axiosInstance.interceptors.response.use(
         const originalRequest = error?.config;
 
         if (error?.response?.status === 401 && !originalRequest._retry) {
-            if (localStorage.getItem('token'))
+            if(localStorage.getItem('token'))
                 return await refreshToken(originalRequest);
         }
 

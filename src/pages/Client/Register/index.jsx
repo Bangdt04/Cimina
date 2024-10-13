@@ -12,44 +12,44 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
     const [form] = Form.useForm();
 
 
-    // const mutationRegister = useRegister({
-    //     success: (data) => {
-    //         notification.success({
-    //             message: 'Đăng ký thành công'
-    //         });
-    //     },
-    //     error: (err) => {
-    //         let description = 'Có lỗi xảy ra khi đăng ký, vui lòng thử lại sau';
-    //         let detail = err?.response?.data?.message;
-    //         if (detail) {
-    //             description = err?.response?.data?.message;
-    //         }
-    //         notification.error({
-    //             message: 'Đăng ký thất bại',
-    //             description: err?.response?.data?.message,
-    //         });
-    //     },
-    //     mutate: () => {
-    //         setProcessing(true);
-    //     },
-    //     settled: () => {
-    //         setProcessing(false);
-    //     },
-    // });
+    const mutationRegister = useRegister({
+        success: (data) => {
+            notification.success({
+                message: 'Đăng ký thành công'
+            });
+            openLoginModal();
+        },
+        error: (err) => {
+            let description = 'Có lỗi xảy ra khi đăng ký, vui lòng thử lại sau';
+            let detail = err?.response?.data?.message;
+            if (detail) {
+                description = err?.response?.data?.message;
+            }
+            notification.error({
+                message: 'Đăng ký thất bại',
+                description: err?.response?.data?.message,
+            });
+        },
+        mutate: () => {
+            setProcessing(true);
+        },
+        settled: () => {
+            setProcessing(false);
+        },
+    });
 
 
 
     const onRegister = async () => {
-        // await mutationRegister.mutateAsync({
-        //     ho_ten: form.getFieldValue('lastname').form.getFieldValue('firstname'),
-        //     username: form.getFieldValue('username'),
-        //     phone: form.getFieldValue('phone'),
-        //     email: form.getFieldValue('email'),
-        //     password: form.getFieldValue('password'),
-        //     name: form.getFieldValue('name'),
-        //     confirmPassword: form.getFieldValue('confirmPassword'),
-        //     role: ' user',
-        // });
+        await mutationRegister.mutateAsync({
+            ho_ten: form.getFieldValue('lastname') +" "+ form.getFieldValue('firstname'),
+            gioi_tinh: form.getFieldValue('gender') === "Nam" ? "nam" : "nu",
+            so_dien_thoai: form.getFieldValue('phone'),
+            email: form.getFieldValue('email'),
+            password: form.getFieldValue('password'),
+            password_confirmation: form.getFieldValue('confirmPassword'),
+            vai_tro: ' user',
+        });
     };
 
 
@@ -59,18 +59,22 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50" id="registerModal">
+        <div className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50 mt-12" id="registerModal">
             <div className="bg-black bg-opacity-90 p-8 rounded-lg shadow-lg w-120 relative">
                 <button className="absolute top-2 right-2 text-white" onClick={closeModal}>
                     X
                 </button>
-                <h2 className="text-white text-2xl mb-6">
+                <h2 className="text-white text-2xl mb-2">
                     Đăng kí
                 </h2>
+
+
                 <Form form={form} onFinish={onRegister}>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-4 mb-14">
                         <FormItem
-                            name={'lastname'}
+                            name="lastname"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Họ</label>}
                             rules={[
                                 {
                                     required: true,
@@ -85,7 +89,9 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                             />
                         </FormItem>
                         <FormItem
-                            name={'fristname'}
+                            name="firstname"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Tên</label>}
                             rules={[
                                 {
                                     required: true,
@@ -101,27 +107,35 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                         </FormItem>
                     </div>
 
-                    <div className="mb-10">
+                    <div className="mb-20">
                         <FormItem
-                            name={'username'}
+                            name="email"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Email</label>}
                             rules={[
                                 {
+                                    type: 'email',
+                                    message: 'Email không hợp lý!',
+                                },
+                                {
                                     required: true,
-                                    message: "Vui lòng nhập tên tài khoản."
+                                    message: "Vui lòng nhập email."
                                 },
                             ]}
                         >
                             <Input
-                                className="p-2 w-full rounded border border-gray-300 "
-                                placeholder="Tên đăng nhập"
-                                type="text"
+                                className="p-2 w-full rounded border border-gray-300"
+                                placeholder="abc-example@gmail.com"
+                                type="email"
                             />
                         </FormItem>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-4 mb-16">
                         <FormItem
-                            name={'phone'}
+                            name="phone"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Số điện thoại</label>}
                             rules={[
                                 {
                                     required: true,
@@ -136,24 +150,29 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                             />
                         </FormItem>
                         <FormItem
-                            name={'email'}
+                            className='mg'
+                            name="gender"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Giới tính</label>}
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập email."
+                                    message: "Vui lòng nhập tên tài khoản."
                                 },
                             ]}
                         >
                             <Input
                                 className="p-2 rounded-lg border border-gray-300"
-                                placeholder="Email"
-                                type="email"
+                                placeholder="Nam"
+                                type="text"
                             />
                         </FormItem>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-4 mb-16">
                         <FormItem
-                            name={'password'}
+                            name="password"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Mật khẩu</label>}
                             rules={[
                                 {
                                     required: true,
@@ -169,7 +188,9 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                         </FormItem>
 
                         <FormItem
-                            name={'confirmPassword'}
+                            name="confirmPassword"
+                            layout="vertical"
+                            label={<label style={{ color: "white" }}>Xác nhận mật khẩu</label>}
                             rules={[
                                 {
                                     required: true,
@@ -177,17 +198,10 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                                 },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
-                                        if (
-                                            !value ||
-                                            getFieldValue('password') === value
-                                        ) {
+                                        if (!value || getFieldValue('password') === value) {
                                             return Promise.resolve();
                                         }
-                                        return Promise.reject(
-                                            new Error(
-                                                'Mật khẩu xác nhận chưa đúng',
-                                            ),
-                                        );
+                                        return Promise.reject(new Error('Mật khẩu xác nhận chưa đúng'));
                                     },
                                 }),
                             ]}
@@ -201,7 +215,8 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                     </div>
                     <button
                         className="w-full bg-red-600 text-white p-2 rounded-lg hover-zoom"
-                        type="submit"
+                        type="primary"
+                        htmlType="submit"
                     >
                         Đăng ký
                     </button>

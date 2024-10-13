@@ -11,10 +11,16 @@ const apiRoutes = {
         },
     },
     admin: {
-        category: '/category',
+        gerne: '/moviegenres',
+        voucher: '/vouchers'
     },
     web: {
-
+        user: '/auth/upload-profile',
+        post: '/post',
+        user_message: '/user/message',
+        user_message_chat: '/user/message-chat',
+        transaction: '/transaction',
+        movie:'/movies',
     },
 };
 

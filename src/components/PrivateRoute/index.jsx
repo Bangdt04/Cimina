@@ -5,22 +5,23 @@ import { useGetMe } from '../../hooks/api/useUserApi';
 
 
 function PrivateRoute({ children, roles }) {
-    const { data, isLoading } = useGetMe();
+    // const { data, isLoading } = useGetMe();
+    console.log("Private Route", roles)
     if (!isTokenStoraged()) {
         return <Navigate to={config.routes.web.login} replace />;
     }
 
-    if (isLoading) return <div>Loading...</div>;
+    // if (isLoading) return <div>Loading...</div>;
 
-    if (!data) {
-        return <Navigate to={config.routes.web.login} replace />;
-    }
-    if (roles.includes('ADMIN') && !roles.includes('USER')) {
-        const res = data?.roles?.some((role) => role?.name?.includes('ADMIN'));
-        if (!res) {
-            return <Navigate to={config.routes.admin.forbidden} replace />;
-        }
-    }
+    // if (!data) {
+    //     return <Navigate to={config.routes.web.login} replace />;
+    // }
+    // if (roles.includes('admin') && !roles.includes('user')) {
+    //     const res = data?.roles?.some((role) => role?.name?.includes('admin'));
+    //     if (!res) {
+    //         return <Navigate to={config.routes.admin.forbidden} replace />;
+    //     }
+    // }
 
     return children;
 }

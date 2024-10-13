@@ -6,7 +6,8 @@ notification.config({
 
 export default function AntdConfigProvider({ children }) {
   return (
-    <ConfigProvider>
+    <ConfigProvider
+    >
       {children}
     </ConfigProvider>
   );
