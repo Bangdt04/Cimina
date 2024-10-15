@@ -10,11 +10,27 @@ import GenrePage from "../pages/Admin/Genres";
 import VoucherPage from "../pages/Admin/Voucher";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
+import TicketPricePage from "../pages/Client/TicketPrice";
+import AboutPage from "../pages/Client/About";
 
 const publicRoutes = [
     {
         path: config.routes.web.home,
         component: HomePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.giaVe,
+        component: TicketPricePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.gioiThieu,
+        component: AboutPage,
         layout: ClientLayout,
         roles: ['user'],
         private: false,

@@ -18,7 +18,7 @@ const routes = {
         lichChieu: '/about',
         tinTuc: '/explore',
         khuyenMai: '/profile',
-        giaVe: '/settings/profile',
+        giaVe: '/ticket-price',
         lienHoanPhim: '/post/new',
         gioiThieu: '/post',
         create_iso: '/iso/new',
