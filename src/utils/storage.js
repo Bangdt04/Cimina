@@ -18,6 +18,6 @@ export const getRoles = () => {
     if (!authInfo) return;
 
     let jwtDecodeObj = jwtDecode(authInfo.token);
-    let role = Object.keys(jwtDecodeObj).find((val) => val.includes('role'));
+    let role = Object.keys(jwtDecodeObj).find((val) => val.includes('vai_tro'));
     return jwtDecodeObj[role];
 };
