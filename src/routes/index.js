@@ -10,7 +10,8 @@ import GenrePage from "../pages/Admin/Genres";
 import VoucherPage from "../pages/Admin/Voucher";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
-
+import UserPage from "../pages/Admin/User";
+import MoviePage from "../pages/Admin/Moives";
 const publicRoutes = [
     {
         path: config.routes.web.home,
@@ -86,6 +87,18 @@ const privateRoutes = [
     {
         path: config.routes.admin.blogs,
         component: BlogsPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },{
+        path: config.routes.admin.users,
+        component: UserPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },{
+        path: config.routes.admin.movies,
+        component: MoviePage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

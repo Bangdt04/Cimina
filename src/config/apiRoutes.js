@@ -12,7 +12,8 @@ const apiRoutes = {
     },
     admin: {
         gerne: '/moviegenres',
-        voucher: '/vouchers'
+        voucher: '/vouchers',
+        
     },
     web: {
         user: '/auth/upload-profile',

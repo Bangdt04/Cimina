@@ -10,6 +10,7 @@ const routes = {
         setting: '/admin/setting',
         auto: '/admin/auto',
         genres: '/admin/genres',
+        users: '/admin/users',
         voucher: '/admin/voucher',
         forbidden: '/forbidden',
     },
