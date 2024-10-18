@@ -1,77 +1,91 @@
-import './header.scss';
-import { Link, useNavigate } from 'react-router-dom';
-import Logo from "../../../../assets/image/logo.webp";
+import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
-    IconUser,
-    IconBell,
-    IconBrandMessenger,
-    IconTableShare,
-    IconMoonStars,
-    IconSquareArrowRight,
+  IconFilter,
+  IconSearch,
+  IconBell,
+  IconChevronDown
 } from '@tabler/icons-react';
-import { Tooltip } from 'antd';
-import { clearToken } from '../../../../utils/storage';
-import config from '../../../../config';
-import { width } from '@fortawesome/free-brands-svg-icons/fa42Group';
+import './Header.scss';
 
 function Header() {
-    const navigate = useNavigate();
-    const onLogout = () => {
-        clearToken();
-        navigate(config.routes.web.login);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+  const languageMenuRef = useRef(null);
+
+  const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
+  const toggleLanguageMenu = () => setIsLanguageMenuOpen(!isLanguageMenuOpen);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target)) {
+        setIsLanguageMenuOpen(false);
+      }
     };
 
-    return (
-        <div className="header-container w-screen fixed bg-[#0D111AFF] border-b-[1px] z-[1000] py-[0.7rem] px-16">
-            <div className="container mx-auto h-[--height-header-admin] flex items-center justify-between">
-                <div className="h-full">
-                    <Link to={config.routes.admin.dashboard}>
-                        <img className="h-full" src={Logo} alt="logo" style={{width : "50%"}}/>
-                    </Link>
-                </div>
-                <div className="text-[1.4rem] font-medium flex items-center justify-between">
-                    <ul className="flex items-center justify-between">
-                        <li className="mr-[2rem] py-[0.5rem] px-[1rem] hover:bg-[--background-item-menu-color] rounded-[5px]">
-                            <Link to={config.routes.admin.profile} className="flex items-center">
-                                <IconUser className="h-[1.8rem]" />
-                                Tài khoản
-                            </Link>
-                        </li>
-                        <li className="mr-[2rem] py-[0.5rem] px-[1rem] hover:bg-[--background-item-menu-color] rounded-[5px]">
-                            <Link className="flex items-center">
-                                <IconBell className="h-[1.8rem]" />
-                                Thông báo
-                            </Link>
-                        </li>
-                        <li className="mr-[2rem] py-[0.5rem] px-[1rem] hover:bg-[--background-item-menu-color] rounded-[5px]">
-                            <Link className="flex items-center">
-                                <IconBrandMessenger className="h-[1.8rem]" />
-                                Tin nhắn
-                            </Link>
-                        </li>
-                        <li className="mr-[2rem] py-[0.5rem] px-[1rem] hover:bg-[--background-item-menu-color] rounded-[5px]">
-                            <Link to={'/'} className="flex items-center">
-                                <IconTableShare className="h-[1.6rem]" />
-                                Website
-                            </Link>
-                        </li>
-                    </ul>
-                    <ul className="flex items-center justify-between text-[1.6rem]">
-                        <li className="hover:bg-lime-50">
-                            <Tooltip placement="bottom" title="Đăng xuất">
-                                <button
-                                    onClick={onLogout}
-                                    className="px-[0.7rem] py-[0.4rem] border-[1px] border-[--primary-color] rounded-[5px] text-center text-[--primary-color]"
-                                >
-                                    <IconSquareArrowRight className="h-[1.8rem]" />
-                                </button>
-                            </Tooltip>
-                        </li>
-                    </ul>
-                </div>
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <header className="main-header fixed">
+      <div className="header-content">
+        <Link to="/" className="logo">
+          <img src="https://ncc.asia/images/logo.png" alt="NCC Logo" />
+        </Link>
+        <div className="header-controls">
+          <button className="filter-button">
+            <IconFilter size={20} />
+            <span>Filter</span>
+          </button>
+          <div className="search-bar">
+            <IconSearch size={20} className="search-icon" />
+            <input type="text" placeholder="Search" />
+          </div>
+          <div className="header-actions">
+            <div className="notification-badge">
+              <IconBell size={20} />
+              <span className="badge">3</span>
             </div>
+            <div className="dropdown" ref={languageMenuRef}>
+              <button className="language-selector" onClick={toggleLanguageMenu}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnamese flag" />
+                <span>Vietnamese</span>
+                <IconChevronDown size={16} />
+              </button>
+              {isLanguageMenuOpen && (
+                <div className="dropdown-menu">
+                  <a href="#" className="dropdown-item">Tiếng Việt</a>
+                  <a href="#" className="dropdown-item">English</a>
+                </div>
+              )}
+            </div>
+            <div className="dropdown" ref={userMenuRef}>
+              <button className="user-menu" onClick={toggleUserMenu}>
+                <img src="https://i.pravatar.cc/300" alt="User avatar" className="user-avatar" />
+                <span>Bằng</span>
+                <IconChevronDown size={16} />
+              </button>
+              {isUserMenuOpen && (
+                <div className="dropdown-menu">
+                  <a href="#" className="dropdown-item">Profile</a>
+                  <a href="#" className="dropdown-item">Settings</a>
+                  <div className="dropdown-divider"></div>
+                  <a href="#" className="dropdown-item">Logout</a>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </header>
+  );
 }
 
 export default Header;
