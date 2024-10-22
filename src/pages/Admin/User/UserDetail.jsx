@@ -1,27 +1,15 @@
 import { Modal, Table, Tag } from 'antd';
 import { useState, useEffect } from 'react';
+import { generateUserData } from './UserData';
 
 function UserDetail({ isDetailOpen, setIsDetailOpen }) {
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
         if (isDetailOpen.isOpen) {
-            // Fetch user data based on isDetailOpen.id
-            // For now, we'll use dummy data
-            setUserData({
-                id: '1',
-                createdAt: new Date().toLocaleString(),
-                updatedAt: new Date().toLocaleString(),
-                name: 'T',
-                email: 't@t.com',
-                phone: '1243143434',
-                zalo: 'zalo',
-                facebook: 'fb',
-                address: 'TPHCM',
-                avatar: 'https://dummyimage.com/138x100.png/dddddd/000000',
-                status: 'Chưa duyệt',
-                confirmed: 'Đã xác nhận',
-            });
+            const allUsers = generateUserData();
+            const selectedUser = allUsers.find(user => user.id === isDetailOpen.id);
+            setUserData(selectedUser || {});
         }
     }, [isDetailOpen]);
 
@@ -33,20 +21,26 @@ function UserDetail({ isDetailOpen, setIsDetailOpen }) {
     const data = Object.entries(userData).map(([key, value], index) => ({
         key: index,
         property: key.charAt(0).toUpperCase() + key.slice(1),
-        value: key === 'avatar' ? <img src={value} alt="Avatar" className="w-20 h-20 rounded-xl" /> :
-               key === 'status' || key === 'confirmed' ? <Tag color={value === 'Hoạt động' || value === 'Đã xác nhận' ? 'green' : 'red'}>{value}</Tag> :
+        value: key === 'avatar' ? <img src={value} alt="Avatar" className="w-20 h-20 rounded-full" /> :
+               key === 'status' ? <Tag color={value === 'Hoạt động' ? 'green' : 'red'}>{value}</Tag> :
                value,
     }));
 
     return (
         <Modal
-            title="Chi tiết người dùng"
+            title={<h2 className="text-2xl font-bold text-gray-800">Chi tiết người dùng</h2>}
             open={isDetailOpen.isOpen}
             onCancel={() => setIsDetailOpen({ id: 0, isOpen: false })}
             footer={null}
             width={600}
+            className="user-detail-modal bg-white"
         >
-            <Table columns={columns} dataSource={data} pagination={false} />
+            <Table 
+                columns={columns} 
+                dataSource={data} 
+                pagination={false}
+                className="user-detail-table"
+            />
         </Modal>
     );
 }

@@ -1,25 +1,15 @@
 import { Modal, Table, Tag } from 'antd';
 import { useState, useEffect } from 'react';
+import { generateMovieData } from './MovieData';
 
 function MovieDetail({ isDetailOpen, setIsDetailOpen }) {
     const [movieData, setMovieData] = useState({});
 
     useEffect(() => {
         if (isDetailOpen.isOpen) {
-            // Fetch movie data based on isDetailOpen.id
-            // For now, we'll use dummy data
-            setMovieData({
-                id: '1',
-                title: 'Avengers: Endgame',
-                genre: 'Hành động, Khoa học viễn tưởng',
-                releaseYear: 2019,
-                director: 'Anthony Russo, Joe Russo',
-                cast: 'Robert Downey Jr., Chris Evans, Mark Ruffalo',
-                duration: '181 phút',
-                description: 'Avengers: Endgame là bộ phim siêu anh hùng Mỹ...',
-                poster: 'https://example.com/movie1.jpg',
-                status: 'Đã chiếu',
-            });
+            const allMovies = generateMovieData();
+            const selectedMovie = allMovies.find(movie => movie.id === isDetailOpen.id);
+            setMovieData(selectedMovie || {});
         }
     }, [isDetailOpen]);
 
@@ -37,7 +27,7 @@ function MovieDetail({ isDetailOpen, setIsDetailOpen }) {
     }));
 
     return (
-        <Modal
+        <Modal className='movie-detail-modal bg-white'
             title="Chi tiết phim"
             open={isDetailOpen.isOpen}
             onCancel={() => setIsDetailOpen({ id: 0, isOpen: false })}

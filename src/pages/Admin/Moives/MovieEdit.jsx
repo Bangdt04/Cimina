@@ -1,25 +1,23 @@
-import { Button, Modal, Form, Input, Select, DatePicker } from 'antd';
+import { Button, Modal, Form, Input, Select, DatePicker, Typography } from 'antd';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
+import { generateMovieData } from './MovieData';
+
+const { Title } = Typography;
 
 function MovieEdit({ isEditOpen, setIsEditOpen }) {
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (isEditOpen.isOpen) {
-            // Fetch movie data based on isEditOpen.id
-            // For now, we'll use dummy data
-            form.setFieldsValue({
-                id: '1',
-                title: 'Avengers: Endgame',
-                genre: 'Hành động, Khoa học viễn tưởng',
-                releaseYear: moment('2019-04-26'),
-                director: 'Anthony Russo, Joe Russo',
-                cast: 'Robert Downey Jr., Chris Evans, Mark Ruffalo',
-                duration: 181,
-                description: 'Avengers: Endgame là bộ phim siêu anh hùng Mỹ...',
-                status: 'Đã chiếu',
-            });
+            const allMovies = generateMovieData();
+            const selectedMovie = allMovies.find(movie => movie.id === isEditOpen.id);
+            if (selectedMovie) {
+                form.setFieldsValue({
+                    ...selectedMovie,
+                    releaseYear: moment(selectedMovie.releaseYear.toString()),
+                });
+            }
         }
     }, [isEditOpen, form]);
 
@@ -37,12 +35,13 @@ function MovieEdit({ isEditOpen, setIsEditOpen }) {
 
     return (
         <Modal
-            title="Chỉnh sửa phim"
+            title={<Title level={4} className="text-black">Chỉnh sửa phim</Title>}
             open={isEditOpen.isOpen}
             onOk={handleOk}
             onCancel={handleCancel}
+            className="movie-edit-modal bg-white"
         >
-            <Form form={form} layout="vertical">
+            <Form form={form} layout="vertical" className="movie-edit-form">
                 <Form.Item name="id" label="ID" hidden>
                     <Input disabled />
                 </Form.Item>
@@ -53,7 +52,7 @@ function MovieEdit({ isEditOpen, setIsEditOpen }) {
                     <Input />
                 </Form.Item>
                 <Form.Item name="releaseYear" label="Ngày phát hành" rules={[{ required: true }]}>
-                    <DatePicker />
+                    <DatePicker className="w-full" />
                 </Form.Item>
                 <Form.Item name="director" label="Đạo diễn">
                     <Input />
@@ -65,7 +64,7 @@ function MovieEdit({ isEditOpen, setIsEditOpen }) {
                     <Input type="number" />
                 </Form.Item>
                 <Form.Item name="description" label="Mô tả">
-                    <Input.TextArea />
+                    <Input.TextArea rows={4} />
                 </Form.Item>
                 <Form.Item name="status" label="Trạng thái">
                     <Select>

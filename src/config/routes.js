@@ -11,6 +11,7 @@ const routes = {
         auto: '/admin/auto',
         genres: '/admin/genres',
         users: '/admin/users',
+        food: '/admin/food',
         voucher: '/admin/voucher',
         forbidden: '/forbidden',
     },

@@ -69,3 +69,38 @@
 
 .user-form-container {
 }
+.user-detail-modal, .user-edit-modal {
+    .ant-modal-content {
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    }
+    .ant-modal-header {
+    background-color: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 8px 8px 0 0;
+    }
+    .ant-modal-body {
+    padding: 24px;
+    }
+    .ant-table-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    }
+    .ant-table-thead > tr > th {
+    background-color: #f9fafb;
+    color: #374151;
+    }
+    .ant-table-tbody > tr > td {
+    border-bottom: 1px solid #e5e7eb;
+    }
+    .ant-form-item-label > label {
+    color: #374151;
+    }
+    .ant-input, .ant-select-selector {
+    border-radius: 6px;
+    }
+    .ant-btn {
+    border-radius: 6px;
+    }
+    }

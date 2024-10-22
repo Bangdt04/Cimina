@@ -9,6 +9,9 @@ import GenreFormPage from "../pages/Admin/Genres/GenreForm";
 import GenrePage from "../pages/Admin/Genres";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
+import UserPage from "../pages/Admin/User";
+import MoviePage from "../pages/Admin/Moives";
+import FoodPage from "../pages/Admin/Food";
 import TicketPricePage from "../pages/Client/TicketPrice";
 import AboutPage from "../pages/Client/About";
 import VoucherPage from "../pages/Client/Voucher";
@@ -166,8 +169,15 @@ const privateRoutes = [
         roles: ['admin'],
         private: true,
     },
-
+    {
+        path: config.routes.admin.food,
+        component: FoodPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
 ]
+
 
 const routes = [...publicRoutes, ...privateRoutes];
 export default routes;

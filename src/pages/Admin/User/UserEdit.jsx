@@ -1,24 +1,17 @@
-import { Button, Modal, Form, Input, Select } from 'antd';
+import { Modal, Form, Input, Select, Button } from 'antd';
 import { useState, useEffect } from 'react';
+import { generateUserData } from './UserData';
 
 function UserEdit({ isEditOpen, setIsEditOpen }) {
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (isEditOpen.isOpen) {
-            // Fetch user data based on isEditOpen.id
-            // For now, we'll use dummy data
-            form.setFieldsValue({
-                id: '1',
-                name: 'T',
-                email: 't@t.com',
-                phone: '1243143434',
-                zalo: 'zalo',
-                facebook: 'fb',
-                address: 'TPHCM',
-                status: 'Chưa duyệt',
-                confirmed: 'Đã xác nhận',
-            });
+            const allUsers = generateUserData();
+            const selectedUser = allUsers.find(user => user.id === isEditOpen.id);
+            if (selectedUser) {
+                form.setFieldsValue(selectedUser);
+            }
         }
     }, [isEditOpen, form]);
 
@@ -35,45 +28,42 @@ function UserEdit({ isEditOpen, setIsEditOpen }) {
     };
 
     return (
-        <Modal
-            title="Chỉnh sửa người dùng"
+        <Modal  
+            title={<h2 className="text-2xl font-bold text-gray-800">Chỉnh sửa người dùng</h2>}
             open={isEditOpen.isOpen}
             onOk={handleOk}
             onCancel={handleCancel}
+            footer={[
+                <Button key="back" onClick={handleCancel}>
+                    Hủy
+                </Button>,
+                <Button key="submit" type="primary" onClick={handleOk}>
+                    Lưu
+                </Button>,
+            ]}
+            className="user-edit-modal bg-white"
         >
-            <Form form={form} layout="vertical">
-                <Form.Item name="id" label="ID" hidden>
-                    <Input disabled />
-                </Form.Item>
-                <Form.Item name="name" label="Tên" rules={[{ required: true }]}>
+            <Form form={form} layout="vertical" className="user-edit-form">
+                <Form.Item name="id" hidden>
                     <Input />
                 </Form.Item>
-                <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+                <Form.Item name="name" label="Tên" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
                     <Input />
                 </Form.Item>
-                <Form.Item name="phone" label="Số điện thoại">
+                <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Vui lòng nhập email hợp lệ' }]}>
                     <Input />
                 </Form.Item>
-                <Form.Item name="zalo" label="Zalo">
-                    <Input />
+                <Form.Item name="role" label="Chức vụ" rules={[{ required: true, message: 'Vui lòng chọn chức vụ' }]}>
+                    <Select>
+                        <Select.Option value="Admin">Admin</Select.Option>
+                        <Select.Option value="Quản lý">Quản lý</Select.Option>
+                        <Select.Option value="Nhân viên">Nhân viên</Select.Option>
+                    </Select>
                 </Form.Item>
-                <Form.Item name="facebook" label="Facebook">
-                    <Input />
-                </Form.Item>
-                <Form.Item name="address" label="Địa chỉ">
-                    <Input />
-                </Form.Item>
-                <Form.Item name="status" label="Trạng thái">
+                <Form.Item name="status" label="Trạng thái" rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}>
                     <Select>
                         <Select.Option value="Hoạt động">Hoạt động</Select.Option>
                         <Select.Option value="Không hoạt động">Không hoạt động</Select.Option>
-                        <Select.Option value="Chưa duyệt">Chưa duyệt</Select.Option>
-                    </Select>
-                </Form.Item>
-                <Form.Item name="confirmed" label="Xác nhận">
-                    <Select>
-                        <Select.Option value="Đã xác nhận">Đã xác nhận</Select.Option>
-                        <Select.Option value="Chưa xác nhận">Chưa xác nhận</Select.Option>
                     </Select>
                 </Form.Item>
             </Form>
