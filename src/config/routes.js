@@ -21,8 +21,10 @@ const routes = {
         giaVe: '/ticket-price',
         lienHoanPhim: '/festival',
         gioiThieu: '/about',
+        phim: '/movie',
         create_iso: '/iso/new',
         chat: '/chat',
+        profile: '/profile',
         product_detail: '/product-detail',
         login: '/',
         register: '/auth/register'

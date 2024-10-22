@@ -15,6 +15,8 @@ import VoucherPage from "../pages/Client/Voucher";
 import BlogPage from "../pages/Client/Blogs";
 import ShedulePage from "../pages/Client/Shedule";
 import EventMoviePage from "../pages/Client/EventMovie";
+import MovieDetailsPage from "../pages/Client/MovieDetails";
+import ProfilePage from "../pages/Client/Profile";
 
 const publicRoutes = [
     {
@@ -62,6 +64,21 @@ const publicRoutes = [
     {
         path: config.routes.web.lienHoanPhim,
         component: EventMoviePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.phim + "/:id",
+        component: MovieDetailsPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+
+    {
+        path: config.routes.web.profile ,
+        component: ProfilePage,
         layout: ClientLayout,
         roles: ['user'],
         private: false,

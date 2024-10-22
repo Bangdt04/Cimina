@@ -53,7 +53,9 @@ function Header() {
     const menu = (
         <Menu className="">
             <Menu.Item key="1">
-                <a href="profile.html">Thông tin cá nhân</a>
+                <NavLink to={config.routes.web.profile}>
+                    Thông tin cá nhân
+                </NavLink>
             </Menu.Item>
             <Menu.Item key="2">
                 <a href="#" onClick={onLogout}>Đăng xuất</a>
@@ -116,13 +118,13 @@ function Header() {
                 {isTokenStoraged() ? (
                     <>
                         <div className="relative flex items-center space-x-2" style={{ marginRight: 100 }}>
-                            {roles.includes('admin') ? (<>
-                            <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
+                            {roles.vai_tro === 'admin' ? (<>
+                                <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
                             </>) : (<></>)}
                             <FontAwesomeIcon icon="fa-solid fa-user" />
                             <Dropdown overlay={menu} trigger={['click']}>
                                 <span id="user-name" className="user-name cursor-pointer">
-                                    Dương Văn Hòa ▼
+                                    {roles.ho_ten} ▼
                                 </span>
                             </Dropdown>
                         </div>
