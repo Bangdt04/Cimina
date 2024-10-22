@@ -1,8 +1,8 @@
 const apiRoutes = {
     common: {
         auth: {
-            login: '/login',
-            register: '/registers',
+            login: '/auth/login',
+            register: '/auth/registers',
             changePassword: '/auth/change-password',
             confirmed: '/auth/confirmed',
         },

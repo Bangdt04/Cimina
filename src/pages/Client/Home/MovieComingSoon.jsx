@@ -1,4 +1,6 @@
+import { NavLink } from "react-router-dom";
 import ImageMovie from "../../../assets/image/joker.webp";
+import config from "../../../config";
 
 const MovieCommingSoon = () => {
     return (
@@ -16,7 +18,8 @@ const MovieCommingSoon = () => {
                     </a>
                 </div>
                 <div className="flex space-x-4 mt-6 mb-5">
-                    <div className="w-1/4">
+                <NavLink className="w-1/4" to={config.routes.web.phim + `/2`}>
+                    <div>
                         <img
                             alt="Movie poster of Joker: Folie à Deux"
                             className="rounded-2xl hover-zoom mb-2 hover-zoom"
@@ -33,6 +36,7 @@ const MovieCommingSoon = () => {
                             JOKER: FOLIE À DEUX ĐIÊN CÓ ĐÔI-T18
                         </p>
                     </div>
+                    </NavLink>
                     <div className="w-1/4">
                         <img
                             alt="Movie poster of Hẹn Hò Với Sát Nhân"

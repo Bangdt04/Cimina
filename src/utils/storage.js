@@ -17,7 +17,6 @@ export const getRoles = () => {
     let authInfo = JSON.parse(localStorage.getItem('token'));
     if (!authInfo) return;
 
-    let jwtDecodeObj = jwtDecode(authInfo.token);
-    let role = Object.keys(jwtDecodeObj).find((val) => val.includes('vai_tro'));
-    return jwtDecodeObj[role];
+    let jwtDecodeObj = authInfo.auth;
+    return jwtDecodeObj;
 };

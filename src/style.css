@@ -48,10 +48,9 @@ body {
 
 
 .main-content {
-  background-image: url('/assets/image/joker.webp');
+  background-image: url('./assets/image/joker.webp');
   background-size: cover;
   background-position: center;
-
 }
 
 .modal {
@@ -97,10 +96,9 @@ body {
 }
 
 .modal-trailer-content {
-  background-color: #1c1c1c;
+  background-color: #1c1c1c00;
   margin: 15% auto;
   padding: 20px;
-  border: 1px solid #888;
   width: 80%;
   max-width: 600px;
 }
@@ -133,13 +131,13 @@ body {
 }
 
 .seat {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin: 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -174,4 +172,12 @@ body {
 
 .ant-result .ant-result-subtitle {
   color: #ffffff;
+}
+
+.ant-modal .ant-modal-content {
+  background-color: #06080a00;
+}
+
+.ant-modal .ant-modal-content .ant-modal-close-x{
+  color: white;
 }

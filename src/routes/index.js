@@ -7,11 +7,17 @@ import HomePage from "../pages/Client/Home";
 import AutoApprovePage from "../pages/Admin/AutoApprove";
 import GenreFormPage from "../pages/Admin/Genres/GenreForm";
 import GenrePage from "../pages/Admin/Genres";
-import VoucherPage from "../pages/Admin/Voucher";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
-import UserPage from "../pages/Admin/User";
-import MoviePage from "../pages/Admin/Moives";
+import TicketPricePage from "../pages/Client/TicketPrice";
+import AboutPage from "../pages/Client/About";
+import VoucherPage from "../pages/Client/Voucher";
+import BlogPage from "../pages/Client/Blogs";
+import ShedulePage from "../pages/Client/Shedule";
+import EventMoviePage from "../pages/Client/EventMovie";
+import MovieDetailsPage from "../pages/Client/MovieDetails";
+import ProfilePage from "../pages/Client/Profile";
+
 const publicRoutes = [
     {
         path: config.routes.web.home,
@@ -19,7 +25,64 @@ const publicRoutes = [
         layout: ClientLayout,
         roles: ['user'],
         private: false,
-    }
+    },
+    {
+        path: config.routes.web.giaVe,
+        component: TicketPricePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.gioiThieu,
+        component: AboutPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.khuyenMai,
+        component: VoucherPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.tinTuc,
+        component: BlogPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.lichChieu,
+        component: ShedulePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.lienHoanPhim,
+        component: EventMoviePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.phim + "/:id",
+        component: MovieDetailsPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+
+    {
+        path: config.routes.web.profile ,
+        component: ProfilePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
 ]
 
 const privateRoutes = [
