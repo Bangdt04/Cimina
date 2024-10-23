@@ -1,61 +1,61 @@
-.container {
-    .ant-input-search-button {
-        background-color: var(--primary-color);
-        &:hover {
-            background-color: var(--primary-color) !important;
-        }
-    }
-}
-
-.search-container {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.ant-table {
-    border-radius: 4px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.action-btn {
-    button {
-        width: 24px;
-        height: 24px;
-        font-size: 1.4rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
-
-.form-container {
-    width: 80%;
-    form {
-        .ant-form-item-label {
-            label {
-                font-size: 1.6rem;
-                font-weight: 500;
-                color: var(--text-color);
-            }
-        }
-        .ant-form-item-label {
-            max-width: 100%;
-        }
-        .ant-select-selection-search-input {
-            font-size: 1.6rem;
-            &:focus {
-                box-shadow: none;
-            }
-        }
-        .ant-input,
-        .ant-input-password,
-        .ant-select-selector,
-        .ant-select-in-form-item {
-            font-size: 1.6rem;
-            border-radius: 0.5rem;
-            border-color: #d9d9d9;
-        }
-        .ant-form-item-explain-error {
-            font-size: 1.6rem;
-        }
-    }
-}
+.admin-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-content {
+    display: flex;
+    flex: 1;
+  }
+  
+  .admin-main-content {
+    flex: 1;
+    margin-left: 250px; // Chiều rộng của sidebar
+    margin-top: 60px; // Chiều cao của header
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-table-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-spin-nested-loading {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-spin-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ant-table-body {
+    flex: 1;
+    overflow-y: auto;
+  }

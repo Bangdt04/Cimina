@@ -1,83 +1,47 @@
-import { Button, Modal, Table, Tag } from 'antd';
-import Detail from '../../../layouts/Admin/components/Detail';
-const rawData = [
-    {
-        key: '1',
-        property: 'ID',
-        value: '1',
-    },
-    {
-        key: '2',
-        property: 'Ngày tạo',
-        value: new Date().toLocaleString(),
-    },
-    {
-        key: '3',
-        property: 'Ngày cập nhật',
-        value: new Date().toLocaleString(),
-    },
-    {
-        key: '4',
-        property: 'Tên',
-        value: 'T',
-    },
-    {
-        key: '5',
-        property: 'Email',
-        value: 't@t.com',
-    },
-    {
-        key: '6',
-        property: 'Số điện thoại',
-        value: '1243143434',
-    },
-    {
-        key: '7',
-        property: 'Zalo',
-        value: 'zalo',
-    },
-    {
-        key: '8',
-        property: 'Facebook',
-        value: 'fb',
-    },
-    {
-        key: '9',
-        property: 'Địa chỉ',
-        value: 'TPHCM',
-    },
-    {
-        key: '10',
-        property: 'Ảnh',
-        value: (
-            <img
-                className="w-20 h-20 rounded-xl"
-                src="https://dummyimage.com/138x100.png/dddddd/000000"
-            />
-        ),
-    },
-    {
-        key: '11',
-        property: 'Trạng thái',
-        value: (
-            <Tag className="w-fit uppercase" color="red">
-                Chưa duyệt
-            </Tag>
-        ),
-    },
-    {
-        key: '12',
-        property: 'Xác nhận',
-        value: (
-            <Tag className="w-fit uppercase" color="green">
-                Đã xác nhận
-            </Tag>
-        ),
-    },
-];
+import { Modal, Table, Tag } from 'antd';
+import { useState, useEffect } from 'react';
+import { generateUserData } from './UserData';
+
 function UserDetail({ isDetailOpen, setIsDetailOpen }) {
+    const [userData, setUserData] = useState({});
+
+    useEffect(() => {
+        if (isDetailOpen.isOpen) {
+            const allUsers = generateUserData();
+            const selectedUser = allUsers.find(user => user.id === isDetailOpen.id);
+            setUserData(selectedUser || {});
+        }
+    }, [isDetailOpen]);
+
+    const columns = [
+        { title: 'Thuộc tính', dataIndex: 'property', key: 'property' },
+        { title: 'Giá trị', dataIndex: 'value', key: 'value' },
+    ];
+
+    const data = Object.entries(userData).map(([key, value], index) => ({
+        key: index,
+        property: key.charAt(0).toUpperCase() + key.slice(1),
+        value: key === 'avatar' ? <img src={value} alt="Avatar" className="w-20 h-20 rounded-full" /> :
+               key === 'status' ? <Tag color={value === 'Hoạt động' ? 'green' : 'red'}>{value}</Tag> :
+               value,
+    }));
+
     return (
-        <Detail isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} rawData={rawData} />
+        <Modal
+            title={<h2 className="text-2xl font-bold text-gray-800">Chi tiết người dùng</h2>}
+            open={isDetailOpen.isOpen}
+            onCancel={() => setIsDetailOpen({ id: 0, isOpen: false })}
+            footer={null}
+            width={600}
+            className="user-detail-modal bg-white"
+        >
+            <Table 
+                columns={columns} 
+                dataSource={data} 
+                pagination={false}
+                className="user-detail-table"
+            />
+        </Modal>
     );
 }
 

@@ -1,80 +1,60 @@
-import './navbar.scss';
-import config from '../../../../config';
-import React, { useState } from 'react';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
-    IconHome2,
-    IconFingerprint,
-    IconBrandCashapp,
-    IconReportAnalytics,
-    IconSettings,
-    IconAutomaticGearbox,
-    IconInfoCircle,
-    Icon24Hours,
-    IconCategory,
-    IconConeOff,
-    IconBrandBlogger,
-    IconPhoneCall,
-    IconMovie
+  IconDashboard,
+  IconMovie,
+  IconChefHat,
+  IconUsers,
+  IconCreditCard,
+  IconCalendar,
+  IconTags,
+  IconArmchair,
+  IconDoor,
+  IconAddressBook,
+  IconArticle,
+  IconTicket,
+  IconMessageCircle2,
+  IconWheel
 } from '@tabler/icons-react';
-import { Menu } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import './navbar.scss';
 
-const items = [
-    getItem('Trang chủ', config.routes.admin.dashboard, <IconHome2 />),
-    getItem('Người dùng', config.routes.admin.account, <IconFingerprint />),
-    getItem('Phim', config.routes.admin.movies, <IconMovie />),
-    getItem('Thể Loại', config.routes.admin.genres, <IconCategory />),
-    getItem('Khuyến Mãi', config.routes.admin.voucher, <IconConeOff />),
-    getItem('Báo cáo', config.routes.admin.report, <IconReportAnalytics />),
-    getItem('Tin tức', config.routes.admin.blogs, <IconBrandBlogger />),
-    getItem('Liên hệ', config.routes.admin.trade, <IconPhoneCall />),
-    getItem('Thông tin', config.routes.admin.info, <IconInfoCircle />),
-    getItem('Cài đặt hệ thống', config.routes.admin.setting, <IconSettings />),
-    getItem('Duyệt tự động', config.routes.admin.auto, <IconAutomaticGearbox />),
+const menuItems = [
+  { name: 'Dashboard', icon: IconDashboard, path: '/admin/dashboard' },
+  { name: 'Movies', icon: IconMovie, path: '/admin/movies' },
+  { name: 'Food', icon: IconChefHat, path: '/admin/food' },
+  { name: 'Users', icon: IconUsers, path: '/admin/users' },
+  { name: 'Payments', icon: IconCreditCard, path: '/admin/payments' },
+  { name: 'Bookings', icon: IconCalendar, path: '/admin/bookings' },
+  { name: 'Movie Genre', icon: IconTags, path: '/admin/movie-genre' },
+  { name: 'Seat', icon: IconArmchair, path: '/admin/seat' },
+  { name: 'Room', icon: IconDoor, path: '/admin/room' },
+  { name: 'Contact', icon: IconAddressBook, path: '/admin/contact' },
+  { name: 'Blog', icon: IconArticle, path: '/admin/blog' },
+  { name: 'Voucher', icon: IconTicket, path: '/admin/voucher' },
+  { name: 'Feedback', icon: IconMessageCircle2, path: '/admin/feedback' },
+  { name: 'Lucky Wheel', icon: IconWheel, path: '/admin/lucky-wheel' },
 ];
 
-const rootSubmenuKeys = ['user', 'product', 'order'];
-
-function getItem(label, key, icon, children, type) {
-    return {
-        key,
-        icon,
-        children,
-        label,
-        type,
-    };
-}
-
-function Navbar() {
-    const navigate = useNavigate();
-    let routeKey = useLocation().pathname;
-
-    const [openKeys, setOpenKeys] = useState(['home']);
-    const onOpenChange = (keys) => {
-        const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
-        if (latestOpenKey && rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-            setOpenKeys(keys);
-        } else {
-            setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
-        }
-    };
-    const onClick = (e) => {
-        navigate(e.key);
-    };
-
+function Sidebar() {
+    const location = useLocation();
+  
     return (
-        <div className="navbar-admin-container w-[250px]">
-            <Menu
-                className='bg-[#0D111AFF]'
-                mode="inline"
-                onClick={onClick}
-                defaultSelectedKeys={[routeKey]}
-                openKeys={openKeys}
-                onOpenChange={onOpenChange}
-                items={items}
-            />
-        </div>
+      <nav className="sidebar fixed">
+        <ul>
+          {menuItems.map((item) => (
+            <li key={item.name}>
+              <Link
+                to={item.path}
+                className={location.pathname === item.path ? 'active' : ''}
+              >
+                <item.icon size={20} />
+                <span>{item.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     );
-}
+  }
 
-export default Navbar;
+export default Sidebar;
