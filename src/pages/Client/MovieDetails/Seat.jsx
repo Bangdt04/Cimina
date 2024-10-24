@@ -32,15 +32,28 @@ const Seat = ({ selectedTime }) => {
         }
     };
 
+    const getPairedSeatId = (seatId) => {
+        const row = seatId.charAt(0);
+        const number = parseInt(seatId.slice(1));
+        if (number % 2 === 0) {
+            return `${row}${(number - 1).toString().padStart(2, '0')}`;
+        } else {
+            return `${row}${(number + 1).toString().padStart(2, '0')}`;
+        }
+    };
+
     const toggleSeat = (seatId) => {
         const seatType = getSeatType(seatId);
         if (seatType === 'double') {
-            // Xử lý ghế đôi như trước
             const pairSeatId = getPairedSeatId(seatId);
             setSelectedSeats(prevSeats => {
                 if (prevSeats.includes(seatId)) {
                     return prevSeats.filter(id => id !== seatId && id !== pairSeatId);
                 } else {
+                    if (isBooked(seatId) || isBooked(pairSeatId)) {
+                        showNotification("Một hoặc cả hai ghế đôi đã được đặt.");
+                        return prevSeats;
+                    }
                     return [...prevSeats, seatId, pairSeatId];
                 }
             });
@@ -70,11 +83,9 @@ const Seat = ({ selectedTime }) => {
         const leftSeat = number > 1 ? `${row}${(number - 1).toString().padStart(2, '0')}` : null;
         const rightSeat = number < maxSeatNumber ? `${row}${(number + 1).toString().padStart(2, '0')}` : null;
     
-        // Kiểm tra xem ghế đang hủy có phải là ghế ngoài cùng bên trái hoặc bên phải của chuỗi ghế đã chọn không
         const isLeftmostSelected = !leftSeat || !currentSeats.includes(leftSeat);
         const isRightmostSelected = !rightSeat || !currentSeats.includes(rightSeat);
     
-        // Nếu ghế đang hủy không phải là ghế ngoài cùng, không cho phép hủy
         if (!isLeftmostSelected && !isRightmostSelected) {
             return true;
         }
