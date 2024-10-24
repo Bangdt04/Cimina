@@ -1,6 +1,6 @@
 import { NavLink, Navigate, useNavigate } from 'react-router-dom';
 import config from '../../../config';
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, Select, notification } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { useRegister } from '../../../hooks/api/useAuthApi';
 import { useState } from 'react';
@@ -10,7 +10,6 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
     const navigate = useNavigate();
     const [processing, setProcessing] = useState(false);
     const [form] = Form.useForm();
-
 
     const mutationRegister = useRegister({
         success: (data) => {
@@ -38,20 +37,17 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
         },
     });
 
-
-
     const onRegister = async () => {
         await mutationRegister.mutateAsync({
-            ho_ten: form.getFieldValue('lastname') +" "+ form.getFieldValue('firstname'),
-            gioi_tinh: form.getFieldValue('gender') === "Nam" ? "nam" : "nu",
+            ho_ten: form.getFieldValue('fullName'),
+            gioi_tinh: form.getFieldValue('gender'),
             so_dien_thoai: form.getFieldValue('phone'),
             email: form.getFieldValue('email'),
             password: form.getFieldValue('password'),
             password_confirmation: form.getFieldValue('confirmPassword'),
-            vai_tro: ' user',
+            vai_tro: 'user',
         });
     };
-
 
     if (isTokenStoraged()) {
         let url = config.routes.web.home;
@@ -68,40 +64,22 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                     Đăng kí
                 </h2>
 
-
                 <Form form={form} onFinish={onRegister}>
-                    <div className="grid grid-cols-2 gap-4 mb-14">
+                    <div className="mb-14">
                         <FormItem
-                            name="lastname"
+                            name="fullName"
                             layout="vertical"
-                            label={<label style={{ color: "white" }}>Họ</label>}
+                            label={<label style={{ color: "white" }}>Họ và tên</label>}
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập họ."
+                                    message: "Vui lòng nhập họ và tên."
                                 },
                             ]}
                         >
                             <Input
                                 className="p-2 rounded-lg border border-gray-300"
-                                placeholder="Họ"
-                                type="text"
-                            />
-                        </FormItem>
-                        <FormItem
-                            name="firstname"
-                            layout="vertical"
-                            label={<label style={{ color: "white" }}>Tên</label>}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập tên."
-                                },
-                            ]}
-                        >
-                            <Input
-                                className="p-2 rounded-lg border border-gray-300"
-                                placeholder="Tên"
+                                placeholder="Họ và tên"
                                 type="text"
                             />
                         </FormItem>
@@ -150,22 +128,23 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
                             />
                         </FormItem>
                         <FormItem
-                            className='mg'
                             name="gender"
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Giới tính</label>}
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập tên tài khoản."
+                                    message: "Vui lòng chọn giới tính."
                                 },
                             ]}
                         >
-                            <Input
-                                className="p-2 rounded-lg border border-gray-300"
-                                placeholder="Nam"
-                                type="text"
-                            />
+                            <Select
+                                className="w-full"
+                                placeholder="Chọn giới tính"
+                            >
+                                <Select.Option value="nam">Nam</Select.Option>
+                                <Select.Option value="nu">Nữ</Select.Option>
+                            </Select>
                         </FormItem>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-16">
