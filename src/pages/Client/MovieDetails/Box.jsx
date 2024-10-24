@@ -66,7 +66,7 @@ const Box = () => {
                             selectedTime={selectedTime}
                         />
                     )}
-                    {selectedTime && <Seat selectedTime={selectedTime} />}
+                    {selectedTime && <Seat selectedDate={selectedDate} selectedTime={selectedTime} />}
                 </div>
             </div>
         </>

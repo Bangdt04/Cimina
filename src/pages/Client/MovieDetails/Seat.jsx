@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const Seat = ({ selectedTime }) => {
+const Seat = ({ selectedDate, selectedTime }) => {
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const [notification, setNotification] = useState(null);
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -74,7 +77,7 @@ const Seat = ({ selectedTime }) => {
             });
         }
     };
-    
+
     const wouldCreateGap = (seatId, currentSeats) => {
         const row = seatId.charAt(0);
         const number = parseInt(seatId.slice(1));
@@ -187,6 +190,17 @@ const Seat = ({ selectedTime }) => {
         }, 0);
     };
 
+    const handlePayment = () => {
+        navigate(`/payment/${id}`, {
+            state: {
+                selectedSeats,
+                totalAmount: calculateTotal(),
+                selectedDate,
+                selectedTime
+            }
+        });
+    };
+
     return (
         <div className="bg-gray-900 text-white p-6 relative">
             {notification && (
@@ -251,6 +265,7 @@ const Seat = ({ selectedTime }) => {
                                     : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                                 }`}
                                 disabled={selectedSeats.length === 0}
+                                onClick={handlePayment}
                             >
                                 Thanh toán
                             </button>

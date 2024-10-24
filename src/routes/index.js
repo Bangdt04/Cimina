@@ -13,6 +13,7 @@ import UserPage from "../pages/Admin/User";
 import MoviePage from "../pages/Admin/Moives";
 import FoodPage from "../pages/Admin/Food";
 import TicketPricePage from "../pages/Client/TicketPrice";
+import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
 import VoucherPage from "../pages/Client/Voucher";
 import BlogPage from "../pages/Client/Blogs";
@@ -74,6 +75,13 @@ const publicRoutes = [
     {
         path: config.routes.web.phim + "/:id",
         component: MovieDetailsPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.payment,
+        component: PaymentPage,
         layout: ClientLayout,
         roles: ['user'],
         private: false,
