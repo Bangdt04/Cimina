@@ -21,6 +21,7 @@ import ShedulePage from "../pages/Client/Shedule";
 import EventMoviePage from "../pages/Client/EventMovie";
 import MovieDetailsPage from "../pages/Client/MovieDetails";
 import ProfilePage from "../pages/Client/Profile";
+import FoodMenu from "../pages/Client/Food";
 
 const publicRoutes = [
     {
@@ -94,6 +95,14 @@ const publicRoutes = [
         roles: ['user'],
         private: false,
     },
+    {
+        path: config.routes.web.food ,
+        component: FoodMenu,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+ 
 ]
 
 const privateRoutes = [

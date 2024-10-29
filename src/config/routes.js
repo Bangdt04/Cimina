@@ -30,7 +30,8 @@ const routes = {
         profile: '/profile',
         product_detail: '/product-detail',
         login: '/',
-        register: '/auth/register'
+        register: '/auth/register',
+        food : '/food'
     },
 };
 export default routes;
