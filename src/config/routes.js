@@ -24,12 +24,14 @@ const routes = {
         lienHoanPhim: '/festival',
         gioiThieu: '/about',
         phim: '/movie',
+        payment: '/payment/:id',
         create_iso: '/iso/new',
         chat: '/chat',
         profile: '/profile',
         product_detail: '/product-detail',
         login: '/',
-        register: '/auth/register'
+        register: '/auth/register',
+        food : '/food'
     },
 };
 export default routes;

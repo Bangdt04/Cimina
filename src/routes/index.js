@@ -13,6 +13,7 @@ import UserPage from "../pages/Admin/User";
 import MoviePage from "../pages/Admin/Moives";
 import FoodPage from "../pages/Admin/Food";
 import TicketPricePage from "../pages/Client/TicketPrice";
+import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
 import VoucherPage from "../pages/Client/Voucher";
 import BlogPage from "../pages/Client/Blogs";
@@ -20,6 +21,7 @@ import ShedulePage from "../pages/Client/Shedule";
 import EventMoviePage from "../pages/Client/EventMovie";
 import MovieDetailsPage from "../pages/Client/MovieDetails";
 import ProfilePage from "../pages/Client/Profile";
+import FoodMenu from "../pages/Client/Food";
 
 const publicRoutes = [
     {
@@ -78,6 +80,13 @@ const publicRoutes = [
         roles: ['user'],
         private: false,
     },
+    {
+        path: config.routes.web.payment,
+        component: PaymentPage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
 
     {
         path: config.routes.web.profile ,
@@ -86,6 +95,14 @@ const publicRoutes = [
         roles: ['user'],
         private: false,
     },
+    {
+        path: config.routes.web.food ,
+        component: FoodMenu,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+ 
 ]
 
 const privateRoutes = [
