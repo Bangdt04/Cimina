@@ -137,7 +137,7 @@ function Header() {
                                 className="border border-white text-white py-2 px-4 pr-6 pl-6 rounded-full mr-6 hover-zoom"
                                 onClick={openRegisterModal}
                             >
-                                Đăng Kí
+                                Đăng kí
                             </button>
                             <button className="bg-red-500 text-white py-2 px-4 rounded-full hover-zoom"
                                 onClick={openLoginModal}

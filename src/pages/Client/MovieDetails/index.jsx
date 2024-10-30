@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageMovie from "../../../assets/image/joker.webp";
 import ModalTrailerPage from "./ModalTrailer";
 import Box from "./Box";
+import { useParams } from "react-router-dom";
+import { useGetMovieById } from "../../../hooks/api/useMovieApi";
 
 
 const MovieDetailsPage = () => {
     const [showTrailerModal, setShowTrailerModal] = useState(false);
+    let { id } = useParams();
+    const { isLoading: isLoadingMovie, data: movie } = id
+    ? useGetMovieById(id)
+    : { isLoading: null, data: null };
+
+    useEffect(() => {
+        if(!movie) return;
+        console.log("Movie", movie)
+    }, [movie]);
 
     const closeTrailerModal = () => {
         setShowTrailerModal(false);
