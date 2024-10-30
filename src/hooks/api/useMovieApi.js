@@ -19,5 +19,6 @@ export const useGetMovies = () => {
 };
 
 export const useGetMovieById = (id) => {
-    return useFetch({ url: apiRoutes.web.movie + '/' + id, key: 'getMovieById' });
+    console.log("GET MOVIES ID")
+    return useFetch({ url: apiRoutes.web.showMovie + '/' + id, key: 'getMovieById' });
 }

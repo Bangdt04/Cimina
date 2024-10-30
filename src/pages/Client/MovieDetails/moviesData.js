@@ -1,7 +1,8 @@
-
+import JokerImage from "../../../assets/image/joker.webp";
+import InsterIMage from "../../../assets/image/0017893_0.webp";
 export const moviesData = [
     {
-        id: 1,
+        id: 24,
         title: "JOKER: FOLIE À DEUX ĐIÊN CÓ ĐÔI-TIẾP",
         genre: "Kinh dị, Tâm lý, tình cảm, Nhạc kịch",
         country: "MY",
@@ -11,11 +12,11 @@ export const moviesData = [
         releaseDate: "04/10/2024",
         description: "Phần tiếp theo của bộ phim 'JOKER' năm 2019",
         ageRating: "T18: Phim được phổ biến đến khán giả từ đủ 18 tuổi trở lên.",
-        posterImage: "../../../assets/image/joker.webp",
+        posterImage: JokerImage,
         trailerUrl: "https://www.youtube.com/embed/2CnsNzo74e8?si=hYVvaQ0ExIDIrM5k"
       },
     {
-      id: 2,
+      id: 19,
       title: "OPPENHEIMER",
       genre: "Tiểu sử, Lịch sử, Chính kịch",
       country: "Mỹ",
@@ -29,7 +30,7 @@ export const moviesData = [
       trailerUrl: "https://www.youtube.com/embed/uYPbbksJxIg"
     },
     {
-      id: 3,
+      id: 25,
       title: "INCEPTION",
       genre: "Khoa học viễn tưởng, Hành động, Phiêu lưu",
       country: "Mỹ",
@@ -43,7 +44,7 @@ export const moviesData = [
       trailerUrl: "https://www.youtube.com/embed/YoHD9XEInc0"
     },
     {
-      id: 4,
+      id: 28,
       title: "THE DARK KNIGHT",
       genre: "Hành động, Tội phạm, Chính kịch",
       country: "Mỹ",
@@ -57,7 +58,7 @@ export const moviesData = [
       trailerUrl: "https://www.youtube.com/embed/EXeTwQWrcwY"
     },
     {
-      id: 5,
+      id: 26,
       title: "INTERSTELLAR",
       genre: "Khoa học viễn tưởng, Phiêu lưu, Chính kịch",
       country: "Mỹ",
@@ -67,7 +68,7 @@ export const moviesData = [
       releaseDate: "07/11/2014",
       description: "Một nhóm các nhà thám hiểm không gian đi qua một lỗ sâu trong không gian trong nỗ lực đảm bảo sự sống còn của nhân loại.",
       ageRating: "PG-13: Phụ huynh được khuyến cáo, một số tài liệu có thể không phù hợp cho trẻ em dưới 13 tuổi",
-      posterImage: "../../../assets/image/interstellar.jpg",
+      posterImage: InsterIMage,
       trailerUrl: "https://www.youtube.com/embed/zSWdZVtXT7E"
     }
   ];

@@ -22,6 +22,7 @@ const apiRoutes = {
         user_message_chat: '/user/message-chat',
         transaction: '/transaction',
         movie:'/movies',
+        showMovie: '/showMovie'
     },
 };
 
