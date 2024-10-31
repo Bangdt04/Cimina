@@ -13,6 +13,7 @@ const apiRoutes = {
     admin: {
         gerne: '/moviegenres',
         voucher: '/vouchers',
+        movies: '/movies',
         
     },
     web: {

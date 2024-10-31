@@ -113,13 +113,13 @@ function MovieList() {
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
             notification.success({
-                message: 'Thành công',
+                message: 'Xóa phim thành công',
             });
             refetch();
         },
         error: (err) => {
             notification.error({
-                message: 'Thất bại',
+                message: 'Xóa phim thất bại',
             });
         },
         obj: {
@@ -127,8 +127,13 @@ function MovieList() {
         },
     });
 
-    const onDelete = async (id) => {
-        await mutationDelete.mutateAsync(id);
+    const onDelete = async () => {
+        try {
+            const response = await mutationDelete.mutateAsync(isDisableOpen.id);
+            console.log("Response from delete API:", response); // Log phản hồi từ API
+        } catch (error) {
+            console.error("Delete failed:", error); // Log lỗi nếu có
+        }
     };
 
     const onSearch = (value) => {
@@ -157,7 +162,7 @@ function MovieList() {
                 pagination={{ ...tableParams.pagination, showSizeChanger: true }}
             />
 
-            {isDisableOpen.id !== 0 && (
+            {isDisableOpen.isOpen && (
                 <ConfirmPrompt
                     content="Bạn có muốn xóa phim này ?"
                     isDisableOpen={isDisableOpen}
