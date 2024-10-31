@@ -8,26 +8,26 @@ import {
 
 // Tạo một phim mới
 export const useCreateMovie = (updater) => {
-    return usePost(apiRoutes.admin.movies, updater);
-};
-
-// Cập nhật thông tin một phim
-export const useUpdateMovie = (updater) => {
-    return usePut(apiRoutes.admin.movies, updater);
+    return usePost(apiRoutes.admin.movie, updater);
 };
 
 // Lấy danh sách tất cả phim
 export const useGetMovies = () => {
     console.log("GET MOVIES");
-    return useFetch({ url: apiRoutes.web.movie, key: 'getListMovies' });
+    return useFetch({ url: apiRoutes.admin.movie, key: 'getListMovies' });
 };
 
 // Lấy thông tin một phim theo ID
 export const useGetMovie = (id) => {
-    return useFetch({ url: `${apiRoutes.web.movies}/${id}`, key: 'getMovieById' });
+    return useFetch({ url: `${apiRoutes.admin.showMovie}/${id}`, key: 'showMovieById' });
+};
+
+// Cập nhật thông tin một phim theo ID
+export const useUpdateMovie = (id, updater) => {
+    return usePut(`${apiRoutes.admin.updateMovie}/${id}`, updater);
 };
 
 // Xóa một phim
 export const useDeleteMovie = (updater) => {
-    return useDelete(apiRoutes.admin.movies, updater);
+    return useDelete(apiRoutes.admin.movie, updater);
 };

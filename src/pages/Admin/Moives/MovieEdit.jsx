@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetMovies, useUpdateMovie } from '../../../hooks/api/useMovieApi';
+import { useGetMovie, useUpdateMovie } from '../../../hooks/api/useMovieApi';
 import { Button, Input, notification } from 'antd';
 
 const MovieEdit = () => {
-    const { id } = useParams(); // Lấy ID từ URL
+    const { id } = useParams(); // Get ID from URL
     const navigate = useNavigate();
-    const { data: movieData, isLoading } = useGetMovies(id); // Lấy thông tin phim
+    const { data: response, isLoading } = useGetMovie(id); // Fetch movie data
     const [formData, setFormData] = useState({
         ten_phim: '',
         dao_dien: '',
@@ -15,12 +15,12 @@ const MovieEdit = () => {
         danh_gia: '',
     });
 
-    const mutationUpdate = useUpdateMovie({
+    const mutationUpdate = useUpdateMovie(id, {
         success: () => {
             notification.success({
                 message: 'Cập nhật phim thành công',
             });
-            navigate('/admin/movies'); // Quay lại danh sách phim
+            navigate('/admin/movies'); // Navigate back to movie list
         },
         error: (err) => {
             notification.error({
@@ -30,7 +30,9 @@ const MovieEdit = () => {
     });
 
     useEffect(() => {
-        if (movieData) {
+        console.log(response); // Log the response to check its structure
+        if (response && response.data) {
+            const movieData = response.data; // Access the movie data
             setFormData({
                 ten_phim: movieData.ten_phim,
                 dao_dien: movieData.dao_dien,
@@ -39,7 +41,7 @@ const MovieEdit = () => {
                 danh_gia: movieData.danh_gia,
             });
         }
-    }, [movieData]);
+    }, [response]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -51,7 +53,7 @@ const MovieEdit = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutationUpdate.mutate({ id, ...formData }); // Gửi yêu cầu cập nhật
+        mutationUpdate.mutate({ ...formData }); // Send update request
     };
 
     if (isLoading) return <div>Loading...</div>;

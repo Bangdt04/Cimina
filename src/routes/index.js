@@ -22,7 +22,7 @@ import EventMoviePage from "../pages/Client/EventMovie";
 import MovieDetailsPage from "../pages/Client/MovieDetails";
 import ProfilePage from "../pages/Client/Profile";
 import FoodMenu from "../pages/Client/Food";
-
+import MovieEditPage from "../pages/Admin/Moives/MovieEdit";
 const publicRoutes = [
     {
         path: config.routes.web.home,
@@ -182,6 +182,13 @@ const privateRoutes = [
     },{
         path: config.routes.admin.movies,
         component: MoviePage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.movies + '/update/:id', // Route for editing a movie
+        component: MovieEditPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

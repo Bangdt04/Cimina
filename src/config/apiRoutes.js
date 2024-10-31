@@ -13,7 +13,9 @@ const apiRoutes = {
     admin: {
         gerne: '/moviegenres',
         voucher: '/vouchers',
-        movies: '/movies',
+        movie: '/movies',
+        showMovie: '/showMovie', 
+        updateMovie: '/updateMovie', 
         
     },
     web: {

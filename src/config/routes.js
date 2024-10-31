@@ -4,6 +4,7 @@ const routes = {
         dashboard: '/admin/dashboard',
         account: '/admin/account',
         movies: '/admin/movies',
+        updateMovie: '/admin/movies/update/:id', // Thêm route cho trang chỉnh sửa phim
         report: '/admin/report',
         blogs: '/admin/blogs',
         info: '/admin/info',
