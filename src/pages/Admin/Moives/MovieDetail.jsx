@@ -1,40 +1,21 @@
-import { Modal, Table, Tag } from 'antd';
-import { useState, useEffect } from 'react';
-import { generateMovieData } from './MovieData';
+import React from 'react';
+import { Modal } from 'antd';
 
-function MovieDetail({ isDetailOpen, setIsDetailOpen }) {
-    const [movieData, setMovieData] = useState({});
-
-    useEffect(() => {
-        if (isDetailOpen.isOpen) {
-            const allMovies = generateMovieData();
-            const selectedMovie = allMovies.find(movie => movie.id === isDetailOpen.id);
-            setMovieData(selectedMovie || {});
-        }
-    }, [isDetailOpen]);
-
-    const columns = [
-        { title: 'Thuộc tính', dataIndex: 'property', key: 'property' },
-        { title: 'Giá trị', dataIndex: 'value', key: 'value' },
-    ];
-
-    const data = Object.entries(movieData).map(([key, value], index) => ({
-        key: index,
-        property: key.charAt(0).toUpperCase() + key.slice(1),
-        value: key === 'poster' ? <img src={value} alt="Movie Poster" className="w-32 h-48 rounded" /> :
-               key === 'status' ? <Tag color={value === 'Đang chiếu' ? 'green' : value === 'Sắp chiếu' ? 'blue' : 'red'}>{value}</Tag> :
-               value,
-    }));
-
+const MovieDetail = ({ visible, onClose, movie }) => {
     return (
-        <Modal className='movie-detail-modal bg-white'
-            title="Chi tiết phim"
-            open={isDetailOpen.isOpen}
-            onCancel={() => setIsDetailOpen({ id: 0, isOpen: false })}
+        <Modal
+            title="Movie Details"
+            visible={visible}
+            onCancel={onClose}
             footer={null}
-            width={600}
         >
-            <Table columns={columns} dataSource={data} pagination={false} />
+            <div>
+                <h3>{movie.ten_phim}</h3>
+                <p><strong>Đạo diễn:</strong> {movie.dao_dien}</p>
+                <p><strong>Diễn viên:</strong> {movie.dien_vien}</p>
+                <p><strong>Giá vé:</strong> {movie.gia_ve}</p>
+                <p><strong>Đánh giá:</strong> {movie.danh_gia}</p>
+            </div>
         </Modal>
     );
 }

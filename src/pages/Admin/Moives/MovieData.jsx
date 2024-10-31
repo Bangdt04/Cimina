@@ -1,122 +1,108 @@
 import { Tag } from 'antd';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDeleteMovie, useGetMovies } from '../../../hooks/api/useMovieApi';
+import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
+import { Button, Input, Table, notification } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-export const baseColumns = [
+const baseColumns = [
     {
-        title: 'Poster',
-        dataIndex: 'poster',
-        key: 'poster',
-        render: (poster) => <img src={poster} alt="Movie Poster" className="w-16 h-24 rounded" />,
+        title: 'Id',
+        dataIndex: 'id',
+        sorter: true,
+        width: 50,
     },
     {
         title: 'Tên phim',
-        dataIndex: 'title',
-        key: 'title',
-        sorter: (a, b) => a.title.localeCompare(b.title),
+        dataIndex: 'ten_phim',
     },
     {
-        title: 'Thể loại',
-        dataIndex: 'genre',
-        key: 'genre',
+        title: 'Ảnh phim',
+        dataIndex: 'anh_phim',
+        render: (text) => <img src={text} alt="Movie" style={{ width: 50, height: 75 }} />,
     },
     {
-        title: 'Năm phát hành',
-        dataIndex: 'releaseYear',
-        key: 'releaseYear',
-        sorter: (a, b) => a.releaseYear - b.releaseYear,
+        title: 'Đạo diễn',
+        dataIndex: 'dao_dien',
     },
     {
-        title: 'Trạng thái',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status) => (
-            <Tag color={status === 'Đang chiếu' ? 'green' : status === 'Sắp chiếu' ? 'blue' : 'red'}>
-                {status}
-            </Tag>
-        ),
+        title: 'Diễn viên',
+        dataIndex: 'dien_vien',
+    },
+    {
+        title: 'Nội dung',
+        dataIndex: 'noi_dung',
+        render: (text) => <div style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</div>,
+    },
+    {
+        title: 'Trailer',
+        dataIndex: 'trailer',
+        render: (text) => <a href={text} target="_blank" rel="noopener noreferrer">Xem Trailer</a>,
+    },
+    {
+        title: 'Giá vé',
+        dataIndex: 'gia_ve',
+    },
+    {
+        title: 'Đánh giá',
+        dataIndex: 'danh_gia',
+    },
+    {
+        title: 'Ngày tạo',
+        dataIndex: 'created_at',
+    },
+    {
+        title: 'Ngày cập nhật',
+        dataIndex: 'updated_at',
+    },
+    {
+        title: 'Ngày xóa',
+        dataIndex: 'deleted_at',
+    },
+    {
+        title: 'Thao tác',
+        dataIndex: 'action',
     },
 ];
 
-export function generateMovieData() {
-    return [
-        {
-            id: '1',
-            poster: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_SX300.jpg",
-            title: 'Avengers: Endgame',
-            genre: 'Hành động, Khoa học viễn tưởng',
-            releaseYear: 2019,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '2',
-            poster: "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-            title: 'Parasite',
-            genre: 'Hài kịch đen, Ly kỳ',
-            releaseYear: 2019,
-            status: 'Đang chiếu',
-        },
-        {
-            id: '3',
-            poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg",
-            title: 'The Dark Knight',
-            genre: 'Hành động, Tội phạm, Kịch tính',
-            releaseYear: 2008,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '4',
-            poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-            title: 'The Matrix',
-            genre: 'Hành động, Khoa học viễn tưởng',
-            releaseYear: 1999,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '5',
-            poster: "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg",
-            title: 'Pulp Fiction',
-            genre: 'Tội phạm, Kịch tính',
-            releaseYear: 1994,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '6',
-            poster: "https://m.media-amazon.com/images/M/MV5BMTM0MDgwNjMyMl5BMl5BanBnXkFtZTcwNTg3NzAzMw@@._V1_SX300.jpg",
-            title: 'Iron Man 2',
-            genre: 'Hành động, Phiêu lưu, Khoa học viễn tưởng',
-            releaseYear: 2010,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '7',
-            poster: "https://m.media-amazon.com/images/M/MV5BOTY4YjI2N2MtYmFlMC00ZjcyLTg3YjEtMDQyM2ZjYzQ5YWFkXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-            title: 'Batman Begins',
-            genre: 'Hành động, Phiêu lưu',
-            releaseYear: 2005,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '8',
-            poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg",
-            title: 'The Dark Knight',
-            genre: 'Hành động, Tội phạm, Kịch tính',
-            releaseYear: 2008,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '9',
-            poster: "https://m.media-amazon.com/images/M/MV5BNDIzNDU0YzEtYzE5Ni00ZjlkLTk5ZjgtNjM3NWE4YzA3Nzk3XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_SX300.jpg",
-            title: 'Fight Club',
-            genre: 'Kịch tính',
-            releaseYear: 1999,
-            status: 'Đã chiếu',
-        },
-        {
-            id: '10',
-            poster: "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-            title: 'Forrest Gump',
-            genre: 'Kịch, Lãng mạn',
-            releaseYear: 1994,
-            status: 'Đã chiếu',
-        },
-    ];
+function transformData(dt, navigate, setIsDisableOpen) {
+    return dt?.map((item) => {
+        return {
+            key: item.id,
+            id: item.id,
+            ten_phim: item.ten_phim,
+            anh_phim: item.anh_phim,
+            dao_dien: item.dao_dien,
+            dien_vien: item.dien_vien,
+            noi_dung: item.noi_dung,
+            trailer: item.trailer,
+            gia_ve: item.gia_ve,
+            danh_gia: item.danh_gia,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            deleted_at: item.deleted_at,
+            action: (
+                <div className="action-btn flex gap-3">
+                    <Button
+                        className="text-green-500 border border-green-500"
+                        onClick={() =>
+                            navigate(`/admin/movies/update/${item.id}`)
+                        }
+                    >
+                        <FontAwesomeIcon icon={faEdit} />
+                    </Button>
+                    <Button
+                        className={'text-red-500 border border-red-500'}
+                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                    >
+                        <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                </div>
+            ),
+        };
+    });
 }
+
+export default MovieData;

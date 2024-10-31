@@ -8,7 +8,7 @@ function MovieActions({ record, setIsDetailOpen, setIsEditOpen, setIsDeleteOpen 
             <Button
                 className="text-blue-500 border border-blue-500"
                 onClick={() => setIsDetailOpen({
-                    id: record.id,
+                    movie: record, // Pass the entire movie record
                     isOpen: true
                 })}
             >
@@ -17,7 +17,7 @@ function MovieActions({ record, setIsDetailOpen, setIsEditOpen, setIsDeleteOpen 
             <Button
                 className="text-green-500 border border-green-500"
                 onClick={() => setIsEditOpen({
-                    id: record.id,
+                    movie: record, // Pass the entire movie record
                     isOpen: true
                 })}
             >

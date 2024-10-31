@@ -1,77 +1,66 @@
-import { Button, Modal, Form, Input, Select, DatePicker, Typography } from 'antd';
-import { useState, useEffect } from 'react';
-import moment from 'moment';
-import { generateMovieData } from './MovieData';
+import React, { useState } from 'react';
+import { Modal, Form, Input, Button } from 'antd';
 
-const { Title } = Typography;
-
-function MovieEdit({ isEditOpen, setIsEditOpen }) {
+const MovieEdit = ({ visible, onClose, movie, onSave }) => {
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        if (isEditOpen.isOpen) {
-            const allMovies = generateMovieData();
-            const selectedMovie = allMovies.find(movie => movie.id === isEditOpen.id);
-            if (selectedMovie) {
-                form.setFieldsValue({
-                    ...selectedMovie,
-                    releaseYear: moment(selectedMovie.releaseYear.toString()),
-                });
-            }
-        }
-    }, [isEditOpen, form]);
-
-    const handleOk = () => {
-        form.validateFields().then((values) => {
-            console.log('Updated values:', values);
-            // Here you would typically send the updated data to your backend
-            setIsEditOpen({ id: 0, isOpen: false });
-        });
-    };
-
-    const handleCancel = () => {
-        setIsEditOpen({ id: 0, isOpen: false });
+    const handleFinish = (values) => {
+        onSave(values);
+        onClose();
     };
 
     return (
         <Modal
-            title={<Title level={4} className="text-black">Chỉnh sửa phim</Title>}
-            open={isEditOpen.isOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            className="movie-edit-modal bg-white"
+            title="Edit Movie"
+            visible={visible}
+            onCancel={onClose}
+            footer={null}
         >
-            <Form form={form} layout="vertical" className="movie-edit-form">
-                <Form.Item name="id" label="ID" hidden>
-                    <Input disabled />
-                </Form.Item>
-                <Form.Item name="title" label="Tên phim" rules={[{ required: true }]}>
+            <Form
+                form={form}
+                layout="vertical"
+                initialValues={movie}
+                onFinish={handleFinish}
+            >
+                <Form.Item
+                    name="ten_phim"
+                    label="Tên phim"
+                    rules={[{ required: true, message: 'Please input the movie name!' }]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item name="genre" label="Thể loại" rules={[{ required: true }]}>
+                <Form.Item
+                    name="dao_dien"
+                    label="Đạo diễn"
+                    rules={[{ required: true, message: 'Please input the director!' }]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item name="releaseYear" label="Ngày phát hành" rules={[{ required: true }]}>
-                    <DatePicker className="w-full" />
-                </Form.Item>
-                <Form.Item name="director" label="Đạo diễn">
+                <Form.Item
+                    name="dien_vien"
+                    label="Diễn viên"
+                    rules={[{ required: true, message: 'Please input the actors!' }]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item name="cast" label="Diễn viên">
+                <Form.Item
+                    name="gia_ve"
+                    label="Giá vé"
+                    rules={[{ required: true, message: 'Please input the ticket price!' }]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item name="duration" label="Thời lượng (phút)" rules={[{ required: true }]}>
-                    <Input type="number" />
+                <Form.Item
+                    name="danh_gia"
+                    label="Đánh giá"
+                    rules={[{ required: true, message: 'Please input the rating!' }]}
+                >
+                    <Input />
                 </Form.Item>
-                <Form.Item name="description" label="Mô tả">
-                    <Input.TextArea rows={4} />
-                </Form.Item>
-                <Form.Item name="status" label="Trạng thái">
-                    <Select>
-                        <Select.Option value="Đang chiếu">Đang chiếu</Select.Option>
-                        <Select.Option value="Sắp chiếu">Sắp chiếu</Select.Option>
-                        <Select.Option value="Đã chiếu">Đã chiếu</Select.Option>
-                    </Select>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Save
+                    </Button>
                 </Form.Item>
             </Form>
         </Modal>
