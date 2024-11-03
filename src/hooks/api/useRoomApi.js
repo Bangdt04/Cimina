@@ -23,14 +23,10 @@ export const useGetRoom = (id) => {
 
 // Update a room by ID
 export const useUpdateRoom = (updater) => {
-    // Kiểm tra xem updater có chứa id không
-    if (!updater || !updater.id) {
-        throw new Error("Updater must contain an id");
-    }
-    return usePut(`${apiRoutes.admin.updateRoom}/${updater.id}`, updater.body);
+    return usePut(apiRoutes.admin.updateRoom, updater);
 };
 
 // Delete a room by ID
 export const useDeleteRoom = (updater) => {
-    return useDelete(apiRoutes.admin.room, updater);
+    return useDelete(apiRoutes.admin.deleteRoom, updater);
 };

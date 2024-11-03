@@ -1,11 +1,9 @@
+import { Button, Input, Table, notification } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import config from '../../../config';
 import { useDeleteRoom, useGetRooms } from '../../../hooks/api/useRoomApi';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
-import { Button, Input, Table, notification } from 'antd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
-import RoomDetail from './RoomDetail';
 
 const baseColumns = [
     {
@@ -29,17 +27,42 @@ const baseColumns = [
     },
 ];
 
-function RoomList() {
+function transformData(dt, navigate, setIsDisableOpen) {
+    return dt?.map((item) => {
+        return {
+            key: item.id,
+            id: item.id,
+            ten_phong_chieu: item.ten_phong_chieu,
+            tong_ghe_phong: item.tong_ghe_phong,
+            action: (
+                <div className="action-btn flex gap-3">
+                    <Button
+                        className="text-green-500 border border-green-500"
+                        onClick={() => navigate(`${config.routes.admin.room}/update/${item.id}`)}
+                    >
+                        Sửa
+                    </Button>
+                    <Button
+                        className={'text-red-500 border border-red-500'}
+                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                    >
+                        Xóa
+                    </Button>
+                </div>
+            ),
+        };
+    });
+}
+
+function RoomData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
-    const [selectedRoom, setSelectedRoom] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate();
     const { data, isLoading, refetch } = useGetRooms();
     const [tdata, setTData] = useState([]);
 
     useEffect(() => {
         if (isLoading || !data) return;
-        const dt = transformData(data.data, navigate, setIsDisableOpen, setSelectedRoom, setIsModalVisible);
+        const dt = transformData(data.data, navigate, setIsDisableOpen);
         setTData(dt);
     }, [isLoading, data]);
 
@@ -63,7 +86,7 @@ function RoomList() {
         const filteredData = data.data.filter((item) =>
             item.ten_phong_chieu.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen, setSelectedRoom, setIsModalVisible));
+        setTData(transformData(filteredData, navigate, setIsDisableOpen));
     };
 
     return (
@@ -93,50 +116,8 @@ function RoomList() {
                     handleConfirm={onDelete}
                 />
             )}
-
-            <RoomDetail 
-                visible={isModalVisible} 
-                onClose={() => setIsModalVisible(false)} 
-                room={selectedRoom} 
-            />
         </div>
     );
 }
 
-function transformData(dt, navigate, setIsDisableOpen, setSelectedRoom, setIsModalVisible) {
-    return dt?.map((item) => {
-        return {
-            key: item.id,
-            id: item.id,
-            ten_phong_chieu: item.ten_phong_chieu,
-            tong_ghe_phong: item.tong_ghe_phong,
-            action: (
-                <div className="action-btn flex gap-3">
-                    <Button
-                        className="text-blue-500 border border-blue-500"
-                        onClick={() => {
-                            setSelectedRoom(item);
-                            setIsModalVisible(true);
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faEye} />
-                    </Button>
-                    <Button
-                        className="text-green-500 border border-green-500"
-                        onClick={() => navigate(`/admin/room/edit/${item.id}`)}
-                    >
-                        <FontAwesomeIcon icon={faEdit} />
-                    </Button>
-                    <Button
-                        className={'text-red-500 border border-red-500'}
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        <FontAwesomeIcon icon={faTrash} />
-                    </Button>
-                </div>
-            ),
-        };
-    });
-}
-
-export default RoomList;
+export default RoomData;

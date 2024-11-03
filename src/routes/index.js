@@ -13,7 +13,7 @@ import UserPage from "../pages/Admin/User";
 import MoviePage from "../pages/Admin/Moives";
 import FoodPage from "../pages/Admin/Food";
 import RoomPage from "../pages/Admin/Room";
-import RoomEdit from "../pages/Admin/Room/RoomEdit";
+import RoomFormPage from "../pages/Admin/Room/RoomForm";
 import SeatPage from "../pages/Admin/Seats";
 import SeatFormPage from "../pages/Admin/Seats/SeatForm";
 
@@ -206,8 +206,15 @@ const privateRoutes = [
         private: true,
     },
     {
-        path: config.routes.admin.room + '/edit/:id',
-        component: RoomEdit,
+        path: config.routes.admin.room + '/create',
+        component: RoomFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room + '/update/:id',
+        component: RoomFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
