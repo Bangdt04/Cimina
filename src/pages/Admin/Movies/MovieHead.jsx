@@ -1,6 +1,7 @@
 import Head from '../../../layouts/Admin/components/Head';
 import config from '../../../config';
-function MovieHead() {
+
+function SeatHead() {
     return (
         <Head
             title={'Quản lý phim'}
@@ -9,4 +10,4 @@ function MovieHead() {
     );
 }
 
-export default MovieHead;
+export default SeatHead;

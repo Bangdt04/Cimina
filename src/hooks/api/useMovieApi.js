@@ -8,7 +8,7 @@ import {
 
 // Tạo một phim mới
 export const useCreateMovie = (updater) => {
-    return usePost(apiRoutes.admin.movie, updater);
+    return usePost(apiRoutes.admin.storeMovie, updater);
 };
 
 // Lấy danh sách tất cả phim

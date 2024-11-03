@@ -10,7 +10,8 @@ import GenrePage from "../pages/Admin/Genres";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
 import UserPage from "../pages/Admin/User";
-import MoviePage from "../pages/Admin/Moives";
+import MoviePage from "../pages/Admin/Movies";
+import MovieFormPage from "../pages/Admin/Movies/MovieForm";
 import FoodPage from "../pages/Admin/Food";
 import RoomPage from "../pages/Admin/Room";
 import RoomFormPage from "../pages/Admin/Room/RoomForm";
@@ -27,7 +28,6 @@ import EventMoviePage from "../pages/Client/EventMovie";
 import MovieDetailsPage from "../pages/Client/MovieDetails";
 import ProfilePage from "../pages/Client/Profile";
 import FoodMenu from "../pages/Client/Food";
-import MovieEditPage from "../pages/Admin/Moives/MovieEdit";
 const publicRoutes = [
     {
         path: config.routes.web.home,
@@ -192,8 +192,15 @@ const privateRoutes = [
         private: true,
     },
     {
-        path: config.routes.admin.movies + '/update/:id', // Route for editing a movie
-        component: MovieEditPage,
+        path: config.routes.admin.movies + '/create',
+        component: MovieFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.movies + '/update/:id',
+        component: MovieFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
