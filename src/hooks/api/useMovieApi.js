@@ -23,8 +23,8 @@ export const useGetMovie = (id) => {
 };
 
 // Cập nhật thông tin một phim theo ID
-export const useUpdateMovie = (id, updater) => {
-    return usePut(`${apiRoutes.admin.updateMovie}/${id}`, updater);
+export const useUpdateMovie = (id) => {
+    return usePut(`${apiRoutes.admin.updateMovie}/${id}`);
 };
 
 // Xóa một phim

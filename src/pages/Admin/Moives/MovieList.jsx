@@ -1,11 +1,12 @@
-import { Tag } from 'antd';
+import { Tag, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteMovie, useGetMovies } from '../../../hooks/api/useMovieApi';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 import { Button, Input, Table, notification } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'; // Import the eye icon
+import { faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
+import MovieDetail from './MovieDetail';
 
 const baseColumns = [
     {
@@ -17,6 +18,12 @@ const baseColumns = [
     {
         title: 'Tên phim',
         dataIndex: 'ten_phim',
+        render: (text) => <div style={{ fontWeight: 'bold' }}>{text}</div>,
+    },
+    {
+        title: 'Ảnh phim',
+        dataIndex: 'anh_phim',
+        render: (text) => <img src={text} alt="Movie" style={{ width: 50, height: 75 }} />,
     },
     {
         title: 'Đạo diễn',
@@ -27,6 +34,16 @@ const baseColumns = [
         dataIndex: 'dien_vien',
     },
     {
+        title: 'Nội dung',
+        dataIndex: 'noi_dung',
+        render: (text) => <div style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</div>,
+    },
+    {
+        title: 'Trailer',
+        dataIndex: 'trailer',
+        render: (text) => <a href={text} target="_blank" rel="noopener noreferrer">Xem Trailer</a>,
+    },
+    {
         title: 'Giá vé',
         dataIndex: 'gia_ve',
     },
@@ -35,36 +52,47 @@ const baseColumns = [
         dataIndex: 'danh_gia',
     },
     {
+        title: 'Thể loại phim',
+        dataIndex: 'movie_genres',
+        render: (genres) => genres.map(genre => <Tag key={genre.id}>{genre.ten_loai_phim}</Tag>),
+    },
+    {
         title: 'Thao tác',
         dataIndex: 'action',
+        render: (text) => <div style={{ display: 'flex', gap: '8px' }}>{text}</div>,
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen) {
-    let id = 1; // Initialize the id variable
+function transformData(dt, navigate, setIsDisableOpen, setSelectedMovie, setIsModalVisible) {
+    let id = 1;
     return dt?.map((item) => {
         id++;
         return {
-            key: id - 1, // Use the current id as the key
-            id: item.id, // Use the actual id from the item
+            key: id - 1,
+            id: item.id,
             ten_phim: item.ten_phim,
+            anh_phim: item.anh_phim,
             dao_dien: item.dao_dien,
             dien_vien: item.dien_vien,
+            noi_dung: item.noi_dung,
+            trailer: item.trailer,
             gia_ve: item.gia_ve,
             danh_gia: item.danh_gia,
+            movie_genres: item.movie_genres,
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
-                        className="text-blue-500 border border-blue-500" // Change color for view button
-                        onClick={() => navigate(`/admin/movies/detail/${item.id}`)} // Navigate to MovieDetail
+                        className="text-blue-500 border border-blue-500"
+                        onClick={() => {
+                            setSelectedMovie(item);
+                            setIsModalVisible(true);
+                        }}
                     >
-                        <FontAwesomeIcon icon={faEye} /> {/* Eye icon for viewing details */}
+                        <FontAwesomeIcon icon={faEye} />
                     </Button>
                     <Button
                         className="text-green-500 border border-green-500"
-                        onClick={() =>
-                            navigate(`/admin/movies/update/${item.id}`)
-                        }
+                        onClick={() => navigate(`/admin/movies/update/${item.id}`)}
                     >
                         <FontAwesomeIcon icon={faEdit} />
                     </Button>
@@ -85,6 +113,8 @@ function MovieList() {
         id: 0,
         isOpen: false,
     });
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate();
     const { data, isLoading, refetch } = useGetMovies();
     const [tdata, setTData] = useState([]);
@@ -98,7 +128,7 @@ function MovieList() {
 
     useEffect(() => {
         if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDisableOpen);
+        let dt = transformData(data?.data, navigate, setIsDisableOpen, setSelectedMovie, setIsModalVisible);
         setTData(dt);
         setTableParams({
             ...tableParams,
@@ -130,9 +160,9 @@ function MovieList() {
     const onDelete = async () => {
         try {
             const response = await mutationDelete.mutateAsync(isDisableOpen.id);
-            console.log("Response from delete API:", response); // Log phản hồi từ API
+            console.log("Response from delete API:", response);
         } catch (error) {
-            console.error("Delete failed:", error); // Log lỗi nếu có
+            console.error("Delete failed:", error);
         }
     };
 
@@ -140,7 +170,15 @@ function MovieList() {
         const filteredData = data?.data.filter((item) =>
             item.ten_phim.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen));
+        setTData(transformData(filteredData, navigate, setIsDisableOpen, setSelectedMovie, setIsModalVisible));
+    };
+
+    const handleOk = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
     };
 
     return (
@@ -160,6 +198,7 @@ function MovieList() {
                 columns={baseColumns}
                 dataSource={tdata}
                 pagination={{ ...tableParams.pagination, showSizeChanger: true }}
+                rowKey="key"
             />
 
             {isDisableOpen.isOpen && (
@@ -170,6 +209,12 @@ function MovieList() {
                     handleConfirm={onDelete}
                 />
             )}
+
+            <MovieDetail 
+                visible={isModalVisible} 
+                onClose={handleCancel} 
+                movie={selectedMovie} 
+            />
         </div>
     );
 }

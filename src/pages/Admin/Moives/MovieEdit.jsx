@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetMovie, useUpdateMovie } from '../../../hooks/api/useMovieApi';
 import { Button, Input, notification } from 'antd';
+import './movie.scss'; // Import the styles
 
 const MovieEdit = () => {
-    const { id } = useParams(); // Get ID from URL
+    const { id } = useParams();
     const navigate = useNavigate();
-    const { data: response, isLoading } = useGetMovie(id); // Fetch movie data
+    const { data: response, isLoading } = useGetMovie(id);
     const [formData, setFormData] = useState({
         ten_phim: '',
         dao_dien: '',
@@ -15,24 +16,11 @@ const MovieEdit = () => {
         danh_gia: '',
     });
 
-    const mutationUpdate = useUpdateMovie(id, {
-        success: () => {
-            notification.success({
-                message: 'Cập nhật phim thành công',
-            });
-            navigate('/admin/movies'); // Navigate back to movie list
-        },
-        error: (err) => {
-            notification.error({
-                message: 'Cập nhật phim thất bại',
-            });
-        },
-    });
+    const mutationUpdate = useUpdateMovie(id);
 
     useEffect(() => {
-        console.log(response); // Log the response to check its structure
         if (response && response.data) {
-            const movieData = response.data; // Access the movie data
+            const movieData = response.data;
             setFormData({
                 ten_phim: movieData.ten_phim,
                 dao_dien: movieData.dao_dien,
@@ -51,58 +39,68 @@ const MovieEdit = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        mutationUpdate.mutate({ ...formData }); // Send update request
+        try {
+            await mutationUpdate.mutateAsync(formData);
+            notification.success({
+                message: 'Cập nhật phim thành công',
+            });
+            navigate('/admin/movies');
+        } catch (error) {
+            notification.error({
+                message: 'Cập nhật phim thất bại',
+            });
+        }
     };
 
     if (isLoading) return <div>Loading...</div>;
 
     return (
-        <div>
-            <h2>Chỉnh sửa phim</h2>
+        <div className="movie-edit max-w-full mx-auto p-4 bg-gray-800 text-white rounded-lg">
+            <h2 className="text-center text-xl mb-4">Chỉnh sửa phim</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Tên phim:</label>
+                <div className="mb-4">
+                    <label className="block mb-1">Tên phim:</label>
                     <Input
                         name="ten_phim"
                         value={formData.ten_phim}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <label>Đạo diễn:</label>
+                <div className="mb-4">
+                    <label className="block mb-1">Đạo diễn:</label>
                     <Input
                         name="dao_dien"
                         value={formData.dao_dien}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <label>Diễn viên:</label>
+                <div className="mb-4">
+                    <label className="block mb-1">Diễn viên:</label>
                     <Input
                         name="dien_vien"
                         value={formData.dien_vien}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <label>Giá vé:</label>
+                <div className="mb-4">
+                    <label className="block mb-1">Giá vé:</label>
                     <Input
                         name="gia_ve"
                         value={formData.gia_ve}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <label>Đánh giá:</label>
+                <div className="mb-4">
+                    <label className="block mb-1">Đánh giá:</label>
                     <Input
                         name="danh_gia"
                         value={formData.danh_gia}
                         onChange={handleChange}
                     />
                 </div>
-                <Button type="primary" htmlType="submit">Cập nhật</Button>
+                <Button type="primary" htmlType="submit" className="w-full">Cập nhật</Button>
             </form>
         </div>
     );
