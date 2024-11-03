@@ -29,6 +29,7 @@ const apiRoutes = {
         storeSeat: '/storeSeat',
         updateSeat: '/updateSeat',
         showSeat: '/showSeat',
+        deleteSeat: '/deleteSeat',
     },
     web: {
         user: '/auth/upload-profile',

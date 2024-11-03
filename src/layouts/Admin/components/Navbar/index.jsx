@@ -26,7 +26,7 @@ const menuItems = [
   { name: 'Payments', icon: IconCreditCard, path: '/admin/payments' },
   { name: 'Bookings', icon: IconCalendar, path: '/admin/bookings' },
   { name: 'Movie Genre', icon: IconTags, path: '/admin/movie-genre' },
-  { name: 'Seat', icon: IconArmchair, path: '/admin/seat' },
+  { name: 'Seat', icon: IconArmchair, path: '/admin/seats' },
   { name: 'Room', icon: IconDoor, path: '/admin/room' },
   { name: 'Contact', icon: IconAddressBook, path: '/admin/contact' },
   { name: 'Blog', icon: IconArticle, path: '/admin/blog' },

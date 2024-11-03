@@ -44,6 +44,14 @@ function SeatFormPage() {
         });
     }, [seat]);
 
+    const onAddFinish = async (formData) => {
+        await mutateAdd.mutateAsync(formData);
+    };
+
+    const onEditFinish = async (formData) => {
+        await mutateEdit.mutateAsync({ id, body: formData });
+    };
+
     const onFinish = async () => {
         const formData = {
             room_id: 8, // Set the room_id as needed
@@ -59,9 +67,15 @@ function SeatFormPage() {
         console.log(formData); // Log the data being sent
 
         if (id) {
-            await mutateEdit.mutateAsync({ id, body: formData });
+            // Prepare the formData for editing
+            const editData = {
+                so_ghe_ngoi: form.getFieldValue('so_ghe_ngoi'),
+                loai_ghe_ngoi: form.getFieldValue('loai_ghe_ngoi'),
+                gia_ghe: parseFloat(form.getFieldValue('gia_ghe')) // Ensure this is a number
+            };
+            await onEditFinish(editData); // Call the edit function with the correct structure
         } else {
-            await mutateAdd.mutateAsync(formData);
+            await onAddFinish(formData); // Call the add function
         }
     };
 
