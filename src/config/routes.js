@@ -17,6 +17,7 @@ const routes = {
         forbidden: '/forbidden',
         room: '/admin/room',
         roomDetail: '/admin/room/detail',
+        seat: '/admin/seats',
     },
     web: {
         home: '/',

@@ -1,12 +1,13 @@
 import Head from '../../../layouts/Admin/components/Head';
 import config from '../../../config';
-function MovieHead() {
+
+function SeatHead() {
     return (
         <Head
-            title={'Quản lý phim'}
-            route={config.routes.admin.movies + '/create'}
+            title={'Quản lý ghế'}
+            route={config.routes.admin.seat + '/create'}
         />
     );
 }
 
-export default MovieHead;
+export default SeatHead;

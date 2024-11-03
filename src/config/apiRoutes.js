@@ -25,6 +25,10 @@ const apiRoutes = {
         seatAllRoom: '/seatAllRoom',
         baoTriSeat: '/baoTriSeat',
         tatbaoTriSeat: '/tatbaoTriSeat',
+        seat: '/seats',
+        storeSeat: '/storeSeat',
+        updateSeat: '/updateSeat',
+        showSeat: '/showSeat',
     },
     web: {
         user: '/auth/upload-profile',

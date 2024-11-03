@@ -14,6 +14,9 @@ import MoviePage from "../pages/Admin/Moives";
 import FoodPage from "../pages/Admin/Food";
 import RoomPage from "../pages/Admin/Room";
 import RoomEdit from "../pages/Admin/Room/RoomEdit";
+import SeatPage from "../pages/Admin/Seats";
+import SeatFormPage from "../pages/Admin/Seats/SeatForm";
+
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
@@ -205,6 +208,27 @@ const privateRoutes = [
     {
         path: config.routes.admin.room + '/edit/:id',
         component: RoomEdit,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat,
+        component: SeatPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat + '/create',
+        component: SeatFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat + '/update/:id',
+        component: SeatFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
