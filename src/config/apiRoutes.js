@@ -16,7 +16,15 @@ const apiRoutes = {
         movie: '/movies',
         showMovie: '/showMovie', 
         updateMovie: '/updateMovie', 
-        
+        movieDetail: '/movieDetail',
+        room: '/rooms',
+        storeRoom: '/storeRoom',
+        showRoom: '/showRoom',
+        updateRoom: '/updateRoom',
+        storeRoom: '/storeRoom',
+        seatAllRoom: '/seatAllRoom',
+        baoTriSeat: '/baoTriSeat',
+        tatbaoTriSeat: '/tatbaoTriSeat',
     },
     web: {
         user: '/auth/upload-profile',

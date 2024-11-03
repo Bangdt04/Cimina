@@ -31,3 +31,7 @@ export const useUpdateMovie = (id) => {
 export const useDeleteMovie = (updater) => {
     return useDelete(apiRoutes.admin.movie, updater);
 };
+// Lấy thông tin chi tiết một phim theo ID
+export const useGetMovieDetail = (id) => {
+    return useFetch({ url: `${apiRoutes.admin.movieDetail}/${id}`, key: 'getMovieDetail' });
+};

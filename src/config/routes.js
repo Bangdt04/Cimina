@@ -15,6 +15,8 @@ const routes = {
         food: '/admin/food',
         voucher: '/admin/voucher',
         forbidden: '/forbidden',
+        room: '/admin/room',
+        roomDetail: '/admin/room/detail',
     },
     web: {
         home: '/',

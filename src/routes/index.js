@@ -12,6 +12,8 @@ import BlogsPage from "../pages/Admin/Blogs";
 import UserPage from "../pages/Admin/User";
 import MoviePage from "../pages/Admin/Moives";
 import FoodPage from "../pages/Admin/Food";
+import RoomPage from "../pages/Admin/Room";
+import RoomEdit from "../pages/Admin/Room/RoomEdit";
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
@@ -189,6 +191,20 @@ const privateRoutes = [
     {
         path: config.routes.admin.movies + '/update/:id', // Route for editing a movie
         component: MovieEditPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room,
+        component: RoomPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room + '/edit/:id',
+        component: RoomEdit,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

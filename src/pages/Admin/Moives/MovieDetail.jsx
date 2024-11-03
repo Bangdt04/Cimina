@@ -1,10 +1,10 @@
 import React from 'react';
-import { Modal, Typography, Row, Col } from 'antd';
+import { Modal, Typography, Row, Col, Spin } from 'antd'; // Import Spin for loading state
 import './movie.scss'; // Import the styles
 
 const { Title, Text } = Typography;
 
-const MovieDetail = ({ visible, onClose, movie }) => {
+const MovieDetail = ({ visible, onClose, movie, loading }) => { // Added loading prop
     return (
         <Modal
             title="Chi tiết phim"
@@ -14,7 +14,9 @@ const MovieDetail = ({ visible, onClose, movie }) => {
             width={800}
             className="movie-detail max-w-full mx-auto p-4 bg-gray-800 text-white rounded-lg"
         >
-            {movie && (
+            {loading ? ( // Show loading spinner if loading
+                <Spin size="large" />
+            ) : movie ? ( // Check if movie data is available
                 <div>
                     <Row gutter={16}>
                         <Col span={8}>
@@ -43,6 +45,8 @@ const MovieDetail = ({ visible, onClose, movie }) => {
                         </Col>
                     </Row>
                 </div>
+            ) : ( // Handle case where movie data is not available
+                <Text>Không có thông tin phim.</Text>
             )}
         </Modal>
     );
