@@ -1,21 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './food.scss';
+import { useGetFoods } from '../../../hooks/api/useFoodApi';
+import { useParams } from 'react-router-dom';
 const FoodMenu = () => {
-    const [quantities, setQuantities] = useState([1, 1, 1, 1]); // Mảng lưu trữ số lượng cho từng món ăn
+    const [movieDetails, setMovieDetails] = useState(null);
+    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [selectedTime, setSelectedTime] = useState("");
+    const { id } = useParams();
 
-    const increaseQuantity = (index) => {
-        const newQuantities = [...quantities];
-        newQuantities[index] += 1;
-        setQuantities(newQuantities);
-    };
+    const { data, isLoading } = useGetFoods();
 
-    const decreaseQuantity = (index) => {
-        const newQuantities = [...quantities];
-        if (newQuantities[index] > 1) {
-            newQuantities[index] -= 1;
-            setQuantities(newQuantities);
+    useEffect(() => {
+        // const movie = moviesData.find(movie => movie.id === parseInt(id));
+        // setMovieDetails(movie);
+
+        if (location.state) {
+            setSelectedSeats(location.state.selectedSeats);
+            setTotalAmount(location.state.totalAmount);
+            setSelectedTime(location.state.selectedTime);
         }
-    };
+    }, [id, location.state]);
 
     return (
         <>
@@ -23,92 +28,59 @@ const FoodMenu = () => {
                 <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {/* Món ăn 1 */}
-                    <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
-                        <img alt="Promotion image for Bỏng Ngô" className="w-full h-48 object-cover" src="https://via.placeholder.com/600x400.png?text=Bỏng+Ngô" />
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
-                        <div className="p-4">
-                            <p className="text-sm line-through text-gray-400">Giá cũ: 50.000đ</p>
-                            <p className="font-bold text-lg text-green-400">Giá mới: 40.000đ</p>
-                            <p className="font-bold text-xl text-white">Bỏng Ngô</p>
-                            <div className="flex items-center mt-2">
-                                <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                                <span className="text-sm ml-2 text-gray-400">(100 lượt đánh giá)</span>
+                    {data?.data?.map(item => (
+                        <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
+                            <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
+                            <div className="p-4">
+                                <p className="text-sm line-through text-gray-400">Giá cũ: </p>
+                                <p className="font-bold text-lg text-green-400">Giá mới: {item.gia}đ</p>
+                                <p className="font-bold text-xl text-white">{item.ten_do_an}</p>
+                                <div className="flex items-center mt-2">
+                                    <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                                    <span className="text-sm ml-2 text-gray-400">(100 lượt đánh giá)</span>
+                                </div>
+                                <p className="text-sm text-gray-400">Đã bán: 200</p>
+
+                                <button className="mt-4 px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Mua</button>
                             </div>
-                            <p className="text-sm text-gray-400">Đã bán: 200</p>
-                            <div className="flex items-center mt-4">
-                                <button onClick={() => decreaseQuantity(0)} className="bg-gray-600 text-white py-1 px-2 rounded">-</button>
-                                <span className="mx-2 text-white">{quantities[0]}</span>
-                                <button onClick={() => increaseQuantity(0)} className="bg-gray-600 text-white py-1 px-2 rounded">+</button>
-                            </div>
-                            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Thêm vào giỏ hàng</button>
+                        </div>
+                    ))}
+                </div>
+                <div className="mt-10 space-y-8">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
+                        <h2 className="text-2xl font-bold mb-4 text-red-500">Thông tin phim</h2>
+                        <div className="space-y-2">
+                            {/* <p><span className="font-semibold">Phim:</span> {movieDetails.title}</p>
+                            <p><span className="font-semibold">Ghế:</span> {selectedSeats.join(", ")}</p>
+                            <p><span className="font-semibold">Giờ chiếu:</span> {selectedTime}</p>
+                            <p><span className="font-semibold">Ngày chiếu:</span> {movieDetails.room || "24/10/2024"}</p>
+                            <p><span className="font-semibold">Phòng chiếu:</span> {movieDetails.room || "12"}</p>
+                            <p><span className="font-semibold">Định dạng:</span> {movieDetails.format || "2D"}</p> */}
                         </div>
                     </div>
-                    {/* Món ăn 2 */}
-                    <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
-                        <img alt="Promotion image for Nước Ngọt" className="w-full h-48 object-cover" src="https://via.placeholder.com/600x400.png?text=Nước+Ngọt" />
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-15%</div>
-                        <div className="p-4">
-                            <p className="text-sm line-through text-gray-400">Giá cũ: 30.000đ</p>
-                            <p className="font-bold text-lg text-green-400">Giá mới: 25.500đ</p>
-                            <p className="font-bold text-xl text-white">Nước Ngọt</p>
-                            <div className="flex items-center mt-2">
-                                <span className="text-yellow-500">⭐⭐⭐⭐</span>
-                                <span className="text-sm ml-2 text-gray-400">(80 lượt đánh giá)</span>
-                            </div>
-                            <p className="text-sm text-gray-400">Đã bán: 150</p>
-                            <div className="flex items-center mt-4">
-                                <button onClick={() => decreaseQuantity(1)} className="bg-gray-600 text-white py-1 px-2 rounded">-</button>
-                                <span className="mx-2 text-white">{quantities[1]}</span>
-                                <button onClick={() => increaseQuantity(1)} className="bg-gray-600 text-white py-1 px-2 rounded">+</button>
-                            </div>
-                            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Thêm vào giỏ hàng</button>
-                        </div>
-                    </div>
-                    {/* Món ăn 3 */}
-                    <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
-                        <img alt="Promotion image for Combo Bỏng Nước" className="w-full h-48 object-cover" src="https://via.placeholder.com/600x400.png?text=Combo+Bỏng+Nước" />
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-10%</div>
-                        <div className="p-4">
-                            <p className="text-sm line-through text-gray-400">Giá cũ: 70.000đ</p>
-                            <p className="font-bold text-lg text-green-400">Giá mới: 63.000đ</p>
-                            <p className="font-bold text-xl text-white">Combo Bỏng Nước</p>
-                            <div className="flex items-center mt-2">
-                                <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                                <span className="text-sm ml-2 text-gray-400">(120 lượt đánh giá)</span>
-                            </div>
-                            <p className="text-sm text-gray-400">Đã bán: 300</p>
-                            <div className="flex items-center mt-4">
-                                <button onClick={() => decreaseQuantity(2)} className="bg-gray-600 text-white py-1 px-2 rounded">-</button>
-                                <span className="mx-2 text-white">{quantities[2]}</span>
-                                <button onClick={() => increaseQuantity(2)} className="bg-gray-600 text-white py-1 px-2 rounded">+</button>
-                            </div>
-                            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Thêm vào giỏ hàng</button>
-                        </div>
-                    </div>
-                    {/* Món ăn 4 */}
-                    <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
-                        <img alt="Promotion image for Pizza" className="w-full h-48 object-cover" src="https://via.placeholder.com/600x400.png?text=Pizza" />
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-5%</div>
-                        <div className="p-4">
-                            <p className="text-sm line-through text-gray-400">Giá cũ: 100.000đ</p>
-                            <p className="font-bold text-lg text-green-400">Giá mới: 95.000đ</p>
-                            <p className="font-bold text-xl text-white">Pizza</p>
-                            <div className="flex items-center mt-2">
-                                <span className="text-yellow-500">⭐⭐⭐⭐</span>
-                                <span className="text-sm ml-2 text-gray-400">(90 lượt đánh giá)</span>
-                            </div>
-                            <p className="text-sm text-gray-400">Đã bán: 250</p>
-                            <div className="flex items-center mt-4">
-                                <button onClick={() => decreaseQuantity(3)} className="bg-gray-600 text-white py-1 px-2 rounded">-</button>
-                                <span className="mx-2 text-white">{quantities[3]}</span>
-                                <button onClick={() => increaseQuantity(3)} className="bg-gray-600 text-white py-1 px-2 rounded">+</button>
-                            </div>
-                            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">Thêm vào giỏ hàng</button>
-                        </div>
+
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
+                        <h2 className="text-2xl font-bold mb-4 text-red-500">Thông tin thanh toán</h2>
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-gray-700">
+                                    <th className="text-left py-2">Danh mục</th>
+                                    <th className="text-left py-2">Số lượng</th>
+                                    <th className="text-right py-2">Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td className="py-2">Ghế ({selectedSeats.join(", ")})</td>
+                                    <td className="py-2">{selectedSeats.length}</td>
+                                    <td className="text-right py-2">{totalAmount.toLocaleString()}đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div className="text-center mt-8">
-                    <button className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition">Đi tới trang thanh toán</button>
+                    <button className="bg-red-600 text-white py-2 px-4 rounded-full hover:bg-red-600 transition">Thanh Toán</button>
                 </div>
             </div>
         </>

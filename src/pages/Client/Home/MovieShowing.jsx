@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
 import ImageMovie from "../../../assets/image/joker.webp";
-import { useGetMovies } from "../../../hooks/api/useMovieApi";
+import { useGetMovieFilterById, useGetMovies } from "../../../hooks/api/useMovieApi";
 import Voucher from "./Voucher";
 import config from "../../../config";
 
 const MovieShowing = () => {
-    const { data, isLoading } = useGetMovies();
+    const { data, isLoading } = useGetMovieFilterById();
 
     const groupMovies = (movies, groupSize) => {
         const groups = [];
@@ -33,7 +33,7 @@ const MovieShowing = () => {
                 </div>
 
                 {movieGroups.map((group, index) => (
-                    <div key={index} className="flex space-x-4 mt-6 mb-5">
+                    <div className="flex space-x-4 mt-6 mb-5">
                         {group.map((item) => {
                             const allMovieGenres = item.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
                             return (
@@ -43,7 +43,7 @@ const MovieShowing = () => {
                                             alt={`Movie poster of ${item.ten_phim}`}
                                             className="rounded-2xl hover-zoom mb-2"
                                             style={{ height: 350, width: '100%' }}
-                                            src={item.image || ImageMovie} // Giả sử `item.image` chứa đường dẫn hình ảnh
+                                            src={`http://localhost:8000${item.anh_phim}` || ImageMovie} // Giả sử `item.image` chứa đường dẫn hình ảnh
                                         />
                                         <p className="text-gray-400">
                                             {allMovieGenres}

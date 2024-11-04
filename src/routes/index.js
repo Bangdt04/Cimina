@@ -22,6 +22,8 @@ import EventMoviePage from "../pages/Client/EventMovie";
 import MovieDetailsPage from "../pages/Client/MovieDetails";
 import ProfilePage from "../pages/Client/Profile";
 import FoodMenu from "../pages/Client/Food";
+import MovieGernes from "../pages/Client/MovieGernes";
+import Test from "../pages/Client/Test";
 
 const publicRoutes = [
     {
@@ -81,6 +83,20 @@ const publicRoutes = [
         private: false,
     },
     {
+        path: config.routes.web.theLoai + "/:id",
+        component: MovieGernes,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.theLoai,
+        component: MovieGernes,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
         path: config.routes.web.payment,
         component: PaymentPage,
         layout: ClientLayout,
@@ -96,8 +112,15 @@ const publicRoutes = [
         private: false,
     },
     {
-        path: config.routes.web.food ,
+        path: config.routes.web.food + "/:id",
         component: FoodMenu,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.test + "/:id",
+        component: Test,
         layout: ClientLayout,
         roles: ['user'],
         private: false,

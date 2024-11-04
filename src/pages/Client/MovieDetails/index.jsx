@@ -3,17 +3,22 @@ import { useParams } from "react-router-dom";
 import ModalTrailerPage from "./ModalTrailer";
 import Box from "./Box";
 import { moviesData } from "./moviesData";
+import JokerImage from "../../../assets/image/joker.webp";
+import { useGetMovieById } from "../../../hooks/api/useMovieApi";
 
 const MovieDetailsPage = () => {
     const [showTrailerModal, setShowTrailerModal] = useState(false);
     const [movieDetails, setMovieDetails] = useState(null);
     const { id } = useParams();
-
+    const { isLoading: isLoadingMovie, data: movie } = id
+        ? useGetMovieById(id)
+        : { isLoading: null, data: null };
+    console.log("Movie", movie)
+    
     useEffect(() => {
-        const movie = moviesData.find(movie => movie.id === parseInt(id));
-        setMovieDetails(movie);
-    }, [id]);
-
+        if(!movie) return;
+    }, [movie]);
+    const allMovieGenres = movie?.data?.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
     const closeTrailerModal = () => {
         setShowTrailerModal(false);
     };
@@ -22,40 +27,40 @@ const MovieDetailsPage = () => {
         setShowTrailerModal(true);
     };
 
-    if (!movieDetails) {
+    if (!movie) {
         return <div>Loading...</div>;
     }
 
     return (
         <>
-            <main className="main-content py-16 px-8 mt-20">
+            <main className="main-content py-16 px-8 mt-20" style={{ backgroundImage: `url(http://localhost:8000${movie.data.anh_phim})` }}>
                 <div className="flex px-64" >
-                    <img alt="Movie Poster" className="mr-8 rounded-lg" height="450" src={movieDetails.posterImage} width="300" />
+                    <img alt="Movie Poster" className="mr-8 rounded-lg" height="450" src={`http://localhost:8000${movie.data.anh_phim}`} width="300" />
                     <div>
                         <h1 className="text-4xl font-bold mb-4">
-                            {movieDetails.title}
+                            {movie.data.ten_phim}
                         </h1>
                         <p className="mb-2">
-                            {`${movieDetails.genre} | ${movieDetails.country} | ${movieDetails.duration} | Đạo diễn: ${movieDetails.director}`}
+                            {`${allMovieGenres} | Nước Ngoài | ${movie.data.thoi_gian_phim} phút | Đạo diễn: ${movie.data.dao_dien}`}
                         </p>
                         <p className="mb-2">
-                            Diễn viên: {movieDetails.actors}
+                            Diễn viên: {movie.data.dien_vien}
                         </p>
                         <p className="mb-2">
-                            Khởi chiếu: {movieDetails.releaseDate}
+                            Gía vé: {movie.data.gia_ve}
                         </p>
                         <p className="mb-4">
-                            {movieDetails.description}
+                            {movie.data.noi_dung}
                         </p>
                         <p className="mb-4 text-red-500">
-                            Kiểm duyệt: {movieDetails.ageRating}
+                            Kiểm duyệt: T18: Phim được phổ biến đến khán giả từ đủ 18 tuổi trở lên.
                         </p>
                         <div className="flex space-x-4">
                             <button className="bg-gray-800 text-white py-2 px-4 rounded-full hover-zoom">
                                 Chi tiết nội dung
                             </button>
                             <button className="btn-primary text-yellow-400 py-2 px-4 rounded-full hover-zoom" id="trailerBtn" onClick={openTrailerModal}>
-                                Xem trailer
+                                Xem Trailer
                             </button>
                         </div>
                     </div>
@@ -65,7 +70,7 @@ const MovieDetailsPage = () => {
             {showTrailerModal && (
                 <ModalTrailerPage
                     closeModal={closeTrailerModal}
-                    trailerUrl={movieDetails.trailerUrl}
+                    trailerUrl={movie.data.trailer}
                 />
             )}
         </>
