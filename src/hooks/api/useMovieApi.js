@@ -29,3 +29,21 @@ export const useGetMovieFilterById = (id) => {
 export const useGetMovieDetailById = (id) => {
     return useFetch({ url: apiRoutes.web.movieDetail + '/' + id, key: 'getMovieDetailById' });
 }
+// Lấy thông tin một phim theo ID
+export const useGetMovie = (id) => {
+    return useFetch({ url: `${apiRoutes.admin.showMovie}/${id}`, key: 'showMovieById' });
+};
+
+// Cập nhật thông tin một phim theo ID
+export const useUpdateMovie = (id) => {
+    return usePut(`${apiRoutes.admin.updateMovie}/${id}`);
+};
+
+// Xóa một phim
+export const useDeleteMovie = (updater) => {
+    return useDelete(apiRoutes.admin.movie, updater);
+};
+// Lấy thông tin chi tiết một phim theo ID
+export const useGetMovieDetail = (id) => {
+    return useFetch({ url: `${apiRoutes.admin.movieDetail}/${id}`, key: 'getMovieDetail' });
+};
