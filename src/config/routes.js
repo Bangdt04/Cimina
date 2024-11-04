@@ -29,13 +29,14 @@ const routes = {
         gioiThieu: '/about',
         phim: '/movie',
         payment: '/payment/:id',
-        create_iso: '/iso/new',
+        theLoai: '/genre',
         chat: '/chat',
         profile: '/profile',
         product_detail: '/product-detail',
         login: '/',
         register: '/auth/register',
-        food : '/food'
+        food : '/food',
+        test: '/test',
     },
 };
 export default routes;

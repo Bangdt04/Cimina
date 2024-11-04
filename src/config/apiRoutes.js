@@ -38,7 +38,11 @@ const apiRoutes = {
         user_message_chat: '/user/message-chat',
         transaction: '/transaction',
         movie:'/movies',
-        showMovie: '/showMovie'
+        schedulMovies: '/showtimes',
+        showMovie: '/showMovie',
+        movieFilter: '/movieFilter',
+        movieDetail: '/movie-detail',
+        foods: '/foods'
     },
 };
 

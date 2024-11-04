@@ -17,21 +17,15 @@ export const useGetMovies = () => {
     return useFetch({ url: apiRoutes.admin.movie, key: 'getListMovies' });
 };
 
-// Lấy thông tin một phim theo ID
-export const useGetMovie = (id) => {
-    return useFetch({ url: `${apiRoutes.admin.showMovie}/${id}`, key: 'showMovieById' });
-};
+export const useGetMovieById = (id) => {
+    console.log("GET MOVIES ID")
+    return useFetch({ url: apiRoutes.web.showMovie + '/' + id, key: 'getMovieById' });
+}
 
-// Cập nhật thông tin một phim theo ID
-export const useUpdateMovie = (id) => {
-    return usePut(`${apiRoutes.admin.updateMovie}/${id}`);
-};
+export const useGetMovieFilterById = (id) => {
+    return useFetch({ url: apiRoutes.web.movieFilter + '/' + id, key: 'getMovieFilterById' });
+}
 
-// Xóa một phim
-export const useDeleteMovie = (updater) => {
-    return useDelete(apiRoutes.admin.movie, updater);
-};
-// Lấy thông tin chi tiết một phim theo ID
-export const useGetMovieDetail = (id) => {
-    return useFetch({ url: `${apiRoutes.admin.movieDetail}/${id}`, key: 'getMovieDetail' });
-};
+export const useGetMovieDetailById = (id) => {
+    return useFetch({ url: apiRoutes.web.movieDetail + '/' + id, key: 'getMovieDetailById' });
+}

@@ -4,32 +4,28 @@ import RegisterModal from "../../../../pages/Client/Register";
 import { Link, NavLink } from 'react-router-dom';
 import config from '../../../../config';
 import { useEffect, useState } from 'react';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, Spin } from 'antd';
 import { useGetMe } from '../../../../hooks/api/useUserApi';
 import { clearToken, isTokenStoraged, getRoles } from '../../../../utils/storage';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useGetGernes } from "../../../../hooks/api/useGenreApi";
 
 function Header() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const { data, isLoading, refetch } = useGetMe();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [user, setUser] = useState(null);
+    const { data, isLoading } = useGetGernes();
     let roles = getRoles();
     console.log("ROLE", roles)
-    useEffect(() => {
-        if (isLoading || !data) return;
-        localStorage.setItem('userId', data?.id);
-        setUser(data);
-    }, [isLoading, data]);
+
 
     const onLogout = () => {
         clearToken();
         setUser(null);
     };
 
-    if (isTokenStoraged()) {
-        refetch();
-    }
+
 
     const openRegisterModal = () => {
         setShowRegisterModal(true);
@@ -63,51 +59,77 @@ function Header() {
         </Menu>
     );
 
+    const menuNavLink = (
+        <Menu>
+            {isLoading ? (
+                <Menu.Item>
+                    <Spin />
+                </Menu.Item>
+            ) : (
+                data && data?.data.map((genre) => (
+                    <Menu.Item key={genre?.id}>
+                        <NavLink to={`${config.routes.web.theLoai}/${genre?.id}`}>
+                            {genre?.ten_loai_phim}
+                        </NavLink>
+                    </Menu.Item>
+                ))
+            )}
+        </Menu>
+    );
+
     return (
         <div>
             <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500">
                 <div className="flex items-center" style={{ marginLeft: 100 }}>
                     <img alt="NCC logo" className="mr-2" height="50" src={Logo} width="50" />
                     <nav className="flex space-x-4">
-                        <nav className="flex space-x-4">
+                        <nav className="flex space-x-4 relative">
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.home}
                             >
                                 Trang chủ
                             </NavLink>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.lichChieu}
                             >
                                 Lịch Chiếu
                             </NavLink>
+                            <Dropdown  className="pr-4 text-gray-400" overlay={menuNavLink} trigger={['hover']}>
+                                <NavLink
+                                    className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
+                                    to={config.routes.web.theLoai}
+                                >
+                                    Thể Loại
+                                </NavLink>
+                            </Dropdown>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.tinTuc}
                             >
                                 Tin Tức
                             </NavLink>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
                             >
                                 Khuyến Mãi
                             </NavLink>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.giaVe}
                             >
                                 Giá Vé
                             </NavLink>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.lienHoanPhim}
                             >
                                 Liên Hoan Phim
                             </NavLink>
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link' : 'pr-5 hover-text inactive')}
+                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.gioiThieu}
                             >
                                 Giới Thiệu
@@ -121,7 +143,7 @@ function Header() {
                             {roles.vai_tro === 'admin' ? (<>
                                 <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
                             </>) : (<></>)}
-                            <FontAwesomeIcon icon="fa-solid fa-user" />
+
                             <Dropdown overlay={menu} trigger={['click']}>
                                 <span id="user-name" className="user-name cursor-pointer">
                                     {roles.ho_ten} ▼

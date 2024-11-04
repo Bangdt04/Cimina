@@ -4,7 +4,7 @@ import routes from './routes';
 import PrivateRoute from './components/PrivateRoute';
 import NotFound from './components/NotFound';
 import myHistory from './utils/myHistory';
-import "./style.css";
+import "./style.scss";
 
 function App() {
     return (
