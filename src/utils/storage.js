@@ -20,3 +20,11 @@ export const getRoles = () => {
     let jwtDecodeObj = authInfo.auth;
     return jwtDecodeObj;
 };
+
+export const getTokenOfUser = () => {
+    let authInfo = JSON.parse(localStorage.getItem('token'));
+    if (!authInfo) return;
+
+    let jwtDecodeObj = authInfo["access-token"];
+    return jwtDecodeObj;
+};
