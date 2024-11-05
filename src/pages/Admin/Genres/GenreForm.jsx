@@ -30,7 +30,7 @@ function  GenreFormPage() {
             notification.success({
                 message: 'Thêm mới thành công',
             });
-            navigate(config.routes.admin.genres);
+            navigate(config.routes.admin.genres); // Điều hướng đến trang danh sách thể loại
         },
         error: () => {
             notification.error({
@@ -38,13 +38,13 @@ function  GenreFormPage() {
             });
         },
     });
-
+    
     const mutateEdit = useUpdateGerne({
         success: () => {
             notification.success({
                 message: 'Cập nhật thành công',
             });
-            navigate(config.routes.admin.category);
+            navigate(config.routes.admin.genres); // Điều hướng đến trang danh sách thể loại
         },
         error: () => {
             notification.error({

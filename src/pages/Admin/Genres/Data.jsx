@@ -117,13 +117,13 @@ function Data({ setProductCategoryIds, params, setParams }) {
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
             notification.success({
-                message: 'Thành công',
+                message: 'Xóa thể loại thành công',
             });
             refetch();
         },
         error: (err) => {
             notification.error({
-                message: 'Thất bại',
+                message: 'Xóa thể loại thất bại',
             });
         },
         obj: {

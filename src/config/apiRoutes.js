@@ -12,6 +12,10 @@ const apiRoutes = {
     },
     admin: {
         gerne: '/moviegenres',
+        showMoviegenre: '/showMoviegenre',
+        updateMoviegenre: '/updateMoviegenre',
+        storeMoviegenre: '/storeMoviegenre',
+        deleteMoviegerne: '/moviegenre',
         voucher: '/vouchers',
         movie: '/movies',
         showMovie: '/showMovie', 
