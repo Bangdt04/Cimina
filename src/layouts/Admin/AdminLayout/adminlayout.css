@@ -11,8 +11,8 @@
 
 .admin-main-content {
   flex: 1;
-  margin-left: 300px; // Chiều rộng của sidebar
-  margin-top: 60px; // Chiều cao của header
+  margin-left: 300px;
+  margin-top: 60px;
   padding: 20px;
   width: 1550px;
   overflow-y: auto;
@@ -59,4 +59,4 @@
 .ant-table-body {
   flex: 1;
   overflow-y: auto;
-}
+}/*# sourceMappingURL=adminlayout.css.map */
