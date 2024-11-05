@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGetMovieDetailById } from '../../../hooks/api/useMovieApi';
 import { useParams } from 'react-router-dom';
+import { Spin } from 'antd';
 
 const Seat = ({ selectedDate, selectedTime }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
@@ -31,17 +32,17 @@ const Seat = ({ selectedDate, selectedTime }) => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Spin size="large" className='flex items-center justify-center'></Spin>;
     }
 
     if (!data) {
         return <div>No data available</div>;
     }
 
-    const room = data?.['movie-detail']?.showtimes[0].room;
+    const room = data?.['movie-detail']?.showtimes.find(showtime => showtime.gio_chieu === selectedTime)?.room;
 
     if (!room) {
-        return <div>No room information available</div>;
+        return <div>Không có phòng đang chiếu phim này.</div>;
     }
 
     const toggleSeatSelection = (seat) => {
