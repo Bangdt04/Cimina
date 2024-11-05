@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ModalTrailerPage from "./ModalTrailer";
 import Box from "./Box";
-import { moviesData } from "./moviesData";
-import JokerImage from "../../../assets/image/joker.webp";
 import { useGetMovieById } from "../../../hooks/api/useMovieApi";
+import { Spin } from "antd";
 
 const MovieDetailsPage = () => {
     const [showTrailerModal, setShowTrailerModal] = useState(false);
@@ -28,7 +27,7 @@ const MovieDetailsPage = () => {
     };
 
     if (!movie) {
-        return <div>Loading...</div>;
+        return <Spin size="large" className='flex items-center justify-center mt-20'></Spin>;
     }
 
     return (

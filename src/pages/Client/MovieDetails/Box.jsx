@@ -1,12 +1,17 @@
+import { useParams } from "react-router-dom";
 import Seat from "./Seat";
 import Time from "./Time";
 import { useState, useEffect } from "react";
+import { useGetMovieDetailById } from "../../../hooks/api/useMovieApi";
 
 const Box = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [dates, setDates] = useState([]);
     const [showTime, setShowTime] = useState(false);
+    const [availableShowtimes, setAvailableShowtimes] = useState([]);
+    const { id } = useParams();
+    const { data, isLoading } = useGetMovieDetailById(id);
 
     useEffect(() => {
         const today = new Date();
@@ -27,7 +32,14 @@ const Box = () => {
     const handleDateSelect = (date) => {
         setSelectedDate(date);
         setShowTime(true);
-        setSelectedTime(null); // Reset selected time when a new date is chosen
+        setSelectedTime(null); 
+        filterShowtimes(date);
+    };
+
+    const filterShowtimes = (date) => {
+        const formattedDate = date.toISOString().split('T')[0];
+        const filteredShowtimes = data?.['movie-detail']?.showtimes.filter(showtime => showtime.ngay_chieu === formattedDate);
+        setAvailableShowtimes(filteredShowtimes);
     };
 
     const handleTimeSelect = (time) => {
@@ -41,6 +53,7 @@ const Box = () => {
                     <div className="w-full flex justify-center items-center bg-[#1A1D23]">
                         {dates.map((date, index) => {
                             const formattedDate = formatDate(date);
+                            
                             return (
                                 <div 
                                     key={index}
@@ -64,6 +77,7 @@ const Box = () => {
                             selectedDate={selectedDate} 
                             onTimeSelect={handleTimeSelect}
                             selectedTime={selectedTime}
+                            availableShowtimes={availableShowtimes} // Pass the filtered showtimes
                         />
                     )}
                     {selectedTime && <Seat selectedDate={selectedDate} selectedTime={selectedTime} />}
