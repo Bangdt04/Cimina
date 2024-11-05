@@ -1,12 +1,16 @@
-import FoodList from "./FoodList";
+import FoodData from "./FoodData";
+import { useState } from "react";
 import FoodHead from "./FoodHead";
-import './food.scss'
 
-function FoodPage(){
+function FoodPage() {
+    const [params, setParams] = useState({
+        pageNo: 1,
+        pageSize: 5,
+    });
     return (
-        <div className="food-container h-full flex flex-col">
+        <div className="p-4 bg-gray-900 mb-3 flex flex-col rounded-lg">
             <FoodHead />
-            <FoodList />
+            <FoodData params={params} setParams={setParams} />
         </div>
     );
 }

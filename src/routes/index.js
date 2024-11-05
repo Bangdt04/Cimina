@@ -13,6 +13,7 @@ import UserPage from "../pages/Admin/User";
 import MoviePage from "../pages/Admin/Movies";
 import MovieFormPage from "../pages/Admin/Movies/MovieForm";
 import FoodPage from "../pages/Admin/Food";
+import FoodFormPage from "../pages/Admin/Food/FoodForm";
 import RoomPage from "../pages/Admin/Room";
 import RoomFormPage from "../pages/Admin/Room/RoomForm";
 import SeatPage from "../pages/Admin/Seats";
@@ -274,6 +275,20 @@ const privateRoutes = [
     {
         path: config.routes.admin.food,
         component: FoodPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.food + '/create',
+        component: FoodFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.food + '/update/:id',
+        component: FoodFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

@@ -34,6 +34,11 @@ const apiRoutes = {
         updateSeat: '/updateSeat',
         showSeat: '/showSeat',
         deleteSeat: '/deleteSeat',
+        food: '/foods',
+        storeFood: '/storeFood',
+        showFood: '/showFood',
+        updateFood: '/updateFood',
+        deleteFood: '/deleteFood',
     },
     web: {
         user: '/auth/upload-profile',

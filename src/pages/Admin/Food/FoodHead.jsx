@@ -1,9 +1,11 @@
 import Head from '../../../layouts/Admin/components/Head';
+import config from '../../../config';
+
 function FoodHead() {
     return (
         <Head
-            isAdd={false}
             title={'Quản lý món ăn'}
+            route={config.routes.admin.food + '/create'}
         />
     );
 }
