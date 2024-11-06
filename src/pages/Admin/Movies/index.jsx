@@ -8,7 +8,7 @@ function MoviePage() {
         pageSize: 5,
     });
     return (
-        <div className="category-container">
+        <div className="p-4 bg-gray-900 mb-3 flex flex-col rounded-lg">
             <MovieHead />
             <MovieData params={params} setParams={setParams} />
         </div>

@@ -1,132 +1,127 @@
-import { Tag } from 'antd';
+import { Button, Input, Table, notification } from 'antd';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import config from '../../../config';
+import { useDeleteFood, useGetFoods } from '../../../hooks/api/useFoodApi';
+import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
-export const baseColumns = [
+const baseColumns = [
     {
-        title: 'Hình ảnh',
-        dataIndex: 'image',
-        key: 'image',
-        render: (image) => <img src={image} alt="Food" className="w-16 h-16 object-cover rounded" />,
+        title: 'Id',
+        dataIndex: 'id',
+        sorter: true,
+        width: 50,
     },
     {
-        title: 'Tên món',
-        dataIndex: 'name',
-        key: 'name',
-        sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-        title: 'Danh mục',
-        dataIndex: 'category',
-        key: 'category',
+        title: 'Tên món ăn',
+        dataIndex: 'ten_do_an',
     },
     {
         title: 'Giá',
-        dataIndex: 'price',
-        key: 'price',
-        render: (price) => `${price.toLocaleString()} VND`,
+        dataIndex: 'gia',
     },
     {
-        title: 'Trạng thái',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status) => (
-            <Tag color={status === 'Còn hàng' ? 'green' : 'red'}>
-                {status}
-            </Tag>
-        ),
+        title: 'Ghi chú',
+        dataIndex: 'ghi_chu',
+    },
+    {
+        title: 'Thao tác',
+        dataIndex: 'action',
     },
 ];
 
-export function generateFoodData() {
-    return [
-        {
-            id: '1',
-            image: "https://picsum.photos/seed/pho/200/200",
-            name: 'Phở bò',
-            category: 'Món chính',
-            price: 50000,
-            status: 'Còn hàng',
-            description: 'Phở bò truyền thống Hà Nội',
-        },
-        {
-            id: '2',
-            image: "https://picsum.photos/seed/banhmi/200/200",
-            name: 'Bánh mì thịt',
-            category: 'Món phụ',
-            price: 25000,
-            status: 'Còn hàng',
-            description: 'Bánh mì thịt nguội kèm rau và sốt',
-        },
-        {
-            id: '3',
-            image: "https://picsum.photos/seed/comtam/200/200",
-            name: 'Cơm tấm',
-            category: 'Món chính',
-            price: 40000,
-            status: 'Còn hàng',
-            description: 'Cơm tấm sườn bì chả trứng',
-        },
-        {
-            id: '4',
-            image: "https://picsum.photos/seed/buncha/200/200",
-            name: 'Bún chả',
-            category: 'Món chính',
-            price: 45000,
-            status: 'Hết hàng',
-            description: 'Bún chả Hà Nội với nước chấm đặc biệt',
-        },
-        {
-            id: '5',
-            image: "https://picsum.photos/seed/goicuon/200/200",
-            name: 'Gỏi cuốn',
-            category: 'Món phụ',
-            price: 30000,
-            status: 'Còn hàng',
-            description: 'Gỏi cuốn tôm thịt',
-        },
-        {
-            id: '6',
-            image: "https://picsum.photos/seed/banhxeo/200/200",
-            name: 'Bánh xèo',
-            category: 'Món chính',
-            price: 55000,
-            status: 'Hết hàng',
-            description: 'Bánh xèo miền Trung',
-        },
-        {
-            id: '7',
-            image: "https://picsum.photos/seed/cakhoto/200/200",
-            name: 'Cá kho tộ',
-            category: 'Món chính',
-            price: 60000,
-            status: 'Còn hàng',
-            description: 'Cá kho tộ đậm đà hương vị',
-        },
-        {
-            id: '8',
-            image: "https://picsum.photos/seed/chebamau/200/200",
-            name: 'Chè ba màu',
-            category: 'Tráng miệng',
-            price: 20000,
-            status: 'Hết hàng',
-            description: 'Chè ba màu mát lạnh',
-        },
-        {
-            id: '9',
-            image: "https://picsum.photos/seed/nemran/200/200",
-            name: 'Nem rán',
-            category: 'Món phụ',
-            price: 35000,
-            status: 'Còn hàng',
-            description: 'Nem rán giòn rụm',
-        },
-        {
-            id: '10',
-            image: "https://picsum.photos/seed/trasua/200/200",
-            name: 'Trà sữa trân châu',
-            category: 'Đồ uống',
-            price: 28000,
-            status: 'Hết hàng',
-            description: 'Trà sữa trân châu đường đen',
-        },
-    ];
+function transformData(dt, navigate, setIsDisableOpen) {
+    return dt?.map((item) => {
+        return {
+            key: item.id,
+            id: item.id,
+            ten_do_an: item.ten_do_an,
+            gia: item.gia,
+            ghi_chu: item.ghi_chu,
+            action: (
+                <div className="action-btn flex gap-3">
+                    <Button
+                        className="text-green-500 border border-green-500"
+                        onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
+                    >
+                        Sửa
+                    </Button>
+                    <Button
+                        className={'text-red-500 border border-red-500'}
+                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                    >
+                        Xóa
+                    </Button>
+                </div>
+            ),
+        };
+    });
 }
+
+function FoodData({ setParams, params }) {
+    const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
+    const [searchValue, setSearchValue] = useState('');
+    const navigate = useNavigate();
+    const { data, isLoading, refetch } = useGetFoods();
+    const [tdata, setTData] = useState([]);
+
+    useEffect(() => {
+        if (isLoading || !data) return;
+        let dt = transformData(data?.data, navigate, setIsDisableOpen);
+        setTData(dt);
+    }, [isLoading, data]);
+
+    const mutationDelete = useDeleteFood({
+        success: () => {
+            setIsDisableOpen({ ...isDisableOpen, isOpen: false });
+            notification.success({ message: 'Xóa thành công' });
+            refetch();
+        },
+        error: () => {
+            notification.error({ message: 'Xóa thất bại' });
+        },
+        obj: { id: isDisableOpen.id },
+    });
+
+    const onDelete = async (id) => {
+        await mutationDelete.mutateAsync(id);
+    };
+
+    const onSearch = (value) => {
+        setSearchValue(value);
+        const filteredData = data?.data.filter(item =>
+            item.ten_do_an.toLowerCase().includes(value.toLowerCase())
+        );
+        setTData(transformData(filteredData, navigate, setIsDisableOpen));
+    };
+
+    return (
+        <div>
+            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
+                <Input.Search
+                    className="xl:w-1/4 md:w-1/2"
+                    allowClear
+                    enterButton
+                    placeholder="Nhập từ khoá tìm kiếm"
+                    onSearch={onSearch}
+                />
+            </div>
+            <Table
+                loading={isLoading}
+                columns={baseColumns}
+                dataSource={tdata}
+                pagination={{ showSizeChanger: true }}
+            />
+            {isDisableOpen.id !== 0 && (
+                <ConfirmPrompt
+                    content="Bạn có muốn xóa món ăn này?"
+                    isDisableOpen={isDisableOpen}
+                    setIsDisableOpen={setIsDisableOpen}
+                    handleConfirm={onDelete}
+                />
+            )}
+        </div>
+    );
+}
+
+export default FoodData;

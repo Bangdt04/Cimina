@@ -12,6 +12,10 @@ const apiRoutes = {
     },
     admin: {
         gerne: '/moviegenres',
+        showMoviegenre: '/showMoviegenre',
+        updateMoviegenre: '/updateMoviegenre',
+        storeMoviegenre: '/storeMoviegenre',
+        deleteMoviegerne: '/moviegenre',
         voucher: '/vouchers',
         movie: '/movies',
         showMovie: '/showMovie', 
@@ -30,6 +34,11 @@ const apiRoutes = {
         updateSeat: '/updateSeat',
         showSeat: '/showSeat',
         deleteSeat: '/deleteSeat',
+        food: '/foods',
+        storeFood: '/storeFood',
+        showFood: '/showFood',
+        updateFood: '/updateFood',
+        deleteFood: '/deleteFood',
     },
     web: {
         user: '/auth/upload-profile',

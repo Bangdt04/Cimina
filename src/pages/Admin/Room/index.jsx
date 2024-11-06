@@ -8,7 +8,7 @@ function RoomPage() {
         pageSize: 5,
     });
     return (
-        <div className="category-container">
+        <div className="p-4 bg-gray-900 mb-3 flex flex-col rounded-lg">
             <RoomHead />
             <RoomData params={params} setParams={setParams} />
         </div>
