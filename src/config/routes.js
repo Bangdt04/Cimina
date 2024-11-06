@@ -28,7 +28,7 @@ const routes = {
         lienHoanPhim: '/festival',
         gioiThieu: '/about',
         phim: '/movie',
-        payment: '/payment/:id',
+        payment: '/payment',
         theLoai: '/genre',
         chat: '/chat',
         profile: '/profile',
