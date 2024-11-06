@@ -18,7 +18,7 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
             message: 'Đăng nhập thành công',
             description: 'Chào mừng bạn đến với hệ thống của chúng tôi',
         });
-        navigate(url);
+        window.location.reload();
     };
 
     const mutationLogin = useLogin({

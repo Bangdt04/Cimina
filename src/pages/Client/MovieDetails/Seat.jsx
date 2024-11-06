@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useGetMovieDetailById } from '../../../hooks/api/useMovieApi';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Spin } from 'antd';
+import { getTokenOfUser } from '../../../utils/storage';
 
 const Seat = ({ selectedDate, selectedTime }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const { id } = useParams();
     const { data, isLoading } = useGetMovieDetailById(id);
     const [selectedSeats, setSelectedSeats] = useState([]);
+    const [movieDetail, setMovieDetail] = useState(data?.['movie-detail']);
+    const [selectedSeatIds, setSelectedSeatIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [notification, setNotification] = useState('');
+    const accessToken = getTokenOfUser();
+    const navigate = useNavigate();
+
+    console.log("Access Token", accessToken)
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -40,7 +47,7 @@ const Seat = ({ selectedDate, selectedTime }) => {
     }
 
     const room = data?.['movie-detail']?.showtimes.find(showtime => showtime.gio_chieu === selectedTime)?.room;
-
+    const showtime = data?.['movie-detail']?.showtimes.find(showtime => showtime.gio_chieu === selectedTime);
     if (!room) {
         return <div>Không có phòng đang chiếu phim này.</div>;
     }
@@ -60,6 +67,13 @@ const Seat = ({ selectedDate, selectedTime }) => {
             // Cập nhật tổng tiền
             const priceChange = isSelected ? -seatPrice[seat.loai_ghe_ngoi] : seatPrice[seat.loai_ghe_ngoi];
             setTotalPrice(prevPrice => prevPrice + priceChange);
+
+            return updatedSeats;
+        });
+
+        setSelectedSeatIds((prev) => {
+            const isSelected = prev.includes(seat.id);
+            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id).so_ghe_ngoi : [...prev, seat.so_ghe_ngoi];
 
             return updatedSeats;
         });
@@ -99,17 +113,21 @@ const Seat = ({ selectedDate, selectedTime }) => {
         );
     };
 
-    const handlePayment = () => {
+    const handleFood = () => {
         navigate(`/food/${id}`, {
             state: {
                 selectedSeats,
-                totalAmount: calculateTotal(),
+                totalAmount: totalPrice,
                 selectedDate,
-                selectedTime
+                selectedTime,
+                selectedSeatIds,
+                movieDetail,
+                showtimeState: showtime
             }
         });
     };
 
+    
     return (
         <div className="bg-gray-900 text-white p-6 relative">
             {notification && (
@@ -177,16 +195,19 @@ const Seat = ({ selectedDate, selectedTime }) => {
                         </div>
                         <div className="flex space-x-4">
                             <button className="px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Quay lại</button>
-                            <button
-                                className={`px-6 py-2 rounded-full transition duration-300 ${selectedSeats.length > 0
-                                    ? 'bg-red-600 text-white hover:bg-red-500 cursor-pointer'
-                                    : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                                    }`}
-                                disabled={selectedSeats.length === 0}
-                                onClick={handlePayment}
-                            >
-                                Chọn Đồ Ăn
-                            </button>
+
+                            {accessToken && (
+                                <button
+                                    className={`px-6 py-2 rounded-full transition duration-300 ${selectedSeats.length > 0
+                                        ? 'bg-red-600 text-white hover:bg-red-500 cursor-pointer'
+                                        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                                        }`}
+                                    disabled={selectedSeats.length === 0}
+                                    onClick={handleFood}
+                                >
+                                    Chọn Đồ Ăn
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

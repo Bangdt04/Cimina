@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
 import ImageMovie from "../../../assets/image/joker.webp";
-import { useGetMovieFilterById, useGetMovies } from "../../../hooks/api/useMovieApi";
+import { useGetMovies } from "../../../hooks/api/useMovieApi";
 import Voucher from "./Voucher";
 import config from "../../../config";
 
 const MovieShowing = () => {
-    const { data, isLoading } = useGetMovieFilterById();
+    const { data, isLoading } = useGetMovies();
 
     const groupMovies = (movies, groupSize) => {
         const groups = [];
@@ -38,7 +38,7 @@ const MovieShowing = () => {
                             const allMovieGenres = item.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
                             return (
                                 <NavLink className="w-1/4" to={config.routes.web.phim +`/`+ item.id}>
-                                    <div key={item.id}>
+                                    <div>
                                         <img
                                             alt={`Movie poster of ${item.ten_phim}`}
                                             className="rounded-2xl hover-zoom mb-2"

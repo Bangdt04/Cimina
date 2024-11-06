@@ -5,9 +5,7 @@ import { Link, NavLink } from 'react-router-dom';
 import config from '../../../../config';
 import { useEffect, useState } from 'react';
 import { Dropdown, Menu, Spin } from 'antd';
-import { useGetMe } from '../../../../hooks/api/useUserApi';
-import { clearToken, isTokenStoraged, getRoles } from '../../../../utils/storage';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { clearToken, isTokenStoraged, getRoles, getInfoAuth } from '../../../../utils/storage';
 import { useGetGernes } from "../../../../hooks/api/useGenreApi";
 
 function Header() {
@@ -17,12 +15,13 @@ function Header() {
     const [user, setUser] = useState(null);
     const { data, isLoading } = useGetGernes();
     let roles = getRoles();
-    console.log("ROLE", roles)
+    let info = getInfoAuth();
 
 
     const onLogout = () => {
         clearToken();
         setUser(null);
+        window.location.reload();
     };
 
 
@@ -140,13 +139,13 @@ function Header() {
                 {isTokenStoraged() ? (
                     <>
                         <div className="relative flex items-center space-x-2" style={{ marginRight: 100 }}>
-                            {roles.vai_tro === 'admin' ? (<>
+                            {roles === 'admin' ? (<>
                                 <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
                             </>) : (<></>)}
 
                             <Dropdown overlay={menu} trigger={['click']}>
                                 <span id="user-name" className="user-name cursor-pointer">
-                                    {roles.ho_ten} ▼
+                                    {info.ho_ten} ▼
                                 </span>
                             </Dropdown>
                         </div>
