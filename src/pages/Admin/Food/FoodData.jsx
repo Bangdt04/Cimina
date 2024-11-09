@@ -50,17 +50,23 @@ function transformData(dt, navigate, setIsDisableOpen, setViewData) {
                         icon={<EyeOutlined />}
                         className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
                         onClick={() => setViewData(item)}
-                    />
+                    >
+                        Xem
+                    </Button>
                     <Button
                         icon={<EditOutlined />}
                         className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
                         onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
-                    />
+                    >
+                        Sửa
+                    </Button>
                     <Button
                         icon={<DeleteOutlined />}
                         className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    />
+                    >
+                        Xóa
+                    </Button>
                 </div>
             ),
         };

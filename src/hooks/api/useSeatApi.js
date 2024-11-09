@@ -35,3 +35,6 @@ export const useUpdateSeat = (updater) => {
 export const useDeleteSeat = (updater) => {
     return useDelete(apiRoutes.admin.deleteSeat, updater);
 };
+export const useGetAddSeat = () => {
+    return useFetch({ url: apiRoutes.admin.addSeat, key: 'getAddSeat' }); // xuat ghế theo phòng
+};

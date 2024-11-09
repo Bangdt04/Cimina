@@ -1,17 +1,14 @@
-import { Button, Input, Table, notification } from 'antd';
+import { Button, Input, Table, notification, Modal, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import config from '../../../config';
 import { useDeleteMovie, useGetMovies } from '../../../hooks/api/useMovieApi';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
+const { Title, Text } = Typography;
+
 const baseColumns = [
-    {
-        title: 'Id',
-        dataIndex: 'id',
-        sorter: true,
-        width: 50,
-    },
     {
         title: 'Tên Phim',
         dataIndex: 'ten_phim',
@@ -35,11 +32,9 @@ const baseColumns = [
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen) {
+function transformData(dt, navigate, setIsDisableOpen, setViewData) {
     return dt?.map((item) => {
         return {
-            key: item.id,
-            id: item.id,
             ten_phim: item.ten_phim,
             dao_dien: item.dao_dien,
             dien_vien: item.dien_vien,
@@ -47,17 +42,20 @@ function transformData(dt, navigate, setIsDisableOpen) {
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
-                        className="text-green-500 border border-green-500"
-                        onClick={() => navigate(`${config.routes.admin.movies}/update/${item.id}`)}
-                    >
-                        Sửa
-                    </Button>
+                        icon={<EyeOutlined />}
+                        className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
+                        onClick={() => setViewData(item)}
+                    />
                     <Button
-                        className={'text-red-500 border border-red-500'}
+                        icon={<EditOutlined />}
+                        className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
+                        onClick={() => navigate(`${config.routes.admin.movies}/update/${item.id}`)}
+                    />
+                    <Button
+                        icon={<DeleteOutlined />}
+                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        Xóa
-                    </Button>
+                    />
                 </div>
             ),
         };
@@ -66,13 +64,14 @@ function transformData(dt, navigate, setIsDisableOpen) {
 
 function MovieData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
+    const [viewData, setViewData] = useState(null);
     const navigate = useNavigate();
     const { data, isLoading, refetch } = useGetMovies();
     const [tdata, setTData] = useState([]);
 
     useEffect(() => {
         if (isLoading || !data) return;
-        const dt = transformData(data.data, navigate, setIsDisableOpen);
+        const dt = transformData(data.data, navigate, setIsDisableOpen, setViewData);
         setTData(dt);
     }, [isLoading, data]);
 
@@ -96,12 +95,16 @@ function MovieData({ setParams, params }) {
         const filteredData = data.data.filter((item) =>
             item.ten_phim.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen));
+        setTData(transformData(filteredData, navigate, setIsDisableOpen, setViewData));
+    };
+
+    const handleViewClose = () => {
+        setViewData(null);
     };
 
     return (
-        <div>
-            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
+        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
+            <div className="mb-3 flex items-center">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear
@@ -116,6 +119,10 @@ function MovieData({ setParams, params }) {
                 columns={baseColumns}
                 dataSource={tdata}
                 rowKey="key"
+                pagination={{ showSizeChanger: true }}
+                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200')}
+                bordered
+                size="middle"
             />
 
             {isDisableOpen.isOpen && (
@@ -126,6 +133,24 @@ function MovieData({ setParams, params }) {
                     handleConfirm={onDelete}
                 />
             )}
+
+            <Modal
+                title="Chi tiết phim"
+                visible={!!viewData}
+                onCancel={handleViewClose}
+                footer={null}
+                width={600}
+            >
+                {viewData && (
+                    <div style={{ padding: '20px' }}>
+                        <Title level={4}>Thông tin phim</Title>
+                        <p><strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text></p>
+                        <p><strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text></p>
+                        <p><strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text></p>
+                        <p><strong>Giá vé:</strong> <Text>{viewData.gia_ve}</Text></p>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }
