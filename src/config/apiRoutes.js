@@ -30,6 +30,7 @@ const apiRoutes = {
         baoTriSeat: '/baoTriSeat',
         tatbaoTriSeat: '/tatbaoTriSeat',
         seat: '/seats',
+        addSeat: '/addSeat',
         storeSeat: '/storeSeat',
         updateSeat: '/updateSeat',
         showSeat: '/showSeat',

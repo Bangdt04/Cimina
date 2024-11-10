@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Row, notification, Typography } from 'antd';
+import { Button, Col, Form, Input, Row, notification, Typography, Select } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import config from '../../../config';
@@ -67,8 +67,8 @@ function FoodFormPage() {
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
-            <Title level={2} style={{ textAlign: 'center' }}>
+        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}> {/* Improved styling */}
+            <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
                 {id ? 'Cập nhật thông tin món ăn' : 'Thêm món ăn mới'}
             </Title>
             <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -105,12 +105,15 @@ function FoodFormPage() {
                             name="trang_thai"
                             rules={[{ required: true, message: 'Nhập trạng thái!' }]}
                         >
-                            <Input placeholder="Nhập trạng thái" />
+                            <Select placeholder="Chọn trạng thái">
+                                <Select.Option value={0}>Còn hàng</Select.Option>
+                                <Select.Option value={1}>Hết hàng</Select.Option>
+                            </Select>
                         </Form.Item>
                     </Col>
                 </Row>
                 <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%' }}>Đặt lại</Button>
+                    <Button htmlType="reset" style={{ width: '48%' , background:'red' }} onClick={() => navigate(-1)}>Hủy</Button> {/* Added navigation to previous page */}
                     <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%' }}>
                         {id ? 'Cập nhật' : 'Thêm mới'}
                     </Button>

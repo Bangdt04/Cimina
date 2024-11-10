@@ -1,17 +1,14 @@
-import { Button, Input, Table, notification } from 'antd';
+import { Button, Input, Table, notification, Modal, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import config from '../../../config';
-import { useDeleteSeat, useGetSeats } from '../../../hooks/api/useSeatApi';
+import { useDeleteSeat, useGetSeats, useGetAddSeat } from '../../../hooks/api/useSeatApi'; 
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
+const { Title, Text } = Typography;
+
 const baseColumns = [
-    {
-        title: 'Id',
-        dataIndex: 'id',
-        sorter: true,
-        width: 50,
-    },
     {
         title: 'Số ghế ngồi',
         dataIndex: 'so_ghe_ngoi',
@@ -25,28 +22,37 @@ const baseColumns = [
         dataIndex: 'gia_ghe',
     },
     {
+        title: 'Tên phòng chiếu',
+        dataIndex: 'ten_phong_chieu',
+    },
+    {
         title: 'Thao tác',
         dataIndex: 'action',
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen) {
+function transformData(dt, roomData, navigate, setIsDisableOpen, setViewData) {
     return dt?.map((item) => {
+        const room = Array.isArray(roomData) ? roomData.find(r => r.id === item.room_id) : null;
         return {
             key: item.id,
             id: item.id,
             so_ghe_ngoi: item.so_ghe_ngoi,
             loai_ghe_ngoi: item.loai_ghe_ngoi,
             gia_ghe: item.gia_ghe,
+            room_id: item.room_id,
+            ten_phong_chieu: room ? room.ten_phong_chieu : 'Không xác định', 
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
+                        icon={<EditOutlined />}
                         className="text-green-500 border border-green-500"
                         onClick={() => navigate(`${config.routes.admin.seat}/update/${item.id}`)}
                     >
                         Sửa
                     </Button>
                     <Button
+                        icon={<DeleteOutlined />}
                         className={'text-red-500 border border-red-500'}
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                     >
@@ -60,15 +66,18 @@ function transformData(dt, navigate, setIsDisableOpen) {
 
 function SeatData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
+    const [viewData, setViewData] = useState(null); // State for view data
     const navigate = useNavigate();
-    const { data, isLoading, refetch } = useGetSeats();
+    const { data: seatData, isLoading, refetch } = useGetSeats();
+    const { data: roomDataResponse } = useGetAddSeat();
+    const roomData = roomDataResponse?.data || [];
     const [tdata, setTData] = useState([]);
 
     useEffect(() => {
-        if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDisableOpen);
+        if (isLoading || !seatData) return;
+        let dt = transformData(seatData?.data, roomData, navigate, setIsDisableOpen, setViewData);
         setTData(dt);
-    }, [isLoading, data]);
+    }, [isLoading, seatData, roomData]);
 
     const mutationDelete = useDeleteSeat({
         success: () => {
@@ -86,6 +95,17 @@ function SeatData({ setParams, params }) {
         await mutationDelete.mutateAsync(id);
     };
 
+    const onSearch = (value) => {
+        const filteredData = seatData.data.filter((item) =>
+            item.ten_phong_chieu.toLowerCase().includes(value.toLowerCase())
+        );
+        setTData(transformData(filteredData, roomData, navigate, setIsDisableOpen, setViewData));
+    };
+
+    const handleViewClose = () => {
+        setViewData(null);
+    };
+
     return (
         <div>
             <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
@@ -94,6 +114,7 @@ function SeatData({ setParams, params }) {
                     allowClear
                     enterButton
                     placeholder="Nhập từ khoá tìm kiếm"
+                    onSearch={onSearch}
                 />
             </div>
             <Table
@@ -102,7 +123,7 @@ function SeatData({ setParams, params }) {
                 dataSource={tdata}
                 pagination={{ showSizeChanger: true }}
             />
-            {isDisableOpen.id !== 0 && (
+            {isDisableOpen.isOpen && (
                 <ConfirmPrompt
                     content="Bạn có muốn xóa ghế này?"
                     isDisableOpen={isDisableOpen}
@@ -110,6 +131,23 @@ function SeatData({ setParams, params }) {
                     handleConfirm={onDelete}
                 />
             )}
+            <Modal
+                title="Chi tiết ghế"
+                visible={!!viewData}
+                onCancel={handleViewClose}
+                footer={null}
+                width={600}
+            >
+                {viewData && (
+                    <div style={{ padding: '20px' }}>
+                        <Title level={4}>Thông tin ghế</Title>
+                        <p><strong>Số ghế ngồi:</strong> <Text>{viewData.so_ghe_ngoi}</Text></p>
+                        <p><strong>Loại ghế ngồi:</strong> <Text>{viewData.loai_ghe_ngoi}</Text></p>
+                        <p><strong>Giá ghế:</strong> <Text>{viewData.gia_ghe}</Text></p>
+                        <p><strong>Tên phòng chiếu:</strong> <Text>{viewData.ten_phong_chieu}</Text></p>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

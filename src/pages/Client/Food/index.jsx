@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './food.scss';
 import { useGetFoods } from '../../../hooks/api/useFoodApi';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
 const FoodMenu = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
@@ -17,44 +18,82 @@ const FoodMenu = () => {
     const { data, isLoading } = useGetFoods();
 
     useEffect(() => {
-        console.log(location.state)
+        console.log(location.state);
         if (location.state) {
             setSelectedSeats(location.state.selectedSeats);
             setTotalAmount(location.state.totalAmount);
-            setTicketPrice(location.state.totalAmount)
+            setTicketPrice(location.state.totalAmount);
             setSelectedTime(location.state.selectedTime);
-            setSelectedSeatIds(location.state.selectedSeatIds)
-            setMovieDetail(location.state.movieDetail),
-            setShowtime(location.state.showtimeState)
-
+            setSelectedSeatIds(location.state.selectedSeatIds);
+            setMovieDetail(location.state.movieDetail);
+            setShowtime(location.state.showtimeState);
         }
     }, [id, location.state]);
 
-    
-
-
     const handlePurchase = (item) => {
-        const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10); // Loại bỏ dấu chấm và chuyển đổi thành số nguyên
-
-
-        setTotalAmount(prevTotal => {
-            const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
-            return currentTotal + itemPrice;
-        });
-
-
-        setSelectedItems(prevItems => [...prevItems, item]);
+        const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10);
+        if (!isNaN(itemPrice)) {
+            setTotalAmount(prevTotal => {
+                const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
+                return currentTotal + itemPrice;
+            });
+            setSelectedItems(prevItems => {
+                const existingItem = prevItems.find(selectedItem => selectedItem.ten_do_an === item.ten_do_an);
+                if (existingItem) {
+                    // Nếu món ăn đã tồn tại, tăng số lượng
+                    return prevItems.map(selectedItem => {
+                        if (selectedItem.ten_do_an === item.ten_do_an) {
+                            return { ...selectedItem, quantity: (selectedItem.quantity || 1) + 1 };
+                        }
+                        return selectedItem;
+                    });
+                } else {
+                    // Nếu món ăn chưa tồn tại, thêm mới với số lượng là 1
+                    return [...prevItems, { ...item, quantity: 1 }];
+                }
+            });
+        } else {
+            console.error("Giá không hợp lệ:", item.gia);
+        }
     };
 
     const handleRemoveItem = (itemToRemove) => {
-        // Cập nhật danh sách các món ăn đã chọn
-        setSelectedItems(prevItems => prevItems.filter(item => item !== itemToRemove));
+        setSelectedItems(prevItems => {
+            const updatedItems = prevItems.filter(item => item.ten_do_an !== itemToRemove.ten_do_an);
+            const itemPrice = parseInt(itemToRemove.gia.replace(/\./g, ''), 10) * (itemToRemove.quantity || 1);
+            // Cập nhật tổng tiền khi xóa món
+            setTotalAmount(prevTotal => prevTotal - itemPrice);
+            return updatedItems;
+        });
+    };
 
-        // Cập nhật tổng số tiền
-        setTotalAmount(prevTotal => {
-            const itemPrice = parseInt(itemToRemove.gia.replace(/\./g, ''), 10);
-            const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
-            return currentTotal - itemPrice; // Giảm giá trị
+    const handleIncreaseQuantity = (item) => {
+        setSelectedItems(prevItems => {
+            return prevItems.map(selectedItem => {
+                if (selectedItem.ten_do_an === item.ten_do_an) {
+                    const newQuantity = (selectedItem.quantity || 1) + 1;
+                    setTotalAmount(prevTotal => prevTotal + parseInt(item.gia.replace(/\./g, ''), 10));
+                    return { ...selectedItem, quantity: newQuantity };
+                }
+                return selectedItem;
+            });
+        });
+    };
+
+    const handleDecreaseQuantity = (item) => {
+        setSelectedItems(prevItems => {
+            return prevItems.map(selectedItem => {
+                if (selectedItem.ten_do_an === item.ten_do_an) {
+                    const newQuantity = (selectedItem.quantity || 1) - 1;
+                    if (newQuantity <= 0) {
+                        handleRemoveItem(selectedItem); // Remove item if quantity is 0
+                        return selectedItem; // Return the original item to avoid state issues
+                    }
+                    setTotalAmount(prevTotal => prevTotal - parseInt(item.gia.replace(/\./g, ''), 10));
+                    return { ...selectedItem, quantity: newQuantity };
+                }
+                return selectedItem;
+            });
         });
     };
 
@@ -72,14 +111,14 @@ const FoodMenu = () => {
             }
         });
     };
+
     return (
         <>
             <div className="container mx-auto py-8 mt-16 px-32">
                 <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {/* Món ăn 1 */}
                     {data?.data?.map(item => (
-                        <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
+                        <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
                             <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                             <div className="p-4">
                                 <p className="text-sm line-through text-gray-400">Giá cũ: </p>
@@ -90,11 +129,13 @@ const FoodMenu = () => {
                                     <span className="text-sm ml-2 text-gray-400">(100 lượt đánh giá)</span>
                                 </div>
                                 <p className="text-sm text-gray-400">Đã bán: 200</p>
-
-                                <button onClick={() => handlePurchase(item)} className="mt-4 px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Mua</button>
+                                <div className="flex items-center mt-4">
+                                    <button onClick={() => handlePurchase(item)} className="ml-4 px-4 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Đặt</button>
+                                </div>
                             </div>
                         </div>
                     ))}
+
                 </div>
                 <div className="mt-10 space-y-8">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
@@ -120,14 +161,21 @@ const FoodMenu = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
-                                <td className="py-2">{selectedSeats.length}</td>
-                                <td className="text-right py-2">{ticketPrice}đ</td>
+                                <tr>
+                                    <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
+                                    <td className="py-2">{selectedSeats.length}</td>
+                                    <td className="text-right py-2">{ticketPrice}đ</td>
+                                    <td className="text-right py-2"></td>
+                                </tr>
                                 {selectedItems.map((item, index) => (
                                     <tr key={index}>
                                         <td className="py-2">{item.ten_do_an}</td>
-                                        <td className="py-2">1</td>
-                                        <td className="text-right py-2">{item.gia}đ</td>
+                                        <td className="py-2 flex items-center">
+                                            <button onClick={() => handleDecreaseQuantity(item)} className="text-red-500 hover:text-red-700">-</button>
+                                            <span className="mx-2">{item.quantity || 1}</span>
+                                            <button onClick={() => handleIncreaseQuantity(item)} className="text-green-500 hover:text-green-700">+</button>
+                                        </td>
+                                        <td className="text-right py-2">{(parseInt(item.gia.replace(/\./g, ''), 10) * (item.quantity || 1)).toLocaleString()}đ</td>
                                         <td className="text-right py-2">
                                             <button
                                                 onClick={() => handleRemoveItem(item)}
@@ -137,7 +185,6 @@ const FoodMenu = () => {
                                             </button>
                                         </td>
                                     </tr>
-
                                 ))}
                                 <tr>
                                     <td className="py-2 font-bold">Tổng cộng</td>
