@@ -1,23 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useGetMovieDetailById } from '../../../hooks/api/useMovieApi';
+import { useGetMovieDetailById, useGetShowSeatById } from '../../../hooks/api/useMovieApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spin } from 'antd';
 import { getTokenOfUser } from '../../../utils/storage';
 
-const Seat = ({ selectedDate, selectedTime }) => {
+const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const { id } = useParams();
-    const { data, isLoading } = useGetMovieDetailById(id);
+    const { data, isLoading } = useGetShowSeatById(id, timeId);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [movieDetail, setMovieDetail] = useState(data?.['movie-detail']);
+    const [movieDetail, setMovieDetail] = useState(detail);
     const [selectedSeatIds, setSelectedSeatIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [notification, setNotification] = useState('');
     const accessToken = getTokenOfUser();
     const navigate = useNavigate();
 
-    console.log("Access Token", accessToken)
-
+    
     useEffect(() => {
         const timer = setInterval(() => {
             setRemainingTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
@@ -38,6 +37,7 @@ const Seat = ({ selectedDate, selectedTime }) => {
         "Double": 300000 // Giá ghế đôi
     };
 
+
     if (isLoading) {
         return <Spin size="large" className='flex items-center justify-center'></Spin>;
     }
@@ -46,17 +46,25 @@ const Seat = ({ selectedDate, selectedTime }) => {
         return <div>No data available</div>;
     }
 
-    const room = data?.['movie-detail']?.showtimes.find(showtime => showtime.gio_chieu === selectedTime)?.room;
-    const showtime = data?.['movie-detail']?.showtimes.find(showtime => showtime.gio_chieu === selectedTime);
+    const room = data?.showtime?.room;
+    const showtime = data?.showtime;
+
+    const seats = data?.seats.map((seat, index) => {
+        return {
+            ...seat,
+            row: Math.floor(index / 5) + 1 // Giả sử mỗi hàng có 2 ghế
+        };
+    });
+
     if (!room) {
-        return <div>Không có phòng đang chiếu phim này.</div>;
+        return <center className='mb-4'>Không có phòng đang chiếu phim này.</center>;
     }
 
     const toggleSeatSelection = (seat) => {
         // Kiểm tra nếu ghế đã được đặt
-        if (seat.trang_thai === 1) {
-            setNotification(`Ghế ${seat.so_ghe_ngoi} đã được đặt!`);
-            return; // Không cho phép chọn ghế đã đặt
+        if (seat.trang_thai === "đã đặt") {
+            setNotification(`Ghế ${seat.ten_ghe_ngoi} đã được đặt!`);
+            return; 
         }
 
         setNotification(''); // Xóa thông báo nếu ghế chưa đặt
@@ -65,7 +73,7 @@ const Seat = ({ selectedDate, selectedTime }) => {
             const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
 
             // Cập nhật tổng tiền
-            const priceChange = isSelected ? -seatPrice[seat.loai_ghe_ngoi] : seatPrice[seat.loai_ghe_ngoi];
+            const priceChange = isSelected ? -seatPrice["VIP"] : seatPrice["VIP"];
             setTotalPrice(prevPrice => prevPrice + priceChange);
 
             return updatedSeats;
@@ -73,17 +81,19 @@ const Seat = ({ selectedDate, selectedTime }) => {
 
         setSelectedSeatIds((prev) => {
             const isSelected = prev.includes(seat.id);
-            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id).so_ghe_ngoi : [...prev, seat.so_ghe_ngoi];
+            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id).ten_ghe_ngoi : [...prev, seat.ten_ghe_ngoi];
 
             return updatedSeats;
         });
+
+        // console.log("SEAT SELECT", seat)
     };
 
     const renderSeat = (seat) => {
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
         // Determine the seat status
-        if (seat.trang_thai === 1) {
+        if (seat.trang_thai === "đã đặt") {
             seatClass += ' bg-gray-700'; // Ghế đã đặt
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded ${seatClass}`}>
@@ -92,23 +102,22 @@ const Seat = ({ selectedDate, selectedTime }) => {
             );
         }
 
-        // Ghế chưa đặt
         if (selectedSeats.includes(seat.id)) {
-            seatClass += ' bg-blue-500'; // Ghế đã chọn
-        } else {
-            // Ghế còn lại
-            if (seat.loai_ghe_ngoi === "Thường") {
-                seatClass += ' bg-gray-600'; // Ghế thường
-            } else if (seat.loai_ghe_ngoi === "VIP") {
-                seatClass += ' bg-orange-400'; // Ghế VIP
-            } else if (seat.loai_ghe_ngoi === "Double") {
-                seatClass += ' bg-red-400'; // Ghế đôi
+            seatClass += ' bg-blue-500';
+        }
+        else {
+            if (seat.ten_ghe_ngoi.includes("VIP")) {
+                seatClass += ' bg-orange-400';
+            } else {
+                seatClass += ' bg-gray-600';
             }
         }
 
+
+
         return (
             <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded ${seatClass}`} onClick={() => toggleSeatSelection(seat)}>
-                {seat.so_ghe_ngoi}
+                {seat.ten_ghe_ngoi}
             </div>
         );
     };
@@ -127,7 +136,16 @@ const Seat = ({ selectedDate, selectedTime }) => {
         });
     };
 
-    
+
+    const seatsByRow = seats.reduce((acc, seat) => {
+        const row = seat.row;
+        if (!acc[row]) {
+            acc[row] = []; 
+        }
+        acc[row].push(seat); 
+        return acc;
+    }, {});
+
     return (
         <div className="bg-gray-900 text-white p-6 relative">
             {notification && (
@@ -150,16 +168,11 @@ const Seat = ({ selectedDate, selectedTime }) => {
                 </div>
                 <h2 className="text-center text-2xl font-bold mb-8">{room.ten_phong_chieu}</h2>
                 <div className="mb-12 bg-gray-800 p-8 rounded-lg shadow-xl overflow-x-auto">
-                    {room?.seat?.reduce((acc, seat, index) => {
-                        if ((index + 1) % 10 === 0) {
-                            acc.push(
-                                <div key={index} className="flex justify-center mb-2">
-                                    {room?.seat?.slice(index - 9, index + 1).map(seat => renderSeat(seat))}
-                                </div>
-                            );
-                        }
-                        return acc;
-                    }, [])}
+                    {Object.keys(seatsByRow).map(row => (
+                        <div key={row} className="flex justify-center mb-2">
+                            {seatsByRow[row].map(seat => renderSeat(seat))}
+                        </div>
+                    ))}
                 </div>
                 <div className="flex flex-wrap justify-center gap-4 mb-8">
                     <div className="flex items-center">
@@ -188,15 +201,13 @@ const Seat = ({ selectedDate, selectedTime }) => {
                         <div className="mb-4 md:mb-0">
                             <p className="text-lg mb-2">Ghế đã chọn: <span className="font-bold">
                                 {selectedSeats.map(seatId => (
-                                    <span key={seatId}>{room.seat.find(seat => seat.id === seatId).so_ghe_ngoi} </span>
+                                    <span key={seatId}>{seats?.find(seat => seat.id === seatId).ten_ghe_ngoi} </span>
                                 ))}
                             </span></p>
                             <p className="text-lg">Tổng tiền: <span className="font-bold text-green-400">{totalPrice.toLocaleString()}đ</span></p>
                         </div>
                         <div className="flex space-x-4">
-                            <button className="px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Quay lại</button>
-
-                            {accessToken && (
+                            {accessToken ? (
                                 <button
                                     className={`px-6 py-2 rounded-full transition duration-300 ${selectedSeats.length > 0
                                         ? 'bg-red-600 text-white hover:bg-red-500 cursor-pointer'
@@ -207,6 +218,8 @@ const Seat = ({ selectedDate, selectedTime }) => {
                                 >
                                     Chọn Đồ Ăn
                                 </button>
+                            ) : (
+                                <p className="text-red-500">Vui lòng đăng nhập trước khi đặt vé.</p>
                             )}
                         </div>
                     </div>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { FaSearch, FaFilm, FaUser, FaVideo, FaFilter, FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeCategory, setActiveCategory] = useState('all');
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Searching for:", searchTerm, "in category:", activeCategory);
+        navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
     };
 
     return (
@@ -15,7 +16,7 @@ const Search = () => {
             <form onSubmit={handleSubmit} className="relative mb-6">
                 <input
                     type="text"
-                    placeholder="Tìm kiếm phim, diễn viên, đạo diễn..."
+                    placeholder="Tìm kiếm tên phim..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full py-4 px-6 pr-14 rounded-full bg-gray-700 focus:bg-gray-600 border-2 border-gray-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/50 transition duration-300 ease-in-out text-gray-200 text-lg placeholder-gray-400 shadow-inner"

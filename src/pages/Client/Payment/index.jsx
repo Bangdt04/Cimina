@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { moviesData } from "../MovieDetails/moviesData";
 import { Spin } from "antd";
+import axios from "axios";
+import { usePaymentMethod } from "../../../hooks/api/usePaymentApi";
+import { getTokenOfUser } from "../../../utils/storage";
 
 const Payment = () => {
   const [movieDetails, setMovieDetails] = useState(null);
@@ -17,15 +19,16 @@ const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(0); 
+  const [discount, setDiscount] = useState(0);
+  const accessToken = getTokenOfUser();
 
   const handleApplyPromoCode = () => {
-      // Kiểm tra mã khuyến mãi (ví dụ: mã "DISCOUNT10" giảm 10%)
-      if (promoCode === "DISCOUNT10") {
-          setDiscount(totalAmount * 0.1); // Giảm 10% tổng số tiền
-      } else {
-          alert("Mã khuyến mãi không hợp lệ");
-      }
+    // Kiểm tra mã khuyến mãi (ví dụ: mã "DISCOUNT10" giảm 10%)
+    if (promoCode === "vou10") {
+      setDiscount(totalAmount * 0.1); // Giảm 10% tổng số tiền
+    } else {
+      alert("Mã khuyến mãi không hợp lệ");
+    }
   };
 
   const finalAmount = totalAmount - discount;
@@ -43,15 +46,71 @@ const Payment = () => {
         setSelectedItems(location.state.items),
         setTicketPrice(location.state.ticketPrice)
     }
-  }, [id, location.state]);
+  }, [location.state]);
 
-  const handlePayment = () => {
-    alert("Thanh toán thành công!");
-    navigate("/");
+
+  const processDoan = () => {
+    const doanArray = Object.keys(selectedItems).map((key) => ({
+      doan_id: selectedItems[key].id,
+      so_luong_do_an: selectedItems[key].quantity,
+    }));
+    return doanArray;
+  };
+
+
+
+
+  const data = {
+    thongtinchieu_id: location.state.showtimeState.id,
+    ghe_ngoi: selectedSeats,
+    doan: processDoan(),
+    ma_giam_gia: promoCode,
+    ghi_chu: "Chỗ ngồi yêu cầu ở giữa"
+  };
+
+
+  const handlePayment = async () => {
+    const sendData = async () => {
+      try {
+        const result = await axios.post('http://127.0.0.1:8000/api/booking', data, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        callPaymentMethod(result?.data);
+        // usePaymentMethod(result?.data?.id, "ncb")
+        console.log(result?.data)
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    await sendData();
+  };
+
+
+  const callPaymentMethod = async (data) => {
+    try {
+      
+      const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/ncb`, data, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`, // Add the bearer token here
+          'Content-Type': 'application/json',
+        },
+      });
+      window.location.href = result?.data.url
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   if (!movieDetail) {
     return <Spin size="large" className='flex items-center justify-center mt-20'></Spin>;
+  }
+
+  if (!accessToken) {
+    navigate("/");
   }
 
   return (
@@ -66,8 +125,7 @@ const Payment = () => {
                 <p><span className="font-semibold">Phim:</span> {movieDetail?.ten_phim}</p>
                 <p><span className="font-semibold">Giờ chiếu:</span> {selectedTime}</p>
                 <p><span className="font-semibold">Ngày chiếu:</span> {showtime?.ngay_chieu}</p>
-                <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.gio_chieu}</p>
-                <p><span className="font-semibold">Phòng chiếu số:</span> {showtime?.room?.rapphim_id}</p>
+                <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.room?.ten_phong_chieu}</p>
               </div>
             </div>
 
@@ -85,14 +143,16 @@ const Payment = () => {
                   <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
                   <td className="py-2">{selectedSeats.length}</td>
                   <td className="text-right py-2">{ticketPrice}đ</td>
-                  {selectedItems.map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2">{item.ten_do_an}</td>
-                      <td className="py-2">1</td>
-                      <td className="text-right py-2">{item.gia}đ</td>
-                    </tr>
-
-                  ))}
+                  {Object.keys(selectedItems).map((key, index) => {
+                    const item = selectedItems[key]; // Lấy món ăn từ selectedItems
+                    return (
+                      <tr key={index}>
+                        <td className="py-2">{item.ten_do_an}</td>
+                        <td className="py-2">{item.quantity}</td> {/* Hiển thị số lượng */}
+                        <td className="text-right py-2">{item.quantity * item.gia}đ</td>
+                      </tr>
+                    );
+                  })}
                   <tr>
                     <td className="py-2 font-bold">Tổng cộng</td>
                     <td className="py-2"></td>

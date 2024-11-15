@@ -51,8 +51,10 @@ const apiRoutes = {
         schedulMovies: '/showtimes',
         showMovie: '/showMovie',
         movieFilter: '/movieFilter',
+        movieFilterKeyword: '/movieFilterKeyword',
         movieDetail: '/movie-detail',
-        foods: '/foods'
+        foods: '/foods',
+        payment: '/payment'
     },
 };
 
