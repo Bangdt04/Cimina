@@ -101,7 +101,6 @@ function MovieData({ setParams, params }) {
     const handleViewClose = () => {
         setViewData(null);
     };
-
     return (
         <div className="bg-white text-black p-4 rounded-lg shadow-lg">
             <div className="mb-3 flex items-center">
@@ -113,7 +112,6 @@ function MovieData({ setParams, params }) {
                     onSearch={onSearch}
                 />
             </div>
-
             <Table
                 loading={isLoading}
                 columns={baseColumns}
@@ -124,16 +122,14 @@ function MovieData({ setParams, params }) {
                 bordered
                 size="middle"
             />
-
             {isDisableOpen.isOpen && (
                 <ConfirmPrompt
-                    content="Bạn có muốn xóa phim này ?"
+                    content="Bạn có muốn xóa phim này?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
                     handleConfirm={onDelete}
                 />
             )}
-
             <Modal
                 title="Chi tiết phim"
                 visible={!!viewData}

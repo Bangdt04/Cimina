@@ -90,8 +90,8 @@ function RoomData({ setParams, params }) {
     };
 
     return (
-        <div>
-            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
+        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
+            <div className="p-4 mb-3 flex items-center rounded-lg">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear
@@ -100,17 +100,15 @@ function RoomData({ setParams, params }) {
                     onSearch={onSearch}
                 />
             </div>
-
             <Table
                 loading={isLoading}
                 columns={baseColumns}
                 dataSource={tdata}
                 rowKey="key"
             />
-
             {isDisableOpen.isOpen && (
                 <ConfirmPrompt
-                    content="Bạn có muốn xóa phòng này ?"
+                    content="Bạn có muốn xóa phòng này?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
                     handleConfirm={onDelete}

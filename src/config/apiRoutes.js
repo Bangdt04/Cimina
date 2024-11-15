@@ -18,6 +18,7 @@ const apiRoutes = {
         deleteMoviegerne: '/moviegenre',
         voucher: '/vouchers',
         movie: '/movies',
+        storeMovie:'/storeMovie',
         showMovie: '/showMovie', 
         updateMovie: '/updateMovie', 
         movieDetail: '/movieDetail',
