@@ -19,6 +19,8 @@ import RoomPage from "../pages/Admin/Room";
 import RoomFormPage from "../pages/Admin/Room/RoomForm";
 import SeatPage from "../pages/Admin/Seats";
 import SeatFormPage from "../pages/Admin/Seats/SeatForm";
+import ShowTimePage from "../pages/Admin/ShowTime";
+import ShowTimeFormPage from "../pages/Admin/ShowTime/ShowTimeForm";
 
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
@@ -290,6 +292,27 @@ const privateRoutes = [
     {
         path: config.routes.admin.food + '/update/:id',
         component: FoodFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime,
+        component: ShowTimePage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime + '/create',
+        component: ShowTimeFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime + '/update/:id',
+        component: ShowTimeFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
