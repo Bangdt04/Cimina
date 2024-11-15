@@ -107,8 +107,8 @@ function SeatData({ setParams, params }) {
     };
 
     return (
-        <div>
-            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
+        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
+            <div className="p-4 mb-3 flex items-center rounded-lg">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear

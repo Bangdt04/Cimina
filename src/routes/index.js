@@ -7,6 +7,7 @@ import HomePage from "../pages/Client/Home";
 import AutoApprovePage from "../pages/Admin/AutoApprove";
 import GenreFormPage from "../pages/Admin/Genres/GenreForm";
 import GenrePage from "../pages/Admin/Genres";
+import Voucher from "../pages/Admin/Voucher";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
 import UserPage from "../pages/Admin/User";
@@ -18,6 +19,8 @@ import RoomPage from "../pages/Admin/Room";
 import RoomFormPage from "../pages/Admin/Room/RoomForm";
 import SeatPage from "../pages/Admin/Seats";
 import SeatFormPage from "../pages/Admin/Seats/SeatForm";
+import ShowTimePage from "../pages/Admin/ShowTime";
+import ShowTimeFormPage from "../pages/Admin/ShowTime/ShowTimeForm";
 
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
@@ -195,7 +198,7 @@ const privateRoutes = [
         private: true,
     },{
         path: config.routes.admin.voucher,
-        component: VoucherPage,
+        component: Voucher,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
@@ -306,6 +309,27 @@ const privateRoutes = [
     {
         path: config.routes.admin.food + '/update/:id',
         component: FoodFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime,
+        component: ShowTimePage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime + '/create',
+        component: ShowTimeFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.showTime + '/update/:id',
+        component: ShowTimeFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

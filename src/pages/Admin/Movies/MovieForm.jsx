@@ -49,14 +49,6 @@ function MovieFormPage() {
         });
     }, [movie]);
 
-    const onAddFinish = async (formData) => {
-        await mutateAdd.mutateAsync(formData);
-    };
-
-    const onEditFinish = async (formData) => {
-        await mutateEdit.mutateAsync({ id, body: formData });
-    };
-
     const onFinish = async () => {
         const formData = {
             ten_phim: form.getFieldValue('ten_phim'),
@@ -71,14 +63,14 @@ function MovieFormPage() {
         };
 
         if (id) {
-            await onEditFinish(formData);
+            await mutateEdit.mutateAsync({ id, body: formData });
         } else {
-            await onAddFinish(formData);
+            await mutateAdd.mutateAsync(formData);
         }
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center' }}>
                 {id ? 'Cập nhật thông tin phim' : 'Thêm phim mới'}
             </Title>

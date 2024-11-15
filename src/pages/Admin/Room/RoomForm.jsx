@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import config from '../../../config';
 import { useUpdateRoom, useGetRoom, useCreateRoom } from '../../../hooks/api/useRoomApi';
+
 const { Title } = Typography;
 
 function RoomFormPage() {
@@ -41,22 +42,6 @@ function RoomFormPage() {
         });
     }, [room]);
 
-    const handleAddRoom = async (formData) => {
-        try {
-            await mutateAdd.mutateAsync(formData);
-        } catch (error) {
-            console.error("Error during adding room:", error);
-        }
-    };
-
-    const handleEditRoom = async (formData) => {
-        try {
-            await mutateEdit.mutateAsync({ id, body: formData });
-        } catch (error) {
-            console.error("Error during editing room:", error);
-        }
-    };
-
     const onFinish = async () => {
         const formData = {
             rapphim_id: form.getFieldValue('rapphim_id'),
@@ -65,14 +50,14 @@ function RoomFormPage() {
         };
 
         if (id) {
-            await handleEditRoom(formData);
+            await mutateEdit.mutateAsync({ id, body: formData });
         } else {
-            await handleAddRoom(formData);
+            await mutateAdd.mutateAsync(formData);
         }
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center' }}>
                 {id ? 'Cập nhật thông tin phòng' : 'Thêm phòng mới'}
             </Title>
