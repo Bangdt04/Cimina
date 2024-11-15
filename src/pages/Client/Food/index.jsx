@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './food.scss';
 import { useGetFoods } from '../../../hooks/api/useFoodApi';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
 const FoodMenu = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
@@ -17,11 +18,11 @@ const FoodMenu = () => {
     const { data, isLoading } = useGetFoods();
     ;
     useEffect(() => {
-        console.log(location.state)
+        console.log(location.state);
         if (location.state) {
             setSelectedSeats(location.state.selectedSeats);
             setTotalAmount(location.state.totalAmount);
-            setTicketPrice(location.state.totalAmount)
+            setTicketPrice(location.state.totalAmount);
             setSelectedTime(location.state.selectedTime);
             setSelectedSeatIds(location.state.selectedSeatIds)
             setMovieDetail(location.state.movieDetail),
@@ -71,7 +72,6 @@ const FoodMenu = () => {
     };
 
 
-
     const handlePayment = () => {
         navigate(`/payment`, {
             state: {
@@ -86,14 +86,14 @@ const FoodMenu = () => {
             }
         });
     };
+
     return (
         <>
             <div className="container mx-auto py-8 mt-16 px-32">
                 <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {/* Món ăn 1 */}
                     {data?.data?.map(item => (
-                        <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
+                        <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
                             <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                             <div className="p-4">
                                 <p className="font-bold text-lg text-green-400">Giá: {item.gia}đ</p>
@@ -108,10 +108,12 @@ const FoodMenu = () => {
                                     <button onClick={() => handlePurchase(item, 'remove')} className="px-2 py-1 bg-gray-600 text-white rounded">-</button>
                                     <span className="mx-2">{selectedItems[item.id]?.quantity || 0}</span>
                                     <button onClick={() => handlePurchase(item, 'add')} className="px-2 py-1 bg-gray-600 text-white rounded">+</button>
+
                                 </div>
                             </div>
                         </div>
                     ))}
+
                 </div>
                 <div className="mt-10 space-y-8">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
@@ -150,6 +152,7 @@ const FoodMenu = () => {
                                         </tr>
                                     );
                                 })}
+
                                 <tr>
                                     <td className="py-2 font-bold">Tổng cộng</td>
                                     <td className="py-2"></td>

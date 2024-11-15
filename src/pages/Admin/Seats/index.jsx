@@ -1,18 +1,18 @@
-import FoodData from "./FoodData";
+import SeatData from "./SeatData";
 import { useState } from "react";
-import FoodHead from "./FoodHead";
+import SeatHead from "./SeatHead";
 
-function FoodPage() {
+function SeatPage() {
     const [params, setParams] = useState({
         pageNo: 1,
         pageSize: 5,
     });
     return (
         <div className="p-4 bg-gray-900 mb-3 flex flex-col rounded-lg">
-            <FoodHead />
-            <FoodData params={params} setParams={setParams} />
+            <SeatHead />
+            <SeatData params={params} setParams={setParams} />
         </div>
     );
 }
 
-export default FoodPage;
+export default SeatPage;

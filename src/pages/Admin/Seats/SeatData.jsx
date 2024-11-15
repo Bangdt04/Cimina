@@ -3,28 +3,27 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import config from '../../../config';
-import { useDeleteFood, useGetFoods } from '../../../hooks/api/useFoodApi';
+import { useDeleteSeat, useGetSeats, useGetAddSeat } from '../../../hooks/api/useSeatApi'; 
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
 const { Title, Text } = Typography;
 
 const baseColumns = [
     {
-        title: 'Tên món ăn',
-        dataIndex: 'ten_do_an',
-        sorter: true,
+        title: 'Số ghế ngồi',
+        dataIndex: 'so_ghe_ngoi',
     },
     {
-        title: 'Giá',
-        dataIndex: 'gia',
+        title: 'Loại ghế ngồi',
+        dataIndex: 'loai_ghe_ngoi',
     },
     {
-        title: 'Ghi chú',
-        dataIndex: 'ghi_chu',
+        title: 'Giá ghế',
+        dataIndex: 'gia_ghe',
     },
     {
-        title: 'Trạng thái',
-        dataIndex: 'trang_thai',
+        title: 'Tên phòng chiếu',
+        dataIndex: 'ten_phong_chieu',
     },
     {
         title: 'Thao tác',
@@ -32,37 +31,29 @@ const baseColumns = [
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen, setViewData) {
+function transformData(dt, roomData, navigate, setIsDisableOpen, setViewData) {
     return dt?.map((item) => {
+        const room = Array.isArray(roomData) ? roomData.find(r => r.id === item.room_id) : null;
         return {
             key: item.id,
-            ten_do_an: item.ten_do_an,
-            gia: item.gia,
-            ghi_chu: item.ghi_chu,
-            trang_thai: (
-                <span className={item.trang_thai === 0 ? 'text-green-500' : 'text-red-500'}>
-                    {item.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}
-                </span>
-            ),
+            id: item.id,
+            so_ghe_ngoi: item.so_ghe_ngoi,
+            loai_ghe_ngoi: item.loai_ghe_ngoi,
+            gia_ghe: item.gia_ghe,
+            room_id: item.room_id,
+            ten_phong_chieu: room ? room.ten_phong_chieu : 'Không xác định', 
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
-                        icon={<EyeOutlined />}
-                        className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
-                        onClick={() => setViewData(item)}
-                    >
-                        Xem
-                    </Button>
-                    <Button
                         icon={<EditOutlined />}
-                        className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
-                        onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
+                        className="text-green-500 border border-green-500"
+                        onClick={() => navigate(`${config.routes.admin.seat}/update/${item.id}`)}
                     >
                         Sửa
                     </Button>
                     <Button
                         icon={<DeleteOutlined />}
-                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
+                        className={'text-red-500 border border-red-500'}
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                     >
                         Xóa
@@ -73,21 +64,22 @@ function transformData(dt, navigate, setIsDisableOpen, setViewData) {
     });
 }
 
-function FoodData({ setParams, params }) {
+function SeatData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
-    const [searchValue, setSearchValue] = useState('');
-    const [viewData, setViewData] = useState(null);
+    const [viewData, setViewData] = useState(null); // State for view data
     const navigate = useNavigate();
-    const { data, isLoading, refetch } = useGetFoods();
+    const { data: seatData, isLoading, refetch } = useGetSeats();
+    const { data: roomDataResponse } = useGetAddSeat();
+    const roomData = roomDataResponse?.data || [];
     const [tdata, setTData] = useState([]);
 
     useEffect(() => {
-        if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDisableOpen, setViewData);
+        if (isLoading || !seatData) return;
+        let dt = transformData(seatData?.data, roomData, navigate, setIsDisableOpen, setViewData);
         setTData(dt);
-    }, [isLoading, data]);
+    }, [isLoading, seatData, roomData]);
 
-    const mutationDelete = useDeleteFood({
+    const mutationDelete = useDeleteSeat({
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
             notification.success({ message: 'Xóa thành công' });
@@ -104,11 +96,10 @@ function FoodData({ setParams, params }) {
     };
 
     const onSearch = (value) => {
-        setSearchValue(value);
-        const filteredData = data?.data.filter(item =>
-            item.ten_do_an.toLowerCase().includes(value.toLowerCase())
+        const filteredData = seatData.data.filter((item) =>
+            item.ten_phong_chieu.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen, setViewData));
+        setTData(transformData(filteredData, roomData, navigate, setIsDisableOpen, setViewData));
     };
 
     const handleViewClose = () => {
@@ -116,8 +107,8 @@ function FoodData({ setParams, params }) {
     };
 
     return (
-        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
-            <div className="mb-3 flex items-center">
+        <div>
+            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear
@@ -131,20 +122,17 @@ function FoodData({ setParams, params }) {
                 columns={baseColumns}
                 dataSource={tdata}
                 pagination={{ showSizeChanger: true }}
-                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200')}
-                bordered
-                size="middle"
             />
-            {isDisableOpen.id !== 0 && (
+            {isDisableOpen.isOpen && (
                 <ConfirmPrompt
-                    content="Bạn có muốn xóa món ăn này?"
+                    content="Bạn có muốn xóa ghế này?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
                     handleConfirm={onDelete}
                 />
             )}
             <Modal
-                title="Chi tiết món ăn"
+                title="Chi tiết ghế"
                 visible={!!viewData}
                 onCancel={handleViewClose}
                 footer={null}
@@ -152,11 +140,11 @@ function FoodData({ setParams, params }) {
             >
                 {viewData && (
                     <div style={{ padding: '20px' }}>
-                        <Title level={4}>Thông tin món ăn</Title>
-                        <p><strong>Tên món ăn:</strong> <Text>{viewData.ten_do_an}</Text></p>
-                        <p><strong>Giá:</strong> <Text>{viewData.gia}</Text></p>
-                        <p><strong>Ghi chú:</strong> <Text>{viewData.ghi_chu}</Text></p>
-                        <p><strong>Trạng thái:</strong> <Text>{viewData.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}</Text></p>
+                        <Title level={4}>Thông tin ghế</Title>
+                        <p><strong>Số ghế ngồi:</strong> <Text>{viewData.so_ghe_ngoi}</Text></p>
+                        <p><strong>Loại ghế ngồi:</strong> <Text>{viewData.loai_ghe_ngoi}</Text></p>
+                        <p><strong>Giá ghế:</strong> <Text>{viewData.gia_ghe}</Text></p>
+                        <p><strong>Tên phòng chiếu:</strong> <Text>{viewData.ten_phong_chieu}</Text></p>
                     </div>
                 )}
             </Modal>
@@ -164,4 +152,4 @@ function FoodData({ setParams, params }) {
     );
 }
 
-export default FoodData;
+export default SeatData;

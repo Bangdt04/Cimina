@@ -10,8 +10,15 @@ import GenrePage from "../pages/Admin/Genres";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
 import UserPage from "../pages/Admin/User";
-import MoviePage from "../pages/Admin/Moives";
+import MoviePage from "../pages/Admin/Movies";
+import MovieFormPage from "../pages/Admin/Movies/MovieForm";
 import FoodPage from "../pages/Admin/Food";
+import FoodFormPage from "../pages/Admin/Food/FoodForm";
+import RoomPage from "../pages/Admin/Room";
+import RoomFormPage from "../pages/Admin/Room/RoomForm";
+import SeatPage from "../pages/Admin/Seats";
+import SeatFormPage from "../pages/Admin/Seats/SeatForm";
+
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
@@ -227,8 +234,78 @@ const privateRoutes = [
         private: true,
     },
     {
+        path: config.routes.admin.movies + '/create',
+        component: MovieFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.movies + '/update/:id',
+        component: MovieFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room,
+        component: RoomPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room + '/create',
+        component: RoomFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.room + '/update/:id',
+        component: RoomFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat,
+        component: SeatPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat + '/create',
+        component: SeatFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.seat + '/update/:id',
+        component: SeatFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
         path: config.routes.admin.food,
         component: FoodPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.food + '/create',
+        component: FoodFormPage,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
+    },
+    {
+        path: config.routes.admin.food + '/update/:id',
+        component: FoodFormPage,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

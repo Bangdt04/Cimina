@@ -3,110 +3,97 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import config from '../../../config';
-import { useDeleteFood, useGetFoods } from '../../../hooks/api/useFoodApi';
+import { useDeleteMovie, useGetMovies } from '../../../hooks/api/useMovieApi';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
 const { Title, Text } = Typography;
 
 const baseColumns = [
     {
-        title: 'Tên món ăn',
-        dataIndex: 'ten_do_an',
-        sorter: true,
+        title: 'Tên Phim',
+        dataIndex: 'ten_phim',
     },
     {
-        title: 'Giá',
-        dataIndex: 'gia',
+        title: 'Đạo Diễn',
+        dataIndex: 'dao_dien',
     },
     {
-        title: 'Ghi chú',
-        dataIndex: 'ghi_chu',
+        title: 'Diễn Viên',
+        dataIndex: 'dien_vien',
     },
     {
-        title: 'Trạng thái',
-        dataIndex: 'trang_thai',
+        title: 'Giá Vé',
+        dataIndex: 'gia_ve',
     },
     {
-        title: 'Thao tác',
+        title: 'Thao Tác',
         dataIndex: 'action',
+        render: (text) => <div style={{ display: 'flex', gap: '8px' }}>{text}</div>,
     },
 ];
 
 function transformData(dt, navigate, setIsDisableOpen, setViewData) {
     return dt?.map((item) => {
         return {
-            key: item.id,
-            ten_do_an: item.ten_do_an,
-            gia: item.gia,
-            ghi_chu: item.ghi_chu,
-            trang_thai: (
-                <span className={item.trang_thai === 0 ? 'text-green-500' : 'text-red-500'}>
-                    {item.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}
-                </span>
-            ),
+            ten_phim: item.ten_phim,
+            dao_dien: item.dao_dien,
+            dien_vien: item.dien_vien,
+            gia_ve: item.gia_ve,
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
                         icon={<EyeOutlined />}
                         className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
                         onClick={() => setViewData(item)}
-                    >
-                        Xem
-                    </Button>
+                    />
                     <Button
                         icon={<EditOutlined />}
                         className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
-                        onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
-                    >
-                        Sửa
-                    </Button>
+                        onClick={() => navigate(`${config.routes.admin.movies}/update/${item.id}`)}
+                    />
                     <Button
                         icon={<DeleteOutlined />}
                         className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        Xóa
-                    </Button>
+                    />
                 </div>
             ),
         };
     });
 }
 
-function FoodData({ setParams, params }) {
+function MovieData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
-    const [searchValue, setSearchValue] = useState('');
     const [viewData, setViewData] = useState(null);
     const navigate = useNavigate();
-    const { data, isLoading, refetch } = useGetFoods();
+    const { data, isLoading, refetch } = useGetMovies();
     const [tdata, setTData] = useState([]);
 
     useEffect(() => {
         if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDisableOpen, setViewData);
+        const dt = transformData(data.data, navigate, setIsDisableOpen, setViewData);
         setTData(dt);
     }, [isLoading, data]);
 
-    const mutationDelete = useDeleteFood({
+    const mutationDelete = useDeleteMovie({
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-            notification.success({ message: 'Xóa thành công' });
+            notification.success({ message: 'Xóa phim thành công' });
             refetch();
         },
         error: () => {
-            notification.error({ message: 'Xóa thất bại' });
+            notification.error({ message: 'Xóa phim thất bại' });
         },
         obj: { id: isDisableOpen.id },
     });
 
-    const onDelete = async (id) => {
-        await mutationDelete.mutateAsync(id);
+    const onDelete = async () => {
+        await mutationDelete.mutateAsync(isDisableOpen.id);
     };
 
     const onSearch = (value) => {
-        setSearchValue(value);
-        const filteredData = data?.data.filter(item =>
-            item.ten_do_an.toLowerCase().includes(value.toLowerCase())
+        const filteredData = data.data.filter((item) =>
+            item.ten_phim.toLowerCase().includes(value.toLowerCase())
         );
         setTData(transformData(filteredData, navigate, setIsDisableOpen, setViewData));
     };
@@ -126,25 +113,29 @@ function FoodData({ setParams, params }) {
                     onSearch={onSearch}
                 />
             </div>
+
             <Table
                 loading={isLoading}
                 columns={baseColumns}
                 dataSource={tdata}
+                rowKey="key"
                 pagination={{ showSizeChanger: true }}
                 rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200')}
                 bordered
                 size="middle"
             />
-            {isDisableOpen.id !== 0 && (
+
+            {isDisableOpen.isOpen && (
                 <ConfirmPrompt
-                    content="Bạn có muốn xóa món ăn này?"
+                    content="Bạn có muốn xóa phim này ?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
                     handleConfirm={onDelete}
                 />
             )}
+
             <Modal
-                title="Chi tiết món ăn"
+                title="Chi tiết phim"
                 visible={!!viewData}
                 onCancel={handleViewClose}
                 footer={null}
@@ -152,11 +143,11 @@ function FoodData({ setParams, params }) {
             >
                 {viewData && (
                     <div style={{ padding: '20px' }}>
-                        <Title level={4}>Thông tin món ăn</Title>
-                        <p><strong>Tên món ăn:</strong> <Text>{viewData.ten_do_an}</Text></p>
-                        <p><strong>Giá:</strong> <Text>{viewData.gia}</Text></p>
-                        <p><strong>Ghi chú:</strong> <Text>{viewData.ghi_chu}</Text></p>
-                        <p><strong>Trạng thái:</strong> <Text>{viewData.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}</Text></p>
+                        <Title level={4}>Thông tin phim</Title>
+                        <p><strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text></p>
+                        <p><strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text></p>
+                        <p><strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text></p>
+                        <p><strong>Giá vé:</strong> <Text>{viewData.gia_ve}</Text></p>
                     </div>
                 )}
             </Modal>
@@ -164,4 +155,4 @@ function FoodData({ setParams, params }) {
     );
 }
 
-export default FoodData;
+export default MovieData;

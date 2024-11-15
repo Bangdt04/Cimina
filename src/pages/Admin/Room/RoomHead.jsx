@@ -1,13 +1,13 @@
 import Head from '../../../layouts/Admin/components/Head';
 import config from '../../../config';
 
-function FoodHead() {
+function RoomHead() {
     return (
         <Head
-            title={'Quản lý món ăn'}
-            route={config.routes.admin.food + '/create'}
+            title={'Quản lý phòng'}
+            route={config.routes.admin.room + '/create'}
         />
     );
 }
 
-export default FoodHead;
+export default RoomHead;

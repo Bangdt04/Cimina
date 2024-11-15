@@ -13,11 +13,11 @@ import {
 } from '../../utils/reactQuery';
 
 export const useCreateGerne = (updater) => {
-    return usePost(apiRoutes.admin.gerne, updater);
+    return usePost(apiRoutes.admin.storeMoviegenre, updater);
 };
 
 export const useUpdateGerne = (updater) => {
-    return usePut(apiRoutes.admin.gerne, updater);
+    return usePut(apiRoutes.admin.updateMoviegenre, updater);
 };
 
 export const useGetGernes = () => {
@@ -25,9 +25,9 @@ export const useGetGernes = () => {
 };
 
 export const useGetGerne = (id) => {
-    return useFetch({ url: apiRoutes.admin.gerne + '/' + id, key: 'getGerneById' });
+    return useFetch({ url: apiRoutes.admin.showMoviegenre + '/' + id, key: 'getGerneById' });
 }
 
 export const useDeleteGerne = (updater) => {
-    return useDelete(apiRoutes.admin.gerne, updater);
+    return useDelete(apiRoutes.admin.deleteMoviegerne, updater);
 }
