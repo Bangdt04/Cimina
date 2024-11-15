@@ -66,7 +66,7 @@ const ShedulePage = () => {
                                         Xuất xứ: Nước Ngoài
                                     </p>
                                     <p className="text-sm">
-                                        Địa điểm: {item.theater.ten_rap} | {item.theater.dia_diem}
+                                       Trạng thái: {item.movie.hinh_thuc_phim}
                                     </p>
                                     <p className="text-red-600 warning text-sm">
                                         Kiểm duyệt: T18 - Phim được phổ biến đến người xem từ đủ 18 tuổi trở lên 20+

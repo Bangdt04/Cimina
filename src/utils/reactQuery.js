@@ -1,6 +1,7 @@
 import { api } from './api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { encodeQueryData } from './queryParams';
+import axios from 'axios';
 
 const fetcher = async ({ queryKey, pageParam }) => {
     const [url, key, params] = queryKey;
@@ -78,6 +79,7 @@ export const useDeleteList = (url, updater) => {
         updater,
     );
 };
+
 
 export const usePost = (url, updater) => {
     return useGenericMutation((data) => api.post(url, data), url, updater);

@@ -1,17 +1,14 @@
-import { useParams } from "react-router-dom";
 import Seat from "./Seat";
 import Time from "./Time";
 import { useState, useEffect } from "react";
-import { useGetMovieDetailById } from "../../../hooks/api/useMovieApi";
 
-const Box = () => {
+const Box = ({detail}) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedId, setSelectedId] = useState(null);
     const [dates, setDates] = useState([]);
     const [showTime, setShowTime] = useState(false);
     const [availableShowtimes, setAvailableShowtimes] = useState([]);
-    const { id } = useParams();
-    const { data, isLoading } = useGetMovieDetailById(id);
 
     useEffect(() => {
         const today = new Date();
@@ -38,12 +35,12 @@ const Box = () => {
 
     const filterShowtimes = (date) => {
         const formattedDate = date.toISOString().split('T')[0];
-        const filteredShowtimes = data?.['movie-detail']?.showtimes.filter(showtime => showtime.ngay_chieu === formattedDate);
-        setAvailableShowtimes(filteredShowtimes);
+        setAvailableShowtimes(formattedDate);
     };
 
-    const handleTimeSelect = (time) => {
+    const handleTimeSelect = (id, time) => {
         setSelectedTime(time);
+        setSelectedId(id);
     };
 
     return (
@@ -80,7 +77,7 @@ const Box = () => {
                             availableShowtimes={availableShowtimes} // Pass the filtered showtimes
                         />
                     )}
-                    {selectedTime && <Seat selectedDate={selectedDate} selectedTime={selectedTime} />}
+                    {selectedTime && <Seat timeId={selectedId} selectedDate={selectedDate} selectedTime={selectedTime} detail={detail} />}
                 </div>
             </div>
         </>

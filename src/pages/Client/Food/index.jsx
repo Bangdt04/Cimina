@@ -15,7 +15,7 @@ const FoodMenu = () => {
     const location = useLocation();
     const [selectedItems, setSelectedItems] = useState([]);
     const { data, isLoading } = useGetFoods();
-
+    ;
     useEffect(() => {
         console.log(location.state)
         if (location.state) {
@@ -25,38 +25,52 @@ const FoodMenu = () => {
             setSelectedTime(location.state.selectedTime);
             setSelectedSeatIds(location.state.selectedSeatIds)
             setMovieDetail(location.state.movieDetail),
-            setShowtime(location.state.showtimeState)
+                setShowtime(location.state.showtimeState)
 
         }
     }, [id, location.state]);
 
-    
 
 
-    const handlePurchase = (item) => {
-        const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10); // Loại bỏ dấu chấm và chuyển đổi thành số nguyên
 
+    const handlePurchase = (item, action) => {
+        console.log(`Action: ${action}, Item ID: ${item.id}`);
+        const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10);
 
-        setTotalAmount(prevTotal => {
-            const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
-            return currentTotal + itemPrice;
+        setSelectedItems(prevItems => {
+            const newItems = { ...prevItems };
+            if (action === 'add') {
+                if (!newItems[item.id]) {
+                    newItems[item.id] = { ...item, quantity: 1 };
+                } else {
+                    newItems[item.id] = { ...newItems[item.id], quantity: newItems[item.id].quantity + 1 };
+                }
+            } else if (action === 'remove' && newItems[item.id]) {
+                if (newItems[item.id].quantity > 1) {
+                    newItems[item.id] = { ...newItems[item.id], quantity: newItems[item.id].quantity - 1 };
+                } else {
+                    delete newItems[item.id];
+                }
+            }
+            console.log("New Items:", newItems);
+            return newItems;
         });
 
-
-        setSelectedItems(prevItems => [...prevItems, item]);
-    };
-
-    const handleRemoveItem = (itemToRemove) => {
-        // Cập nhật danh sách các món ăn đã chọn
-        setSelectedItems(prevItems => prevItems.filter(item => item !== itemToRemove));
-
-        // Cập nhật tổng số tiền
         setTotalAmount(prevTotal => {
-            const itemPrice = parseInt(itemToRemove.gia.replace(/\./g, ''), 10);
+            // Chuyển đổi prevTotal thành số nếu nó là chuỗi
             const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
-            return currentTotal - itemPrice; // Giảm giá trị
+
+            // Đảm bảo rằng currentTotal luôn là số
+            if (isNaN(currentTotal)) {
+                return action === 'add' ? itemPrice : 0; // Nếu currentTotal không phải là số, trả về giá trị tương ứng
+            }
+
+            // Cập nhật tổng số tiền
+            return action === 'add' ? currentTotal + (itemPrice)/1000 : currentTotal - (itemPrice)/1000;
         });
     };
+
+
 
     const handlePayment = () => {
         navigate(`/payment`, {
@@ -66,7 +80,7 @@ const FoodMenu = () => {
                 selectedTime,
                 ticketPrice,
                 selectedSeatIds,
-                movieDetail,
+                movieDetail: location.state.movieDetail,
                 showtimeState: showtime,
                 items: selectedItems
             }
@@ -82,8 +96,7 @@ const FoodMenu = () => {
                         <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
                             <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                             <div className="p-4">
-                                <p className="text-sm line-through text-gray-400">Giá cũ: </p>
-                                <p className="font-bold text-lg text-green-400">Giá mới: {item.gia}đ</p>
+                                <p className="font-bold text-lg text-green-400">Giá: {item.gia}đ</p>
                                 <p className="font-bold text-xl text-white">{item.ten_do_an}</p>
                                 <div className="flex items-center mt-2">
                                     <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
@@ -91,7 +104,11 @@ const FoodMenu = () => {
                                 </div>
                                 <p className="text-sm text-gray-400">Đã bán: 200</p>
 
-                                <button onClick={() => handlePurchase(item)} className="mt-4 px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300">Mua</button>
+                                <div className="flex items-center mt-4">
+                                    <button onClick={() => handlePurchase(item, 'remove')} className="px-2 py-1 bg-gray-600 text-white rounded">-</button>
+                                    <span className="mx-2">{selectedItems[item.id]?.quantity || 0}</span>
+                                    <button onClick={() => handlePurchase(item, 'add')} className="px-2 py-1 bg-gray-600 text-white rounded">+</button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -100,11 +117,11 @@ const FoodMenu = () => {
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
                         <h2 className="text-2xl font-bold mb-4 text-red-500">Thông tin phim</h2>
                         <div className="space-y-2">
-                            <p><span className="font-semibold">Phim:</span> {movieDetail?.ten_phim}</p>
+                            <p><span className="font-semibold">Phim:</span> {location.state.movieDetail.ten_phim}</p>
                             <p><span className="font-semibold">Giờ chiếu:</span> {selectedTime}</p>
                             <p><span className="font-semibold">Ngày chiếu:</span> {showtime?.ngay_chieu}</p>
                             <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.gio_chieu}</p>
-                            <p><span className="font-semibold">Phòng chiếu số:</span> {showtime?.room?.rapphim_id}</p>
+                            <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.room?.ten_phong_chieu}</p>
                         </div>
                     </div>
 
@@ -123,22 +140,16 @@ const FoodMenu = () => {
                                 <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
                                 <td className="py-2">{selectedSeats.length}</td>
                                 <td className="text-right py-2">{ticketPrice}đ</td>
-                                {selectedItems.map((item, index) => (
-                                    <tr key={index}>
-                                        <td className="py-2">{item.ten_do_an}</td>
-                                        <td className="py-2">1</td>
-                                        <td className="text-right py-2">{item.gia}đ</td>
-                                        <td className="text-right py-2">
-                                            <button
-                                                onClick={() => handleRemoveItem(item)}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                Xóa
-                                            </button>
-                                        </td>
-                                    </tr>
-
-                                ))}
+                                {Object.keys(selectedItems).map((key, index) => {
+                                    const item = selectedItems[key]; // Lấy món ăn từ selectedItems
+                                    return (
+                                        <tr key={index}>
+                                            <td className="py-2">{item.ten_do_an}</td>
+                                            <td className="py-2">{item.quantity}</td> {/* Hiển thị số lượng */}
+                                            <td className="text-right py-2">{item.quantity * item.gia}đ</td>
+                                        </tr>
+                                    );
+                                })}
                                 <tr>
                                     <td className="py-2 font-bold">Tổng cộng</td>
                                     <td className="py-2"></td>

@@ -24,6 +24,8 @@ import ProfilePage from "../pages/Client/Profile";
 import FoodMenu from "../pages/Client/Food";
 import MovieGernes from "../pages/Client/MovieGernes";
 import Test from "../pages/Client/Test";
+import SearchResults from "../pages/Client/Home/SearchResults";
+import TransactionSuccess from "../pages/Client/Transaction";
 
 const publicRoutes = [
     {
@@ -121,6 +123,21 @@ const publicRoutes = [
     {
         path: config.routes.web.test + "/:id",
         component: Test,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.search,
+        component: SearchResults,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+
+    {
+        path: config.routes.web.transaction,
+        component: TransactionSuccess,
         layout: ClientLayout,
         roles: ['user'],
         private: false,

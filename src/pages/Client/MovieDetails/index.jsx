@@ -7,7 +7,6 @@ import { Spin } from "antd";
 
 const MovieDetailsPage = () => {
     const [showTrailerModal, setShowTrailerModal] = useState(false);
-    const [movieDetails, setMovieDetails] = useState(null);
     const { id } = useParams();
     const { isLoading: isLoadingMovie, data: movie } = id
         ? useGetMovieById(id)
@@ -65,7 +64,7 @@ const MovieDetailsPage = () => {
                     </div>
                 </div>
             </main>
-            <Box />
+            <Box detail={movie?.data} />
             {showTrailerModal && (
                 <ModalTrailerPage
                     closeModal={closeTrailerModal}

@@ -27,6 +27,19 @@ export const useGetMovieFilterById = (id) => {
     return useFetch({ url: apiRoutes.web.movieFilter + '/' + id, key: 'getMovieFilterById' });
 }
 
+export const useGetMovieFilterByKeyword = (searchParam) => {
+    return useFetch({ url: apiRoutes.web.movieFilterKeyword , key: 'getMovieFilterKeyword' , searchParam});
+}
+
 export const useGetMovieDetailById = (id) => {
     return useFetch({ url: apiRoutes.web.movieDetail + '/' + id, key: 'getMovieDetailById' });
+}
+
+export const useGetShowtimeById = (movieId, date) => {
+    return useFetch({ url: apiRoutes.web.movieDetail + '/' + movieId + '/showtime-date/' + date, key: 'getShowtimeById' });
+}
+
+
+export const useGetShowSeatById = (movieId, timeId) => {
+    return useFetch({ url: apiRoutes.web.movieDetail + '/' + movieId + '/showtime/' + timeId + "/seats", key: 'getShowSeatById' });
 }

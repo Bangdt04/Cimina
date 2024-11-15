@@ -33,6 +33,8 @@ const routes = {
         register: '/auth/register',
         food : '/food',
         test: '/test',
+        search: '/search',
+        transaction: '/transaction/success'
     },
 };
 export default routes;
