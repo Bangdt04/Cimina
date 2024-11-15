@@ -13,21 +13,21 @@ import {
 } from '../../utils/reactQuery';
 
 export const useCreateVoucher = (updater) => {
-    return usePost(apiRoutes.admin.voucher, updater);
+    return usePost(apiRoutes.admin.storeVoucher, updater); // updated to match new route
 };
 
 export const useUpdateVoucher = (updater) => {
-    return usePut(apiRoutes.admin.voucher, updater);
+    return usePut(apiRoutes.admin.updateVoucher, updater);
 };
 
 export const useGetVouchers = () => {
-    return useFetch({ url: apiRoutes.admin.voucher, key: 'getListVoucher' });
+    return useFetch({ url: apiRoutes.admin.voucher, key: 'getListVoucher' }); // unchanged
 };
 
-export const useGetVoucher = (id) => {
-    return useFetch({ url: apiRoutes.admin.voucher + '/' + id, key: 'getVoucherById' });
-}
+export const useShowVoucher = (id) => {
+    return useFetch({ url: `${apiRoutes.admin.showVoucher}/${id}`, key: 'showFood' });
+};
 
-export const useDeleteVoucher = (updater) => {
-    return useDelete(apiRoutes.admin.voucher, updater);
-}
+export const useDeleteVoucher = (id) => {
+    return useDelete(apiRoutes.admin.voucher + '/' + id); // updated to match new route
+};

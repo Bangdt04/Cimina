@@ -7,6 +7,7 @@ import HomePage from "../pages/Client/Home";
 import AutoApprovePage from "../pages/Admin/AutoApprove";
 import GenreFormPage from "../pages/Admin/Genres/GenreForm";
 import GenrePage from "../pages/Admin/Genres";
+import Voucher from "../pages/Admin/Voucher";
 import VoucherFormPage from "../pages/Admin/Voucher/VoucherForm";
 import BlogsPage from "../pages/Admin/Blogs";
 import UserPage from "../pages/Admin/User";
@@ -178,7 +179,7 @@ const privateRoutes = [
         private: true,
     },{
         path: config.routes.admin.voucher,
-        component: VoucherPage,
+        component: Voucher,
         layout: AdminLayout,
         roles: ['admin'],
         private: true,

@@ -4,7 +4,7 @@ import config from '../../../config';
 function VoucherHead() {
     return (
         <Head
-            title={'Quản lý khuyễn mãi'}
+            title={'Quản lý voucher'}
             route={config.routes.admin.voucher + '/create'}
         />
     );
