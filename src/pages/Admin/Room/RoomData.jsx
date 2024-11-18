@@ -1,10 +1,10 @@
-import { Button, Input, Table, notification, Modal, Card, Row, Col } from 'antd'; // Added Row and Col imports
+import { Button, Input, Table, notification, Modal, Card, Row, Col } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-import { useDeleteRoom, useGetRooms, useSeatAllRoom, useEnableMaintenanceSeat, useDisableMaintenanceSeat } from '../../../hooks/api/useRoomApi'; // Updated imports
+import { useDeleteRoom, useGetRooms, useSeatAllRoom } from '../../../hooks/api/useRoomApi'; // Removed useEnableMaintenanceSeat and useDisableMaintenanceSeat
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
-import { CloseCircleOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons'; // Added icons
+import { CloseCircleOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import './RoomData.css';
 
 const baseColumns = [
@@ -29,21 +29,21 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats) {
                 <div className="action-btn flex gap-3">
                     <Button
                         type="primary"
-                        icon={<EditOutlined />} // Added icon
+                        icon={<EditOutlined />}
                         onClick={() => navigate(`${config.routes.admin.room}/update/${item.id}`)}
                     >
                         Sửa
                     </Button>
                     <Button
                         type="default"
-                        icon={<EyeOutlined />} // Added icon
+                        icon={<EyeOutlined />}
                         onClick={() => showSeats(item.id)}
                     >
                         Xem ghế
                     </Button>
                     <Button
                         type="danger"
-                        icon={<DeleteOutlined />} // Added icon
+                        icon={<DeleteOutlined />}
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                     >
                         Xóa
@@ -61,10 +61,6 @@ function RoomData({ setParams, params }) {
     const navigate = useNavigate();
     const { data, isLoading, refetch } = useGetRooms();
     const [tdata, setTData] = useState([]);
-
-    // Define mutations at the top level
-    const mutationEnable = useEnableMaintenanceSeat(); // Get the mutation function
-    const mutationDisable = useDisableMaintenanceSeat(); // Get the mutation function
 
     useEffect(() => {
         if (isLoading || !data) return;
@@ -104,26 +100,53 @@ function RoomData({ setParams, params }) {
         setIsModalVisible(false);
         setSelectedRoomId(null);
     };
-
+    
     const handleMaintenance = async (seat) => {
         const action = seat.trang_thai === 2 ? 'tắt bảo trì' : 'bảo trì';
-        const confirm = window.confirm(`Bạn có muốn ${action} ghế này?`); // Confirmation prompt
-        if (confirm) {
-            const mutation = seat.trang_thai === 2 ? mutationDisable : mutationEnable; // Use the mutation function
-            await mutation(seat.id); // Call the mutation function with the seat ID
-            // Cập nhật trạng thái ghế
-            const newStatus = seat.trang_thai === 2 ? 0 : 2; // 0: không bảo trì, 2: đang bảo trì
-            notification.success({ message: `Ghế đã được ${action} thành công` });
-            // Cập nhật lại dữ liệu ghế
-            setTData(prevData => prevData.map(item => 
-                item.id === seat.id ? { ...item, trang_thai: newStatus } : item
-            ));
-            handleModalClose(); // Close the modal after action
-        }
+        Modal.confirm({
+            title: `Xác nhận ${action} ghế`,
+            content: `Bạn có muốn ${action} ghế ${seat.so_ghe_ngoi}?`,
+            onOk: async () => {
+                try {
+                    // Xây dựng endpoint dựa trên trạng thái hiện tại của ghế
+                    const endpoint = seat.trang_thai === 2 
+                        ? `http://127.0.0.1:8000/api/tatbaoTriSeat/${seat.id}` // Tắt bảo trì
+                        : `http://127.0.0.1:8000/api/baoTriSeat/${seat.id}`; // Bật bảo trì
+
+                    const response = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Phản hồi mạng không hợp lệ');
+                    }
+
+                    const responseData = await response.json();
+
+                    // Cập nhật trạng thái ghế
+                    const newStatus = seat.trang_thai === 2 ? 0 : 2; // 0: có thể thuê, 2: đang bảo trì
+                    notification.success({ message: responseData.message });
+                    // Cập nhật dữ liệu ghế
+                    setTData(prevData => prevData.map(item => 
+                        item.id === seat.id ? { ...item, trang_thai: newStatus } : item
+                    ));
+                    handleModalClose(); // Đóng modal sau khi thực hiện hành động
+                } catch (error) {
+                    notification.error({ message: `Có lỗi xảy ra: ${error.message}` });
+                }
+            },
+            onCancel() {
+                // Xử lý hành động hủy nếu cần
+            },
+        });
     };
 
     return (
-        <Card className="bg-white text-black p-4 rounded-lg shadow-lg"> {/* Wrapped in Card */}
+        <Card className="bg-white text-black p-4 rounded-lg shadow-lg">
             <Row gutter={16} className="mb-3">
                 <Col span={24}>
                     <Input.Search
@@ -139,7 +162,7 @@ function RoomData({ setParams, params }) {
                 columns={baseColumns}
                 dataSource={tdata}
                 rowKey="key"
-                pagination={{ pageSize: 5 }} // Added pagination for better data handling
+                pagination={{ pageSize: 5 }}
             />
             {isDisableOpen.isOpen && (
                 <ConfirmPrompt
@@ -164,7 +187,7 @@ function RoomData({ setParams, params }) {
                     padding: '20px', 
                 }}
             >
-                <div style={{ width: '100%', textAlign: 'center', padding: '20px' }}> {/* Added padding */}
+                <div style={{ width: '100%', textAlign: 'center', padding: '20px' }}>
                     <SeatLayout roomId={selectedRoomId} onClose={handleModalClose} handleMaintenance={handleMaintenance} />
                     <div className="legend">
                         <div className="legend-item">
@@ -204,10 +227,10 @@ const SeatLayout = ({ roomId, onClose, handleMaintenance }) => {
     const seats = data?.data || [];
 
     const getSeatClass = (loai_ghe_ngoi, trang_thai) => {
-        if (trang_thai === 2) return 'selected'; // 2: Under maintenance (blue)
-        if (loai_ghe_ngoi === 'VIP') return 'vip'; // VIP seat
-        if (loai_ghe_ngoi === 'Đôi') return 'double'; // Double seat
-        return 'regular'; // Regular seat
+        if (trang_thai === 2) return 'selected'; // 2: Đang bảo trì (màu xanh)
+        if (loai_ghe_ngoi === 'VIP') return 'vip'; // Ghế VIP
+        if (loai_ghe_ngoi === 'Đôi') return 'double'; // Ghế đôi
+        return 'regular'; // Ghế thường
     };
 
     const rows = {};

@@ -4,7 +4,7 @@ import {
     useFetch,
     usePost,
     usePut,
-} from '../../utils/reactQuery';
+} from '../../utils/reactQuery'; // Adjust this path if necessary
 
 // Tạo mới phòng chiếu
 export const useCreateRoom = (updater) => {
@@ -24,7 +24,6 @@ export const useSeatAllRoom = (id) => {
     let totalSeats = 0; // Khởi tạo biến đếm ghế
     if (data && Array.isArray(data.data)) {
         totalSeats = data.data.length; // Đếm số ghế
-        console.log(`Room ID: ${id}, Total Seats: ${totalSeats}`); // Log the total number of seats
     }
 
     return { data, totalSeats }; // Trả về dữ liệu và số ghế
@@ -32,12 +31,16 @@ export const useSeatAllRoom = (id) => {
 
 // Mới: Bật bảo trì ghế
 export const useEnableMaintenanceSeat = () => {
-    return (id) => usePut(`${apiRoutes.admin.baoTriSeat}/${id}`); // Returns a function that takes an ID
+    return useMutation((id) => {
+        return usePut(`${apiRoutes.admin.baoTriSeat}/${id}`); // Returns a promise
+    });
 };
 
 // Mới: Tắt bảo trì ghế
 export const useDisableMaintenanceSeat = () => {
-    return (id) => usePut(`${apiRoutes.admin.tatbaoTriSeat}/${id}`); // Returns a function that takes an ID
+    return useMutation((id) => {
+        return usePut(`${apiRoutes.admin.tatbaoTriSeat}/${id}`); // Returns a promise
+    });
 };
 
 // Lấy dữ liệu phòng chiếu theo ID
