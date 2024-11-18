@@ -1,36 +1,34 @@
-import { Button, Col, Form, Input, Row, Select, Upload, notification } from 'antd';
+import { Button, Col, Form, Input, Row, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import './category.scss';
 import config from '../../../config';
 import { useCreateGerne, useGetGerne, useUpdateGerne } from '../../../hooks/api/useGenreApi';
 
-
-function  GenreFormPage() {
+function GenreFormPage() {
     const navigate = useNavigate();
     let { id } = useParams();
     const { isLoading: isLoadingCategory, data: category } = id
         ? useGetGerne(id)
         : { isLoading: null, data: null };
 
-
     useEffect(() => {
-        if(!category) return;
-        console.log("GERNE", category)
+        if (!category) return;
         form.setFieldsValue({
             name: category?.data?.ten_loai_phim,
         });
     }, [category]);
+
     const [form] = Form.useForm();
     const mutateAdd = useCreateGerne({
         success: () => {
             notification.success({
                 message: 'Thêm mới thành công',
             });
-            navigate(config.routes.admin.genres); // Điều hướng đến trang danh sách thể loại
+            navigate(config.routes.admin.genres);
         },
         error: () => {
             notification.error({
@@ -38,13 +36,13 @@ function  GenreFormPage() {
             });
         },
     });
-    
+
     const mutateEdit = useUpdateGerne({
         success: () => {
             notification.success({
                 message: 'Cập nhật thành công',
             });
-            navigate(config.routes.admin.genres); // Điều hướng đến trang danh sách thể loại
+            navigate(config.routes.admin.genres);
         },
         error: () => {
             notification.error({
@@ -70,30 +68,22 @@ function  GenreFormPage() {
 
     return (
         <div className="form-container">
-            <div className="flex items-center gap-[1rem]">
+            <div className="flex items-center gap-4 mb-4">
                 <FontAwesomeIcon
                     onClick={() => navigate(config.routes.admin.genres)}
-                    className="text-[1.6rem] bg-[--primary-color] p-4 rounded-xl text-white cursor-pointer"
+                    className="text-2xl bg-primary p-3 rounded-full text-white cursor-pointer"
                     icon={faChevronLeft}
                 />
-                <h1 className="font-bold">
+                <h1 className="text-2xl font-bold">
                     {id ? 'Cập nhật thông tin' : 'Thêm thể loại phim'}
                 </h1>
             </div>
-            <div className="flex items-center justify-start rounded-xl shadow text-[1.6rem] text-black gap-[1rem] bg-white p-7">
-                <div className="flex flex-col gap-[1rem]">
-                    <p>ID</p>
-                    <code className="bg-blue-100 p-2">{category?.data?.id || '_'}</code>
-                </div>
-            </div>
-            <div className="bg-white p-7 mt-5 rounded-xl shadow">
+            <div className="bg-white p-6 rounded-lg shadow-md">
                 <Form
-                    name="employee-form"
+                    name="genre-form"
                     layout="vertical"
                     form={form}
-                    labelCol={{
-                        span: 5,
-                    }}
+                    labelCol={{ span: 6 }}
                     onFinish={onFinish}
                 >
                     <Row gutter={16}>
@@ -108,11 +98,11 @@ function  GenreFormPage() {
                                     },
                                 ]}
                             >
-                                <Input />
+                                <Input placeholder="Nhập tên thể loại phim" />
                             </Form.Item>
                         </Col>
                     </Row>
-                    <div className="flex justify-between items-center gap-[1rem]">
+                    <div className="flex justify-between items-center">
                         <Button htmlType="reset" className="min-w-[10%]">Đặt lại</Button>
                         <Button htmlType="submit" className="bg-blue-500 text-white min-w-[10%]">
                             {id ? 'Cập nhật' : 'Thêm mới'}
@@ -124,4 +114,4 @@ function  GenreFormPage() {
     );
 }
 
-export default  GenreFormPage;
+export default GenreFormPage;
