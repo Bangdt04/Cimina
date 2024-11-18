@@ -17,6 +17,7 @@ import FoodPage from "../pages/Admin/Food";
 import FoodFormPage from "../pages/Admin/Food/FoodForm";
 import RoomPage from "../pages/Admin/Room";
 import RoomFormPage from "../pages/Admin/Room/RoomForm";
+import RoomData from "../pages/Admin/Room/RoomData";
 import SeatPage from "../pages/Admin/Seats";
 import SeatFormPage from "../pages/Admin/Seats/SeatForm";
 import ShowTimePage from "../pages/Admin/ShowTime";
@@ -270,7 +271,14 @@ const privateRoutes = [
         layout: AdminLayout,
         roles: ['admin'],
         private: true,
+    },  {
+        path: config.routes.admin.room,
+        component: RoomData,
+        layout: AdminLayout,
+        roles: ['admin'],
+        private: true,
     },
+
     {
         path: config.routes.admin.seat,
         component: SeatPage,
