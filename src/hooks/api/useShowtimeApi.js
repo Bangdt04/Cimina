@@ -29,8 +29,12 @@ export const usestoreShowtime = (updater) => {
     return usePost(apiRoutes.admin.storeShowtime, updater);
 };
 
-export const useUpdateShowtime = (id) => {
-    return usePut({ url: `${apiRoutes.admin.updateShowtime}/${id}`, key: 'updateShowtime' });
+export const useshowShowtime = (id) => {
+    return useFetch({ url: `${apiRoutes.admin.showShowtime}/${id}`, key: 'showShowtime' });
+};
+
+export const useUpdateShowtime = (updater) => {
+    return usePut(apiRoutes.admin.updateShowtime, updater);
 };
 
 export const useDeleteShowtime = (id) => {

@@ -48,6 +48,7 @@ const apiRoutes = {
         addShowtime:'/addShowtime',
         storeShowtime:'/storeShowtime',
         updateShowtime:'/updateShowtime',
+        showShowtime:'/showShowtime',
         deleteShowtime:'/deleteShowtime',
     },
     web: {

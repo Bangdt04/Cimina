@@ -1,15 +1,16 @@
-import { Button, Col, Form, Input, Row, notification, Typography, Select } from 'antd';
+import { Button, Col, Form, Row, notification, Typography, Select, DatePicker } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import config from '../../../config';
 import { usestoreShowtime, useAddShowtime, useUpdateShowtime } from '../../../hooks/api/useShowtimeApi';
+import moment from 'moment'; // Import moment for date handling
 
 const { Title } = Typography;
 
 function ShowtimeFormPage() {
     const navigate = useNavigate();
     let { id } = useParams();
-    const { isLoading, data: showtime } = id ? useAddShowtime(id) : { isLoading: null, data: null };
+    const { isLoading, data: showtime } = useAddShowtime(id); // Call the hook directly to get movies and rooms
 
     const [form] = Form.useForm();
     const mutateAdd = usestoreShowtime({
@@ -38,7 +39,7 @@ function ShowtimeFormPage() {
         form.setFieldsValue({
             phim_id: showtime?.data?.phim_id, // New field
             room_id: showtime?.data?.room_id, // New field
-            ngay_chieu: showtime?.data?.ngay_chieu || "2024-11-14", // New field with default value
+            ngay_chieu: showtime?.data?.ngay_chieu ? moment(showtime.data.ngay_chieu) : null, // Use moment for DatePicker
             gio_chieu: showtime?.data?.gio_chieu || [], // New field
         });
     }, [showtime]);
@@ -55,7 +56,7 @@ function ShowtimeFormPage() {
         const formData = {
             phim_id: form.getFieldValue('phim_id'), // New field
             room_id: form.getFieldValue('room_id'), // New field
-            ngay_chieu: form.getFieldValue('ngay_chieu'), // New field
+            ngay_chieu: form.getFieldValue('ngay_chieu').format('YYYY-MM-DD'), // Format date for submission
             gio_chieu: form.getFieldValue('gio_chieu'), // New field
         };
 
@@ -77,27 +78,35 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Phim ID"
                             name="phim_id"
-                            rules={[{ required: true, message: 'Nhập ID phim!' }]}
+                            rules={[{ required: true, message: 'Chọn ID phim!' }]} // Updated message
                         >
-                            <Input placeholder="Nhập ID phim" />
+                            <Select placeholder="Chọn ID phim">
+                                {showtime?.data?.movies?.map(movie => (
+                                    <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item
                             label="Room ID"
                             name="room_id"
-                            rules={[{ required: true, message: 'Nhập ID phòng!' }]}
+                            rules={[{ required: true, message: 'Chọn ID phòng!' }]} // Updated message
                         >
-                            <Input placeholder="Nhập ID phòng" />
+                            <Select placeholder="Chọn ID phòng">
+                                {showtime?.data?.rooms?.map(room => (
+                                    <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item
                             label="Ngày chiếu"
                             name="ngay_chieu"
-                            rules={[{ required: true, message: 'Nhập ngày chiếu!' }]}
+                            rules={[{ required: true, message: 'Chọn ngày chiếu!' }]} // Updated message
                         >
-                            <Input placeholder="Nhập ngày chiếu (YYYY-MM-DD)" defaultValue="2024-11-14" />
+                            <DatePicker placeholder="Chọn ngày chiếu" format="YYYY-MM-DD" />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
