@@ -52,3 +52,25 @@
     gap: 5px;
     margin-right: 15px;
 }
+.action-btn button {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.action-btn button:hover {
+    opacity: 0.8;
+}
+
+.seat {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.seat:hover {
+    transform: scale(1.05);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}

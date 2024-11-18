@@ -1,26 +1,16 @@
-import { Button, Input, Table, notification, Modal } from 'antd';
+import { Button, Input, Table, notification, Modal, Card, Row, Col } from 'antd'; // Added Row and Col imports
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
 import { useDeleteRoom, useGetRooms, useSeatAllRoom, useEnableMaintenanceSeat, useDisableMaintenanceSeat } from '../../../hooks/api/useRoomApi'; // Updated imports
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
-import { CloseCircleOutlined } from '@ant-design/icons'; 
+import { CloseCircleOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons'; // Added icons
 import './RoomData.css';
 
 const baseColumns = [
     {
-        title: 'Id',
-        dataIndex: 'id',
-        sorter: true,
-        width: 50,
-    },
-    {
         title: 'Tên phòng chiếu',
         dataIndex: 'ten_phong_chieu',
-    },
-    {
-        title: 'Tổng ghế',
-        dataIndex: 'tong_ghe_phong', // Cột này sẽ hiển thị tổng số ghế
     },
     {
         title: 'Thao tác',
@@ -31,29 +21,29 @@ const baseColumns = [
 
 function transformData(dt, navigate, setIsDisableOpen, showSeats) {
     return dt?.map((item) => {
-        // Đếm số ghế từ dữ liệu phòng
-        const totalSeats = Array.isArray(item.seats) ? item.seats.length : 0; // Đếm số ghế
         return {
             key: item.id,
             id: item.id,
             ten_phong_chieu: item.ten_phong_chieu,
-            tong_ghe_phong: totalSeats, // Hiển thị tổng số ghế
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
-                        className="text-green-500 border border-green-500"
+                        type="primary"
+                        icon={<EditOutlined />} // Added icon
                         onClick={() => navigate(`${config.routes.admin.room}/update/${item.id}`)}
                     >
                         Sửa
                     </Button>
                     <Button
-                        className={'text-blue-500 border border-blue-500'}
+                        type="default"
+                        icon={<EyeOutlined />} // Added icon
                         onClick={() => showSeats(item.id)}
                     >
                         Xem ghế
                     </Button>
                     <Button
-                        className={'text-red-500 border border-red-500'}
+                        type="danger"
+                        icon={<DeleteOutlined />} // Added icon
                         onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                     >
                         Xóa
@@ -133,21 +123,23 @@ function RoomData({ setParams, params }) {
     };
 
     return (
-        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
-            <div className="p-4 mb-3 flex items-center rounded-lg">
-                <Input.Search
-                    className="xl:w-1/4 md:w-1/2"
-                    allowClear
-                    enterButton
-                    placeholder="Nhập từ khoá tìm kiếm"
-                    onSearch={onSearch}
-                />
-            </div>
+        <Card className="bg-white text-black p-4 rounded-lg shadow-lg"> {/* Wrapped in Card */}
+            <Row gutter={16} className="mb-3">
+                <Col span={24}>
+                    <Input.Search
+                        allowClear
+                        enterButton
+                        placeholder="Nhập từ khoá tìm kiếm"
+                        onSearch={onSearch}
+                    />
+                </Col>
+            </Row>
             <Table
                 loading={isLoading}
                 columns={baseColumns}
                 dataSource={tdata}
                 rowKey="key"
+                pagination={{ pageSize: 5 }} // Added pagination for better data handling
             />
             {isDisableOpen.isOpen && (
                 <ConfirmPrompt
@@ -158,7 +150,7 @@ function RoomData({ setParams, params }) {
                 />
             )}
             <Modal
-                open={isModalVisible} // Changed from visible to open
+                open={isModalVisible}
                 onCancel={handleModalClose}
                 footer={null}
                 width={900}
@@ -172,7 +164,7 @@ function RoomData({ setParams, params }) {
                     padding: '20px', 
                 }}
             >
-                <div style={{ width: '100%', textAlign: 'center' }}>
+                <div style={{ width: '100%', textAlign: 'center', padding: '20px' }}> {/* Added padding */}
                     <SeatLayout roomId={selectedRoomId} onClose={handleModalClose} handleMaintenance={handleMaintenance} />
                     <div className="legend">
                         <div className="legend-item">
@@ -194,7 +186,7 @@ function RoomData({ setParams, params }) {
                     </div>
                 </div>
             </Modal>
-        </div>
+        </Card>
     );
 }
 
