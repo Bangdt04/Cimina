@@ -2,15 +2,20 @@ import { Button, Col, Form, Row, notification, Typography, Select, DatePicker } 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import config from '../../../config';
-import { usestoreShowtime, useAddShowtime, useUpdateShowtime } from '../../../hooks/api/useShowtimeApi';
-import moment from 'moment'; // Import moment for date handling
+import { usestoreShowtime, useAddShowtime, useshowShowtime, useUpdateShowtime } from '../../../hooks/api/useShowtimeApi';
+import moment from 'moment';
 
 const { Title } = Typography;
 
 function ShowtimeFormPage() {
     const navigate = useNavigate();
     let { id } = useParams();
-    const { isLoading, data: showtime } = useAddShowtime(id); // Call the hook directly to get movies and rooms
+    const { isLoading: loadingShowtime, data: showtime } = id ? useshowShowtime(id) : { isLoading: null, data: null };
+    const { data: showtimeData } = useAddShowtime();
+
+    useEffect(() => {
+        console.log('Showtime data:', showtime);
+    }, [showtime]);
 
     const [form] = Form.useForm();
     const mutateAdd = usestoreShowtime({
@@ -36,13 +41,18 @@ function ShowtimeFormPage() {
 
     useEffect(() => {
         if (!showtime) return;
+    
+        // Tìm ID phim và ID phòng từ showtimeData
+        const movieId = showtimeData?.data?.movies?.find(movie => movie.ten_phim === showtime.movie)?.id || '';
+        const roomId = showtimeData?.data?.rooms?.find(room => room.ten_phong_chieu === showtime.room)?.id || '';
+    
         form.setFieldsValue({
-            phim_id: showtime?.data?.phim_id, // New field
-            room_id: showtime?.data?.room_id, // New field
-            ngay_chieu: showtime?.data?.ngay_chieu ? moment(showtime.data.ngay_chieu) : null, // Use moment for DatePicker
-            gio_chieu: showtime?.data?.gio_chieu || [], // New field
+            phim_id: movieId,
+            room_id: roomId,
+            ngay_chieu: moment(showtime.ngay_chieu),
+            gio_chieu: showtime.gio_chieu ? [showtime.gio_chieu] : [],
         });
-    }, [showtime]);
+    }, [showtime, showtimeData]);
 
     const onAddFinish = async (formData) => {
         await mutateAdd.mutateAsync(formData);
@@ -54,10 +64,10 @@ function ShowtimeFormPage() {
 
     const onFinish = async () => {
         const formData = {
-            phim_id: form.getFieldValue('phim_id'), // New field
-            room_id: form.getFieldValue('room_id'), // New field
-            ngay_chieu: form.getFieldValue('ngay_chieu').format('YYYY-MM-DD'), // Format date for submission
-            gio_chieu: form.getFieldValue('gio_chieu'), // New field
+            phim_id: form.getFieldValue('phim_id'),
+            room_id: form.getFieldValue('room_id'),
+            ngay_chieu: form.getFieldValue('ngay_chieu').format('YYYY-MM-DD'),
+            gio_chieu: form.getFieldValue('gio_chieu'),
         };
 
         if (id) {
@@ -81,8 +91,8 @@ function ShowtimeFormPage() {
                             rules={[{ required: true, message: 'Chọn ID phim!' }]} // Updated message
                         >
                             <Select placeholder="Chọn ID phim">
-                                {showtime?.data?.movies?.map(movie => (
-                                    <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option>
+                                {showtimeData?.data?.movies?.map(movie => (
+                                    <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option> // Use movie ID as value
                                 ))}
                             </Select>
                         </Form.Item>
@@ -94,8 +104,8 @@ function ShowtimeFormPage() {
                             rules={[{ required: true, message: 'Chọn ID phòng!' }]} // Updated message
                         >
                             <Select placeholder="Chọn ID phòng">
-                                {showtime?.data?.rooms?.map(room => (
-                                    <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option>
+                                {showtimeData?.data?.rooms?.map(room => (
+                                    <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option> // Use room ID as value
                                 ))}
                             </Select>
                         </Form.Item>
@@ -113,8 +123,7 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Giờ chiếu"
                             name="gio_chieu"
-                            rules={[{ required: true, message: 'Chọn giờ chiếu!' }]}
-                        >
+                            rules={[{ required: true, message: 'Chọn giờ chiếu!' }]}>
                             <Select mode="multiple" placeholder="Chọn giờ chiếu">
                                 <Select.Option value="07:00">07:00</Select.Option>
                                 <Select.Option value="09:00">09:00</Select.Option>

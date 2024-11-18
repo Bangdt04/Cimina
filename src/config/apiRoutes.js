@@ -50,6 +50,7 @@ const apiRoutes = {
         updateShowtime:'/updateShowtime',
         showShowtime:'/showShowtime',
         deleteShowtime:'/deleteShowtime',
+        editShowtime:'/editShowtime',
     },
     web: {
         user: '/auth/upload-profile',
