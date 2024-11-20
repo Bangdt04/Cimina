@@ -1,37 +1,31 @@
 import { Form, Input } from "antd";
+import { getInfoAuth } from "../../../utils/storage";
+
 
 const MyProfile = () => {
     const onFinish = (values) => {
         console.log('Received values:', values);
     };
+
+    const auth = getInfoAuth();
     return (
         <>
             <Form
                 className="grid grid-cols-2 gap-4 w-1/2"
                 initialValues={{
-                    lastName: 'Dương',
-                    firstName: 'Văn Hòa',
-                    phone: '0123456789',
-                    address: 'Hoan Kiem',
-                    gender: 'Nam',
-                    email: 'abcdef@gmail.com',
+                    fullName: auth.ho_ten,
+                    phone: auth.so_dien_thoai,
+                    address: 'Hoan Kiem, Hà Nội',
+                    gender: auth.gioi_tinh == "nam" ? "Nam" : "Nữ",
+                    email: auth.email,
                 }}
             >
                 <Form.Item
                     className="mb-16"
-                    label={<label style={{ color: "white" }}>Họ</label>}
+                    label={<label style={{ color: "white" }}>Họ và Tên</label>}
                     layout="vertical"
-                    name="lastName"
+                    name="fullName"
                     rules={[{ required: true, message: 'Vui lòng nhập họ!' }]}
-                >
-                    <Input className=" text-black rounded-full" />
-                </Form.Item>
-                <Form.Item
-                    className="mb-16"
-                    label={<label style={{ color: "white" }}>Tên</label>}
-                    layout="vertical"
-                    name="firstName"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
                 >
                     <Input className=" text-black rounded-full" />
                 </Form.Item>
