@@ -173,7 +173,7 @@ const Payment = () => {
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">
             <h2 className="text-2xl font-bold mb-6 text-red-500">Phương thức thanh toán</h2>
             <div className="space-y-4 mb-6">
-              {["VietQR", "VNPAY", "Viettel Money", "Payoo"].map((method) => (
+              {["Visa", "NCB", "Master card", "Momo"].map((method) => (
                 <label key={method} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">
                   <input type="radio" name="paymentMethod" className="form-radio text-red-500" />
                   <span className="text-lg">{method}</span>
