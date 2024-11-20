@@ -26,12 +26,14 @@ const FoodMenu = () => {
             setSelectedTime(location.state.selectedTime);
             setSelectedSeatIds(location.state.selectedSeatIds)
             setMovieDetail(location.state.movieDetail),
-                setShowtime(location.state.showtimeState)
-
+            setShowtime(location.state.showtimeState)
         }
     }, [id, location.state]);
 
-
+    function convertDateString(dateString) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return day + "-" + month + "-" + year;
+    }
 
 
     const handlePurchase = (item, action) => {
@@ -67,7 +69,7 @@ const FoodMenu = () => {
             }
 
             // Cập nhật tổng số tiền
-            return action === 'add' ? currentTotal + (itemPrice)/1000 : currentTotal - (itemPrice)/1000;
+            return action === 'add' ? currentTotal + (itemPrice) : currentTotal - (itemPrice);
         });
     };
 
@@ -82,7 +84,9 @@ const FoodMenu = () => {
                 selectedSeatIds,
                 movieDetail: location.state.movieDetail,
                 showtimeState: showtime,
-                items: selectedItems
+                items: selectedItems,
+                date: convertDateString(location.state.availableShowtimes),
+                timeId: location.state.timeId
             }
         });
     };
@@ -121,8 +125,7 @@ const FoodMenu = () => {
                         <div className="space-y-2">
                             <p><span className="font-semibold">Phim:</span> {location.state.movieDetail.ten_phim}</p>
                             <p><span className="font-semibold">Giờ chiếu:</span> {selectedTime}</p>
-                            <p><span className="font-semibold">Ngày chiếu:</span> {showtime?.ngay_chieu}</p>
-                            <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.gio_chieu}</p>
+                            <p><span className="font-semibold">Ngày chiếu:</span> {convertDateString(location.state.availableShowtimes)}</p>
                             <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.room?.ten_phong_chieu}</p>
                         </div>
                     </div>

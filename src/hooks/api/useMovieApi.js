@@ -40,8 +40,8 @@ export const useGetShowtimeById = (movieId, date) => {
 }
 
 
-export const useGetShowSeatById = (movieId, timeId) => {
-    return useFetch({ url: apiRoutes.web.movieDetail + '/' + movieId + '/showtime/' + timeId + "/seats", key: 'getShowSeatById' });
+export const useGetShowSeatById = (movieId, selectedDate, selectedTime) => {
+    return useFetch({ url: apiRoutes.web.movieDetail + '/' + movieId + '/showtime-date/' + selectedDate + '/' + selectedTime, key: 'getShowSeatById' });
 }
 
 // Lấy thông tin một phim theo ID

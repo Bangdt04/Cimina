@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import axios from "axios";
-import { usePaymentMethod } from "../../../hooks/api/usePaymentApi";
 import { getTokenOfUser } from "../../../utils/storage";
 
 const Payment = () => {
-  const [movieDetails, setMovieDetails] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [selectedTime, setSelectedTime] = useState("");
@@ -15,17 +13,26 @@ const Payment = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [ticketPrice, setTicketPrice] = useState();
   const [showtime, setShowtime] = useState();
-  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const accessToken = getTokenOfUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const promoCodes = ['vou5', 'vou10', 'vou15'];
+
+
+  if (!accessToken) {
+    window.location.href = '/';
+  }
 
   const handleApplyPromoCode = () => {
-    // Kiểm tra mã khuyến mãi (ví dụ: mã "DISCOUNT10" giảm 10%)
     if (promoCode === "vou10") {
-      setDiscount(totalAmount * 0.1); // Giảm 10% tổng số tiền
+      setDiscount(totalAmount * 0.1);
+    } else if (promoCode === "vou15") {
+      setDiscount(totalAmount * 0.15);
+    } else if (promoCode === "vou5") {
+      setDiscount(totalAmount * 0.05);
     } else {
       alert("Mã khuyến mãi không hợp lệ");
     }
@@ -61,7 +68,7 @@ const Payment = () => {
 
 
   const data = {
-    thongtinchieu_id: location.state.showtimeState.id,
+    thongtinchieu_id: location.state.timeId,
     ghe_ngoi: selectedSeats,
     doan: processDoan(),
     ma_giam_gia: promoCode,
@@ -89,10 +96,14 @@ const Payment = () => {
     await sendData();
   };
 
+  const handleSelectPromoCode = (code) => {
+    setPromoCode(code);
+    setIsModalOpen(false);
+  };
 
   const callPaymentMethod = async (data) => {
     try {
-      
+
       const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/ncb`, data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`, // Add the bearer token here
@@ -109,10 +120,6 @@ const Payment = () => {
     return <Spin size="large" className='flex items-center justify-center mt-20'></Spin>;
   }
 
-  if (!accessToken) {
-    navigate("/");
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white  mt-10">
       <div className="container mx-auto px-4 py-12">
@@ -124,7 +131,7 @@ const Payment = () => {
               <div className="space-y-2">
                 <p><span className="font-semibold">Phim:</span> {movieDetail?.ten_phim}</p>
                 <p><span className="font-semibold">Giờ chiếu:</span> {selectedTime}</p>
-                <p><span className="font-semibold">Ngày chiếu:</span> {showtime?.ngay_chieu}</p>
+                <p><span className="font-semibold">Ngày chiếu:</span> {location.state.date}</p>
                 <p><span className="font-semibold">Phòng chiếu:</span> {showtime?.room?.ten_phong_chieu}</p>
               </div>
             </div>
@@ -187,6 +194,7 @@ const Payment = () => {
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
+                onClick={() => setIsModalOpen(true)}
                 placeholder="Nhập mã khuyến mãi"
                 className="w-full p-3 bg-gray-700 rounded-lg text-white placeholder-gray-400"
               />
@@ -215,10 +223,45 @@ const Payment = () => {
               Lưu ý: Không mua vé cho trẻ em dưới 13 tuổi đối với các suất chiếu phim kết thúc sau 22h00 và không mua vé cho trẻ em dưới 16 tuổi đối với các suất chiếu phim kết thúc sau 23h00.
             </p>
           </div>
+
         </div>
       </div>
+      <PromoCodeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        promoCodes={promoCodes}
+        onSelectPromoCode={handleSelectPromoCode}
+      />
     </div>
+
+
   );
 };
 
 export default Payment;
+
+
+const PromoCodeModal = ({ isOpen, onClose, promoCodes, onSelectPromoCode }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/3">
+        <h2 className="text-lg font-bold mb-4">Các mã khuyến mãi</h2>
+        <ul>
+          {promoCodes.map((code, index) => (
+            <li key={index} className="mb-2 " style={{ cursor: 'pointer', color: 'black' }} onClick={() => onSelectPromoCode(code)}>
+              {code}
+            </li>
+          ))}
+        </ul>
+        <button
+          className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
+          onClick={onClose}
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  );
+};

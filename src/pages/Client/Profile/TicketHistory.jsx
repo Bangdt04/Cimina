@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getTokenOfUser } from "../../../utils/storage";
 import { useEffect, useState } from "react";
+import Modal from "./Modal";
 
 const TicketHistory = () => {
     const accessToken = getTokenOfUser ();
@@ -9,6 +10,19 @@ const TicketHistory = () => {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTicket, setSelectedTicket] = useState(null);
+
+
+    const handleOpenModal = (ticket) => {
+        setSelectedTicket(ticket);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedTicket(null);
+    };
 
     const callPaymentMethod = async () => {
         try {
@@ -44,6 +58,10 @@ const TicketHistory = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentTickets = ticketData.slice(startIndex, startIndex + itemsPerPage);
 
+    function convertDateString(dateString) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return day + "-" + month + "-" + year;
+    }
     return (
         <>
             <div className="bg-black p-4 rounded w-3/4">
@@ -61,8 +79,8 @@ const TicketHistory = () => {
                         {currentTickets.length > 0 ? (
                             currentTickets?.map((ticket, index) => (
                                 <tr key={index}>
-                                    <td className="py-4 text-center">{ticket.ngay_mua}</td>
-                                    <td className="py-4 text-center">Phim ABC</td>
+                                    <td className="py-4 text-center">{convertDateString(ticket.ngay_mua)}</td>
+                                    <td className="py-4 text-center cursor-pointer text-red-600" onClick={() => handleOpenModal(ticket)}>Phim ABC</td>
                                     <td className="py-4 text-center">{ticket.so_luong}</td>
                                     <td className="py-4 text-center">{ticket.ghe_ngoi}</td>
                                     <td className="py-4 text-center">{Number(ticket.tong_tien).toLocaleString()} VNĐ</td>
@@ -95,6 +113,7 @@ const TicketHistory = () => {
                         Sau
                     </button>
                 </div>
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal} ticket={selectedTicket} />
             </div>
         </>
     );

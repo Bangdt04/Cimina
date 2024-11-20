@@ -45,7 +45,7 @@ const MovieDetailsPage = () => {
                             Diễn viên: {movie.data.dien_vien}
                         </p>
                         <p className="mb-2">
-                            Gía vé: {movie.data.gia_ve}
+                            Gía vé: {Number(movie.data.gia_ve).toLocaleString()} VNĐ
                         </p>
                         <p className="mb-4">
                             {movie.data.noi_dung}
