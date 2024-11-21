@@ -20,10 +20,10 @@ const Search: React.FC = () => {
             style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginTop: '7px', 
+                marginTop: '6px', 
                 backgroundColor: '#5d5d5d', 
                 borderRadius: '40px', 
-                padding: '2px', 
+                padding: '3px', 
                 boxShadow: '0 4px 15px rgba(55, 43, 43, 0.25)', 
             }}
         >

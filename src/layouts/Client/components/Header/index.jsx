@@ -78,11 +78,11 @@ function Header() {
         <div>
             <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500">
                 <div className="flex items-center" style={{ marginLeft: 100 }}>
-                    <img alt="NCC logo" className="mr-2" height="50" src={Logo} width="50" />
+                    <img alt="NCC logo" className="mr-0" height="50" src={Logo} width="50"  />
                     <nav className="flex space-x-4">
                         <nav className="flex space-x-4 relative">
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
+                                className={({ isActive }) => (isActive ? ' ml-5 pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.home}
                             >
                                 Trang chủ
@@ -101,12 +101,6 @@ function Header() {
                                     Thể Loại
                                 </NavLink>
                             </Dropdown>
-                            <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
-                                to={config.routes.web.tinTuc}
-                            >
-                                Tin Tức
-                            </NavLink>
                             <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
