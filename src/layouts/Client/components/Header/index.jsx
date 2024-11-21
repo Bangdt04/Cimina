@@ -113,8 +113,7 @@ function Header() {
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
                             >
-                                Khuyến Mãi
-                            </NavLink>
+                                Săn voucher                            </NavLink>
                             <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.giaVe}
