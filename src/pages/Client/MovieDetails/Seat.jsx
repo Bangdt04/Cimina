@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useGetMovieDetailById, useGetShowSeatById } from '../../../hooks/api/useMovieApi';
+import { useGetShowSeatById } from '../../../hooks/api/useMovieApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spin } from 'antd';
-import { getTokenOfUser } from '../../../utils/storage';
+import { getTokenOfUser  } from '../../../utils/storage';
+import RoomList from './RoomList';
 
-const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
+const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const { id } = useParams();
-    const { data, isLoading } = useGetShowSeatById(id, timeId);
+    const { data, isLoading } = useGetShowSeatById(id, availableShowtimes, selectedTime);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [movieDetail, setMovieDetail] = useState(detail);
     const [selectedSeatIds, setSelectedSeatIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [notification, setNotification] = useState('');
-    const accessToken = getTokenOfUser();
+    const accessToken = getTokenOfUser ();
     const navigate = useNavigate();
+    const [selectedRoom, setSelectedRoom] = useState(null); 
 
-    
     useEffect(() => {
         const timer = setInterval(() => {
             setRemainingTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
@@ -31,13 +32,6 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const seatPrice = {
-        "Thường": 100000, // Giá ghế thường
-        "VIP": 200000, // Giá ghế VIP
-        "Double": 300000 // Giá ghế đôi
-    };
-
-
     if (isLoading) {
         return <Spin size="large" className='flex items-center justify-center'></Spin>;
     }
@@ -46,55 +40,45 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
         return <div>No data available</div>;
     }
 
-    const room = data?.showtime?.room;
-    const showtime = data?.showtime;
-
-    const seats = data?.seats.map((seat, index) => {
-        return {
-            ...seat,
-            row: Math.floor(index / 5) + 1 // Giả sử mỗi hàng có 2 ghế
-        };
-    });
-
-    if (!room) {
+    const rooms = data?.roomsWithSeats;
+    
+    if (!rooms) {
         return <center className='mb-4'>Không có phòng đang chiếu phim này.</center>;
     }
 
     const toggleSeatSelection = (seat) => {
-        // Kiểm tra nếu ghế đã được đặt
         if (seat.trang_thai === "đã đặt") {
             setNotification(`Ghế ${seat.ten_ghe_ngoi} đã được đặt!`);
             return; 
         }
 
-        setNotification(''); // Xóa thông báo nếu ghế chưa đặt
+        setNotification(''); 
+        
         setSelectedSeats((prev) => {
             const isSelected = prev.includes(seat.id);
             const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
-
-            // Cập nhật tổng tiền
-            const priceChange = isSelected ? -seatPrice["VIP"] : seatPrice["VIP"];
+            const seatPrice = Number(movieDetail.gia_ve) || 0; 
+            const priceChange = isSelected ? -seatPrice : seatPrice;
             setTotalPrice(prevPrice => prevPrice + priceChange);
-
+        
             return updatedSeats;
         });
 
         setSelectedSeatIds((prev) => {
             const isSelected = prev.includes(seat.id);
-            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id).ten_ghe_ngoi : [...prev, seat.ten_ghe_ngoi];
+            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.ten_ghe_ngoi];
 
             return updatedSeats;
         });
-
-        // console.log("SEAT SELECT", seat)
     };
 
-    const renderSeat = (seat) => {
+    const renderSeat = (seat, room) => {
+        
+        setSelectedRoom(room);
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
-        // Determine the seat status
         if (seat.trang_thai === "đã đặt") {
-            seatClass += ' bg-gray-700'; // Ghế đã đặt
+            seatClass += ' bg-gray-700';
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded ${seatClass}`}>
                     X
@@ -104,16 +88,9 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
 
         if (selectedSeats.includes(seat.id)) {
             seatClass += ' bg-blue-500';
+        } else {
+            seatClass += seat.ten_ghe_ngoi.includes("VIP") ? ' bg-orange-400' : ' bg-gray-600';
         }
-        else {
-            if (seat.ten_ghe_ngoi.includes("VIP")) {
-                seatClass += ' bg-orange-400';
-            } else {
-                seatClass += ' bg-gray-600';
-            }
-        }
-
-
 
         return (
             <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded ${seatClass}`} onClick={() => toggleSeatSelection(seat)}>
@@ -122,6 +99,11 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
         );
     };
 
+    const handleRoomChange = () => {
+        setTotalPrice(0);
+        setSelectedSeats([])
+        setSelectedSeatIds([])
+    };
     const handleFood = () => {
         navigate(`/food/${id}`, {
             state: {
@@ -131,21 +113,12 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
                 selectedTime,
                 selectedSeatIds,
                 movieDetail,
-                showtimeState: showtime
+                showtimeState: selectedRoom,
+                availableShowtimes: availableShowtimes, 
+                timeId
             }
         });
     };
-
-
-    const seatsByRow = seats.reduce((acc, seat) => {
-        const row = seat.row;
-        if (!acc[row]) {
-            acc[row] = []; 
-        }
-        acc[row].push(seat); 
-        return acc;
-    }, {});
-
     return (
         <div className="bg-gray-900 text-white p-6 relative">
             {notification && (
@@ -166,14 +139,7 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900"></div>
                 </div>
-                <h2 className="text-center text-2xl font-bold mb-8">{room.ten_phong_chieu}</h2>
-                <div className="mb-12 bg-gray-800 p-8 rounded-lg shadow-xl overflow-x-auto">
-                    {Object.keys(seatsByRow).map(row => (
-                        <div key={row} className="flex justify-center mb-2">
-                            {seatsByRow[row].map(seat => renderSeat(seat))}
-                        </div>
-                    ))}
-                </div>
+                <RoomList rooms={rooms} renderSeat={renderSeat} handleRoomChange={handleRoomChange}/>
                 <div className="flex flex-wrap justify-center gap-4 mb-8">
                     <div className="flex items-center">
                         <div className="w-6 h-6 bg-gray-700 mr-2 flex items-center justify-center text-white font-bold">X</div>
@@ -201,7 +167,7 @@ const Seat = ({ timeId, selectedDate, selectedTime, detail }) => {
                         <div className="mb-4 md:mb-0">
                             <p className="text-lg mb-2">Ghế đã chọn: <span className="font-bold">
                                 {selectedSeats.map(seatId => (
-                                    <span key={seatId}>{seats?.find(seat => seat.id === seatId).ten_ghe_ngoi} </span>
+                                    <span key={seatId}>{selectedRoom.seats?.find(seat => seat.id === seatId)?.ten_ghe_ngoi} </span>
                                 ))}
                             </span></p>
                             <p className="text-lg">Tổng tiền: <span className="font-bold text-green-400">{totalPrice.toLocaleString()}đ</span></p>

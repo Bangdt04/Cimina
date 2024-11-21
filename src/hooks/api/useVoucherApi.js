@@ -28,6 +28,10 @@ export const useShowVoucher = (id) => {
     return useFetch({ url: `${apiRoutes.admin.showVoucher}/${id}`, key: 'showFood' });
 };
 
+// export const useShowVoucher = (id) => {
+//     return useFetch({ url: `${apiRoutes.ú.showVoucher}/${id}`, key: 'showFood' });
+// };
+
 export const useDeleteVoucher = (id) => {
     return useDelete(apiRoutes.admin.voucher + '/' + id); // updated to match new route
 };

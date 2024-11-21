@@ -77,7 +77,7 @@ const Box = ({detail}) => {
                             availableShowtimes={availableShowtimes} // Pass the filtered showtimes
                         />
                     )}
-                    {selectedTime && <Seat timeId={selectedId} selectedDate={selectedDate} selectedTime={selectedTime} detail={detail} />}
+                    {selectedTime && <Seat timeId={selectedId} availableShowtimes={availableShowtimes} selectedDate={selectedDate} selectedTime={selectedTime} detail={detail} />}
                 </div>
             </div>
         </>

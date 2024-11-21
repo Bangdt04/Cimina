@@ -65,7 +65,8 @@ const apiRoutes = {
         movieFilterKeyword: '/movieFilterKeyword',
         movieDetail: '/movie-detail',
         foods: '/foods',
-        payment: '/payment'
+        payment: '/payment',
+        
     },
 };
 

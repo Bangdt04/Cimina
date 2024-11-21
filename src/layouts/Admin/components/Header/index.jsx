@@ -37,7 +37,7 @@ function Header() {
     <header className="main-header fixed">
       <div className="header-content">
         <Link to="/" className="logo">
-          <img src="https://ncc.asia/images/logo.png" alt="NCC Logo" />
+          <img src="https://chieuphimquocgia.com.vn/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75" alt="NCC Logo" />
         </Link>
         <div className="header-controls">
           <button className="filter-button">
