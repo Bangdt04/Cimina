@@ -139,7 +139,7 @@ function Header() {
                     <>
                         <div className="relative flex items-center space-x-2" style={{ marginRight: 100 }}>
                             {roles === 'admin' ? (<>
-                                <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
+                                {/* <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink> nút quản trị viên  */}
                             </>) : (<></>)}
 
                             <Dropdown overlay={menu} trigger={['click']}>
