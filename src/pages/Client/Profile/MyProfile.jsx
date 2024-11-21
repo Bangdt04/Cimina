@@ -5,24 +5,29 @@ import axios from "axios";
 const MyProfile = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Hàm load dữ liệu từ API
     useEffect(() => {
+        const tokenData = localStorage.getItem('token');
+        const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
+
+        if (!token) {
+            message.error("Bạn cần đăng nhập để truy cập trang này.");
+            window.location.href = '/'; 
+            return;
+        } else {
+            setIsAuthenticated(true);
+        }
+
         const fetchProfile = async () => {
             setLoading(true);
             try {
-                const tokenData = localStorage.getItem('token');
-                const token = tokenData ? JSON.parse(tokenData)['access-token'] : null; // Get the token
-
                 const response = await axios.get("http://127.0.0.1:8000/api/auth/profile", {
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Add Bearer token to headers
+                        'Authorization': `Bearer ${token}`,
                     },
                 });
-                console.log(response.data); // Log toàn bộ phản hồi để kiểm tra cấu trúc
-                const data = response.data.data.user; // Cập nhật để truy cập dữ liệu người dùng
-                console.log(data)
-                // Điền dữ liệu vào form
+                const data = response.data.data.user;
                 form.setFieldsValue({
                     ho_ten: data.ho_ten || "",
                     so_dien_thoai: data.so_dien_thoai || "",
@@ -40,7 +45,6 @@ const MyProfile = () => {
         fetchProfile();
     }, [form]);
 
-    // Hàm xử lý khi lưu thông tin
     const onFinish = async (values) => {
         try {
             await axios.put("http://127.0.0.1:8000/api/auth/profile", values);
@@ -49,6 +53,8 @@ const MyProfile = () => {
             message.error("Cập nhật thông tin thất bại.");
         }
     };
+
+    if (!isAuthenticated) return null;
 
     return (
         <>
