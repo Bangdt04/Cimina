@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Row, notification, Typography, Select } from 'antd';
+import { Button, Col, Form, Input, Row, notification, Typography, Select, Upload } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -11,55 +11,85 @@ function FoodFormPage() {
     let { id } = useParams();
     const [form] = Form.useForm();
 
-    // Hàm xử lý khi thêm mới món ăn
-    const onFinish = async () => {
-        const formData = new FormData(); // Sử dụng FormData để gửi dữ liệu
+    // Hàm xử lý khi thêm mới hoặc cập nhật món ăn
+    const onFinish = async (values) => {
+        const formData = new FormData();
 
-        // Lấy giá trị từ form và append vào formData
-        formData.append('ten_do_an', form.getFieldValue('ten_do_an'));
-        formData.append('gia', form.getFieldValue('gia'));
-        formData.append('ghi_chu', form.getFieldValue('ghi_chu'));
-        formData.append('trang_thai', form.getFieldValue('trang_thai'));
+        // Lặp qua tất cả các trường dữ liệu trong form
+        Object.keys(values).forEach((key) => {
+            if (key === 'anh_do_an') {
+                // Xử lý ảnh nếu có
+                if (values[key] && values[key][0]) {
+                    formData.append(key, values[key][0].originFileObj);
+                }
+            } else {
+                formData.append(key, values[key]);
+            }
+        });
 
-        // Kiểm tra và thêm file ảnh nếu có
-        const fileInput = form.getFieldValue('anh_do_an');
-        if (fileInput && fileInput.fileList && fileInput.fileList.length > 0) {
-            formData.append('anh_do_an', fileInput.fileList[0].originFileObj); // Thêm file ảnh vào FormData
-        } else {
-            notification.warning({
-                message: 'Chưa có ảnh',
-                description: 'Vui lòng chọn ảnh món ăn trước khi gửi.',
-            });
-            return; // Dừng hàm nếu không có ảnh
-        }
-
-        // Gửi formData với axios
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/storeFood', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Đảm bảo đúng content type
-                },
-            });
-            // Xử lý phản hồi thành công
-            notification.success({
-                message: 'Thêm mới món ăn thành công',
-                description: response.data.message,
-            });
-            navigate(config.routes.admin.food);
+            if (id) {
+                // Nếu có id, thực hiện update
+                const response = await axios.post(`http://127.0.0.1:8000/api/updateFood/${id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                notification.success({
+                    message: 'Cập nhật món ăn thành công',
+                    description: response.data.message,
+                });
+            } else {
+                // Nếu không có id, thực hiện tạo mới
+                const response = await axios.post('http://127.0.0.1:8000/api/storeFood', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                notification.success({
+                    message: 'Thêm mới món ăn thành công',
+                    description: response.data.message,
+                });
+            }
+            navigate(config.routes.admin.food); // Điều hướng về trang danh sách món ăn
         } catch (error) {
-            // Xử lý lỗi
+            // Xử lý lỗi từ API
             if (error.response) {
                 const { data } = error.response;
                 notification.error({
-                    message: 'Thêm mới món ăn thất bại',
-                    description: data.message || 'Có lỗi xảy ra khi thêm món ăn.',
+                    message: id ? 'Cập nhật món ăn thất bại' : 'Thêm mới món ăn thất bại',
+                    description: data.message || 'Có lỗi xảy ra khi thao tác với món ăn.',
                 });
             }
         }
     };
 
+    // Lấy dữ liệu món ăn khi chỉnh sửa
+    useEffect(() => {
+        if (id) {
+            const fetchFood = async () => {
+                try {
+                    const { data } = await axios.get(`http://127.0.0.1:8000/api/editFood/${id}`);
+                    form.setFieldsValue(data); // Điền dữ liệu vào form
+                } catch (error) {
+                    notification.error({
+                        message: 'Không thể tải dữ liệu',
+                        description: 'Vui lòng thử lại sau!',
+                    });
+                }
+            };
+            fetchFood();
+        }
+    }, [id]);
+
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+        <div
+            className="form-container"
+            style={{
+                padding: '20px',
+                maxWidth: '600px',
+                margin: 'auto',
+                backgroundColor: '#f9f9f9',
+                borderRadius: '10px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            }}
+        >
             <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
                 {id ? 'Cập nhật thông tin món ăn' : 'Thêm món ăn mới'}
             </Title>
@@ -84,10 +114,7 @@ function FoodFormPage() {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Ghi chú"
-                            name="ghi_chu"
-                        >
+                        <Form.Item label="Ghi chú" name="ghi_chu">
                             <Input placeholder="Nhập ghi chú" />
                         </Form.Item>
                     </Col>
@@ -111,13 +138,33 @@ function FoodFormPage() {
                             getValueFromEvent={(e) => e?.fileList}
                             extra="Chọn ảnh món ăn (Tối đa 2MB)"
                         >
-                            <Input type="file" />
+                            <Upload
+                                beforeUpload={() => false} // Không upload ngay mà xử lý khi submit
+                                listType="picture-card" // Hiển thị ảnh sau khi upload
+                                accept=".jpg,.jpeg,.png,.gif" // Giới hạn loại file
+                                maxCount={1} // Chỉ cho phép upload 1 ảnh
+                            >
+                                <Button>Chọn ảnh</Button>
+                            </Upload>
                         </Form.Item>
                     </Col>
                 </Row>
                 <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%' , background:'red' }} onClick={() => navigate(-1)}>Hủy</Button>
-                    <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%' }}>
+                    <Button
+                        htmlType="reset"
+                        style={{ width: '48%', backgroundColor: 'red', color: 'white' }}
+                        onClick={() => navigate(-1)}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        htmlType="submit"
+                        style={{
+                            width: '48%',
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                        }}
+                    >
                         {id ? 'Cập nhật' : 'Thêm mới'}
                     </Button>
                 </div>

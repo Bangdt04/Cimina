@@ -10,6 +10,11 @@ const { Title, Text } = Typography;
 
 const baseColumns = [
     {
+        title: 'Ảnh', 
+        dataIndex: 'anh_do_an', 
+        render: (text) => <img src={`http://localhost:8000${text}`} alt="Food Image" style={{ width: '100px', borderRadius: '8px' }} />, // Render the image
+    },
+    {
         title: 'Tên món ăn',
         dataIndex: 'ten_do_an',
         sorter: true,
@@ -39,6 +44,7 @@ function transformData(dt, navigate, setIsDisableOpen, setViewData) {
             ten_do_an: item.ten_do_an,
             gia: item.gia,
             ghi_chu: item.ghi_chu,
+            anh_do_an: item.anh_do_an, // Assuming the image URL is part of the item
             trang_thai: (
                 <span className={item.trang_thai === 0 ? 'text-green-500' : 'text-red-500'}>
                     {item.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}
@@ -157,6 +163,9 @@ function FoodData({ setParams, params }) {
                         <p><strong>Giá:</strong> <Text>{viewData.gia}</Text></p>
                         <p><strong>Ghi chú:</strong> <Text>{viewData.ghi_chu}</Text></p>
                         <p><strong>Trạng thái:</strong> <Text>{viewData.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}</Text></p>
+                        {viewData.anh_do_an && ( // Check if the image URL exists
+                            <img src={`http://localhost:8000${viewData.anh_do_an}`} alt="Food Image" style={{ width: '100%', borderRadius: '8px', marginTop: '10px' }} />
+                        )}
                     </div>
                 )}
             </Modal>
