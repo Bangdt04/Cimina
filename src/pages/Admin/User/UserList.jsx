@@ -1,19 +1,11 @@
-import { faEdit, faEye, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Input, Table, Tag, message, Modal } from 'antd'; // Thêm Modal từ antd
+import { Button, Input, Table, Select, message, Modal, InputNumber } from 'antd';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
-import UserDetail from './UserDetail';
-import UserEdit from './UserEdit';
-import UserActions from './UserActions';
 
 function UserList() {
-    const [isDetailOpen, setIsDetailOpen] = useState({ id: 0, isOpen: false });
-    const [isEditOpen, setIsEditOpen] = useState({ id: 0, isOpen: false });
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false); // Changed to a boolean state
-    const navigate = useNavigate();
     const [data, setData] = useState([]);
+    const [editingKey, setEditingKey] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,11 +22,8 @@ function UserList() {
                 });
 
                 const result = await response.json();
-                console.log(result); // Kiểm tra dữ liệu nhận được
-
-                // Kiểm tra xem result có phải là mảng không
                 if (result && Array.isArray(result.data)) {
-                    setData(result.data); // Lấy mảng từ thuộc tính 'data'
+                    setData(result.data);
                 } else {
                     console.error('Expected an array but got:', result);
                 }
@@ -46,18 +35,38 @@ function UserList() {
         fetchData();
     }, []);
 
-    const currentUserId = JSON.parse(localStorage.getItem('token'))?.userId; // Lấy ID của tài khoản đang đăng nhập
+    const updateUser = async (id, updatedData) => {
+        try {
+            const tokenData = localStorage.getItem('token');
+            const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
 
-    const handleDelete = async (id) => {
-        if (id === currentUserId) {
-            message.error('Bạn không thể xóa tài khoản đang đăng nhập!'); // Thông báo lỗi
-            return; // Ngừng thực hiện nếu là tài khoản đang đăng nhập
+            const response = await fetch(`http://127.0.0.1:8000/api/updateUser/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (response.ok) {
+                message.success('Cập nhật thành công!');
+            } else {
+                message.error('Cập nhật thất bại!');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            message.error('Đã xảy ra lỗi khi cập nhật!');
         }
+    };
 
-        // Hiển thị modal xác nhận
+    const deleteUser = async (id) => {
         Modal.confirm({
             title: 'Xác nhận xóa',
             content: 'Bạn có chắc chắn muốn xóa người dùng này?',
+            okText: 'Có',
+            okType: 'danger',
+            cancelText: 'Không',
             onOk: async () => {
                 try {
                     const tokenData = localStorage.getItem('token');
@@ -72,19 +81,50 @@ function UserList() {
                     });
 
                     if (response.ok) {
-                        setData(prevData => prevData.filter(user => user.id !== id));
-                        console.log('User deleted successfully');
+                        message.success('Xóa thành công!');
+                        setData((prevData) => prevData.filter((item) => item.id !== id)); // Remove deleted user from state
                     } else {
-                        console.error('Failed to delete user:', response.statusText);
+                        message.error('Xóa thất bại!');
                     }
                 } catch (error) {
                     console.error('Error deleting user:', error);
+                    message.error('Đã xảy ra lỗi khi xóa!');
                 }
             },
-            onCancel() {
-                console.log('Cancel');
-            },
         });
+    };
+
+    const isEditing = (record) => record.id === editingKey;
+
+    const edit = (record) => {
+        setEditingKey(record.id);
+    };
+
+    const save = async (id) => {
+        try {
+            const updatedRow = data.find((row) => row.id === id);
+            await updateUser(id, {
+                ho_ten: updatedRow.ho_ten,
+                gioi_tinh: updatedRow.gioi_tinh,
+                vai_tro: updatedRow.vai_tro,
+                diem_thuong: updatedRow.diem_thuong,
+            });
+            setEditingKey('');
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const cancel = () => {
+        setEditingKey('');
+    };
+
+    const handleChange = (id, key, value) => {
+        setData((prevData) =>
+            prevData.map((item) =>
+                item.id === id ? { ...item, [key]: value } : item
+            )
+        );
     };
 
     const columns = [
@@ -97,6 +137,20 @@ function UserList() {
             title: 'Giới Tính',
             dataIndex: 'gioi_tinh',
             key: 'gioi_tinh',
+            render: (text, record) =>
+                isEditing(record) ? (
+                    <Select
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'gioi_tinh', value)}
+                        style={{ width: 100 }}
+                    >
+                        <Select.Option value="nam">Nam</Select.Option>
+                        <Select.Option value="nu">Nữ</Select.Option>
+                        <Select.Option value="khac">Khác</Select.Option>
+                    </Select>
+                ) : (
+                    text === 'nam' ? 'Nam' : text === 'nu' ? 'Nữ' : 'Khác' 
+                ),
         },
         {
             title: 'Email',
@@ -107,44 +161,87 @@ function UserList() {
             title: 'Chức vụ',
             dataIndex: 'vai_tro',
             key: 'vai_tro',
-            render: (text) => {
-                let color;
+            render: (text, record) => {
+                let roleDisplay;
+                let roleColor;
+
+                // Determine the display text and color based on the role
                 switch (text) {
                     case 'admin':
-                        color = 'red'; 
-                        break;
-                    case 'user':
-                        color = 'green'; 
+                        roleDisplay = 'Admin';
+                        roleColor = 'text-red-500'; // Example color for Admin
                         break;
                     case 'nhan_vien':
-                        color = 'blue';
+                        roleDisplay = 'Nhân viên';
+                        roleColor = 'text-blue-500'; // Example color for Nhân viên
+                        break;
+                    case 'user':
+                        roleDisplay = 'Người dùng';
+                        roleColor = 'text-green-500'; // Example color for User
                         break;
                     default:
-                        color = 'default'; 
+                        roleDisplay = text; // Fallback
+                        roleColor = 'text-gray-500'; // Default color
                 }
-                return <Tag color={color}>{text}</Tag>; 
+
+                return isEditing(record) ? (
+                    <Select
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'vai_tro', value)}
+                        style={{ width: 120 }}
+                    >
+                        <Select.Option value="admin">Admin</Select.Option>
+                        <Select.Option value="nhan_vien">Nhân viên</Select.Option>
+                        <Select.Option value="user">Người dùng</Select.Option>
+                    </Select>
+                ) : (
+                    <span className={roleColor}>{roleDisplay}</span>
+                );
             },
         },
         {
             title: 'Điểm Thưởng',
             dataIndex: 'diem_thuong',
             key: 'diem_thuong',
-        },{
-            title: 'Số điện thoại',
-            dataIndex: 'so_dien_thoai',
-            key: 'so_dien_thoai',
+            render: (text, record) =>
+                isEditing(record) ? (
+                    <InputNumber
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'diem_thuong', value)}
+                        min={0}
+                        style={{ width: 100 }}
+                    />
+                ) : (
+                    text
+                ),
         },
         {
             title: 'Thao tác',
             key: 'actions',
-            render: (_, record) => (
-                <UserActions
-                    record={record}
-                    setIsDetailOpen={setIsDetailOpen}
-                    setIsEditOpen={setIsEditOpen}
-                    setIsDeleteOpen={() => handleDelete(record.id)} // Update to handle delete
-                />
-            ),
+            render: (_, record) =>
+                isEditing(record) ? (
+                    <>
+                        <Button type="link" onClick={() => save(record.id)}>
+                            Lưu
+                        </Button>
+                        <Button type="link" onClick={cancel}>
+                            Hủy
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button type="link" onClick={() => edit(record)}>
+                            Sửa
+                        </Button>
+                        <Button 
+                            type="link" 
+                            onClick={() => deleteUser(record.id)} 
+                            style={{ color: 'red', fontWeight: 'bold' }} // Enhanced styling for delete button
+                        >
+                            Xóa
+                        </Button>
+                    </>
+                ),
         },
     ];
 
@@ -165,6 +262,7 @@ function UserList() {
                 <Table
                     columns={columns}
                     dataSource={data}
+                    rowKey="id"
                     pagination={{
                         defaultPageSize: 10,
                         showSizeChanger: true,
@@ -174,13 +272,6 @@ function UserList() {
                     scroll={{ y: 'calc(100vh - 300px)' }}
                 />
             </div>
-            <UserDetail isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} />
-            <UserEdit isEditOpen={isEditOpen} setIsEditOpen={setIsEditOpen} />
-            <ConfirmPrompt
-                content="Bạn có chắc chắn muốn xóa người dùng này?"
-                isDisableOpen={isDeleteOpen !== false} // Update to check if a user is selected for deletion
-                setIsDisableOpen={() => setIsDeleteOpen(false)} // Reset the state
-            />
         </div>
     );
 }
