@@ -27,7 +27,7 @@ const MovieShowing = () => {
                         </span>
                         Phim đang chiếu
                     </h2>
-                    <a className="text-blue-400" href={config.routes.web.moviesShowing}>
+                    <a href="http://localhost:5173/genre" className="text-blue-400" >
                         Xem tất cả
                     </a>
                 </div>

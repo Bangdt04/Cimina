@@ -63,7 +63,7 @@ const SearchResults = () => {
                                     const allMovieGenres = item.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
                                     return (
                                         <NavLink className="w-1/4" to={config.routes.web.phim + `/` + item.id} key={item.id}>
-                                            <div className="bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300">
+                                            <div className="rounded-lg p-4 hover-zoom hover:shadow-lg transition-shadow duration-300">
                                                 <img
                                                     alt={`Movie poster of ${item.ten_phim}`}
                                                     className="rounded-2xl mb-2"

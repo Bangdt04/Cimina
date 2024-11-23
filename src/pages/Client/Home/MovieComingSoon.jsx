@@ -13,7 +13,7 @@ const MovieCommingSoon = () => {
                         </span>
                         Phim sắp chiếu
                     </h2>
-                    <a className="text-blue-400" href="#">
+                    <a className="text-blue-400" href="http://localhost:5173/genre">
                         Xem tất cả
                     </a>
                 </div>
@@ -22,7 +22,7 @@ const MovieCommingSoon = () => {
                     <div>
                         <img
                             alt="Movie poster of Joker: Folie à Deux"
-                            className="rounded-2xl hover-zoom mb-2 hover-zoom"
+                            className="rounded-2xl hover-zoom mb-2"
                             style={{ height: 350, width: '100%' }}
                             src={ImageMovie}
                         />
