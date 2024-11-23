@@ -37,6 +37,7 @@ import MovieGernes from "../pages/Client/MovieGernes";
 import Test from "../pages/Client/Test";
 import SearchResults from "../pages/Client/Home/SearchResults";
 import TransactionSuccess from "../pages/Client/Transaction";
+import LoginPage from "../pages/Admin/Login/login";
 
 const publicRoutes = [
     {
@@ -151,6 +152,13 @@ const publicRoutes = [
         component: TransactionSuccess,
         layout: ClientLayout,
         roles: ['user'],
+        private: false,
+    },
+
+    {
+        path: config.routes.admin.login,
+        component: LoginPage,
+        roles: ['admin'],
         private: false,
     },
  

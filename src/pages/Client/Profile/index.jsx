@@ -6,10 +6,17 @@ import { useState } from "react";
 
 const ProfilePage = () => {
     const [activeComponent, setActiveComponent] = useState('profile'); // Default component
+    const accessToken = getTokenOfUser();
 
+    if(!accessToken) {
+        window.location.href = "http://localhost:5173/";
+    }
+    
     const handleButtonClick = (component) => {
         setActiveComponent(component);
     };
+
+    
     return (
         <>
             <main className="flex flex-col items-center py-8 mt-16">

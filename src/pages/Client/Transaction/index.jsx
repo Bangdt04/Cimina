@@ -11,7 +11,7 @@ const TransactionSuccess = () => {
                     return prevCountdown - 1;
                 } else {
                     clearInterval(interval);
-                    window.location.href = "http://localhost:5173/"; // Replace with your target URL
+                    window.location.href = "http://localhost:5173/profile"; // Replace with your target URL
                     return 0; // Set countdown to 0 to stop further updates
                 }
             });

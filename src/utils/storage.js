@@ -6,6 +6,7 @@ export const clearToken = () => {
 };
 
 export const isTokenStoraged = () => {
+    console.log("TOOKEN",localStorage.getItem('token'));
     return !!localStorage.getItem('token');
 };
 

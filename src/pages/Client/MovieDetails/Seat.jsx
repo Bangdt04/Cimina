@@ -5,6 +5,7 @@ import { Spin } from 'antd';
 import { getTokenOfUser  } from '../../../utils/storage';
 import RoomList from './RoomList';
 
+
 const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const { id } = useParams();
@@ -80,11 +81,22 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         if (seat.trang_thai === "đã đặt") {
             seatClass += ' bg-gray-700';
             return (
-                <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded ${seatClass}`}>
+                <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
                     X
                 </div>
             );
         }
+
+        if (seat.trang_thai === "bảo trì") {
+            seatClass += ' bg-red-700';
+            return (
+                <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
+                    🚨
+                </div>
+            );
+        }
+
+
 
         if (selectedSeats.includes(seat.id)) {
             seatClass += ' bg-blue-500';
@@ -160,6 +172,10 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                     <div className="flex items-center">
                         <div className="w-6 h-6 bg-red-400 mr-2"></div>
                         <span>Ghế đôi</span>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="w-6 h-6 bg-red-700 mr-2"></div>
+                        <span>Ghế bảo trì</span>
                     </div>
                 </div>
                 <div className="bg-gray-800 p-6 rounded-lg shadow-xl">

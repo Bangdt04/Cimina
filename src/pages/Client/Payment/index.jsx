@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import axios from "axios";
 import { getTokenOfUser } from "../../../utils/storage";
+import PromoCodeModal from "./modal";
 
 const Payment = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -19,29 +20,31 @@ const Payment = () => {
   const [discount, setDiscount] = useState(0);
   const accessToken = getTokenOfUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const promoCodes = ['vou5', 'vou10', 'vou15'];
+  const [savedVouchers, setSavedVouchers] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
 
   if (!accessToken) {
     window.location.href = '/';
   }
 
+  const handlePaymentMethodChange = (event) => {
+    setSelectedPaymentMethod(event.target.value.toLowerCase());
+    console.log("Payment", selectedPaymentMethod)
+  };
   const handleApplyPromoCode = () => {
-    if (promoCode === "vou10") {
-      setDiscount(totalAmount * 0.1);
-    } else if (promoCode === "vou15") {
-      setDiscount(totalAmount * 0.15);
-    } else if (promoCode === "vou5") {
-      setDiscount(totalAmount * 0.05);
-    } else {
-      alert("Mã khuyến mãi không hợp lệ");
-    }
+    savedVouchers.map((voucher, index) => {
+      console.log(totalAmount, promoCode, voucher.ma_giam_gia);
+      if (promoCode === voucher.ma_giam_gia) {
+        setDiscount(totalAmount * (voucher.muc_giam_gia / 100))
+      }
+    })
   };
 
   const finalAmount = totalAmount - discount;
 
   useEffect(() => {
-
+    fetchSavedVouchers();
     if (location.state) {
       setSelectedSeats(location.state.selectedSeats);
       setTotalAmount(location.state.totalAmount);
@@ -55,7 +58,29 @@ const Payment = () => {
     }
   }, [location.state]);
 
+  const fetchSavedVouchers = async () => {
+    if (!accessToken) {
+      console.error('Access token is missing');
+      return;
+    }
 
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/auth/user/voucher-codes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setSavedVouchers(data); // Use 'data' instead of 'vocher'
+    } catch (error) {
+      console.error('Error fetching saved vouchers:', error); // Log the error for debugging
+    }
+  };
   const processDoan = () => {
     const doanArray = Object.keys(selectedItems).map((key) => ({
       doan_id: selectedItems[key].id,
@@ -63,6 +88,8 @@ const Payment = () => {
     }));
     return doanArray;
   };
+
+
 
 
 
@@ -104,7 +131,7 @@ const Payment = () => {
   const callPaymentMethod = async (data) => {
     try {
 
-      const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/ncb`, data, {
+      const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/${selectedPaymentMethod}`, data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`, // Add the bearer token here
           'Content-Type': 'application/json',
@@ -174,8 +201,15 @@ const Payment = () => {
             <h2 className="text-2xl font-bold mb-6 text-red-500">Phương thức thanh toán</h2>
             <div className="space-y-4 mb-6">
               {["Visa", "NCB", "Master card", "Momo"].map((method) => (
-                <label key={method} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">
-                  <input type="radio" name="paymentMethod" className="form-radio text-red-500" />
+                <label key={method} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-red-600">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={method} 
+                    className="form-radio text-red-500"
+                    checked={selectedPaymentMethod === method} 
+                    onChange={handlePaymentMethodChange} 
+                  />
                   <span className="text-lg">{method}</span>
                 </label>
               ))}
@@ -230,7 +264,7 @@ const Payment = () => {
       <PromoCodeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        promoCodes={promoCodes}
+        promoCodes={savedVouchers}
         onSelectPromoCode={handleSelectPromoCode}
       />
     </div >
@@ -242,42 +276,3 @@ const Payment = () => {
 export default Payment;
 
 
-const PromoCodeModal = ({ isOpen, onClose, promoCodes, onSelectPromoCode }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg w-96">
-        <div className="bg-yellow-500 text-white text-lg font-semibold p-4 rounded-t-lg flex justify-between items-center">
-          <span>Chọn Yoonly Voucher</span>
-          <button className="text-xl" onClick={onClose}>×</button>
-        </div>
-        <div className="p-4">
-          <input className="w-full p-2 border rounded-md mb-4" placeholder="Nhập mã khuyến mãi" type="text" />
-          <div className="space-y-4">
-            {promoCodes.map((code, index) => (
-              <div key={index} className="border rounded-md p-4 flex items 
-              center justify-between" style={{ cursor: 'pointer' }} onClick={() => onSelectPromoCode(code)}>
-                <div className="flex items-center">
-                  <img alt="Voucher image" className="w-16 h-16 mr-4" src="https://storage.googleapis.com/a1aa/image/mtqkgsnb9j70L1wtUJ3YU0JKLgMdco5IhPhoctBgPdNs238E.jpg" />
-                  <div>
-                    <div className="text-red-600 font-semibold">Giảm giá {code.discount}đ</div>
-                    <div className="text-gray-600">Đơn tối thiểu {code.minOrder}đ</div>
-                    <div className="text-gray-600">Hạn dùng: <span className="text-red-600">{code.expiryDate}</span></div>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">{code.usageCount}</div>
-                  <input className="form-radio" name="voucher" type="radio" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="bg-gray-100 p-4 flex justify-end space-x-4 rounded-b-lg">
-          <button className="bg-gray-500 text-white px-4 py-2 rounded-md" onClick={onClose}>Quay lại</button>
-        </div>
-      </div>
-    </div>
-  );
-};

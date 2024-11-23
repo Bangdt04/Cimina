@@ -61,7 +61,7 @@ const MovieShowing = () => {
                     </div>
                 ))}
 
-                <hr />
+                {/* <hr /> */}
             </div>
 
             <Voucher />
