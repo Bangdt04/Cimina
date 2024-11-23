@@ -1,10 +1,10 @@
-import { Button, Col, Form, Row, notification, Typography, Select, DatePicker } from 'antd';
+import { Button, Col, Form, Row, notification, Typography, Select, DatePicker, Input } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import config from '../../../config';
 import { usestoreShowtime, useAddShowtime, useshowShowtime, useUpdateShowtime } from '../../../hooks/api/useShowtimeApi';
 import moment from 'moment';
-
+import axios from 'axios'; // Import axios for making API calls
 const { Title } = Typography;
 
 function ShowtimeFormPage() {
@@ -41,40 +41,69 @@ function ShowtimeFormPage() {
 
     useEffect(() => {
         if (!showtime) return;
-    
-        // Tìm ID phim và ID phòng từ showtimeData
         const movieId = showtimeData?.data?.movies?.find(movie => movie.ten_phim === showtime.movie)?.id || '';
-        const roomId = showtimeData?.data?.rooms?.find(room => room.ten_phong_chieu === showtime.room)?.id || '';
-    
+        const roomIds = showtimeData?.data?.rooms?.filter(room => showtime.room.includes(room.ten_phong_chieu)).map(room => room.id) || [];
+        
+        // Check if gio_chieu is a string and format it
+        const gioChieuArray = typeof showtime.gio_chieu === 'string' ? 
+            [moment(showtime.gio_chieu, 'HH:mm:ss').format('HH:mm')] : 
+            []; // Fallback to an empty array if not
+
         form.setFieldsValue({
             phim_id: movieId,
-            room_id: roomId,
+            room_ids: roomIds,
             ngay_chieu: moment(showtime.ngay_chieu),
-            gio_chieu: showtime.gio_chieu ? [showtime.gio_chieu] : [],
+            gio_chieu: gioChieuArray, // Use the formatted array
         });
     }, [showtime, showtimeData]);
-
     const onAddFinish = async (formData) => {
         await mutateAdd.mutateAsync(formData);
     };
 
     const onEditFinish = async (formData) => {
+        // Ensure the formData includes the correct structure for editing
         await mutateEdit.mutateAsync({ id, body: formData });
     };
 
     const onFinish = async () => {
         const formData = {
             phim_id: form.getFieldValue('phim_id'),
-            room_id: form.getFieldValue('room_id'),
+            room_ids: form.getFieldValue('room_ids'),
             ngay_chieu: form.getFieldValue('ngay_chieu').format('YYYY-MM-DD'),
             gio_chieu: form.getFieldValue('gio_chieu'),
         };
-
-        if (id) {
-            await onEditFinish(formData);
-        } else {
-            await onAddFinish(formData);
+        try {
+            if (id) {
+                // Ensure the formData is passed correctly for editing
+                await onEditFinish(formData);
+            } else {
+                await onAddFinish(formData);
+            }
+        } catch (error) {
+            if (error.response && error.response.data) {
+                // Hiển thị thông báo lỗi cho từng trường hợp
+                const errorMessage = error.response.data.error || 'Đã xảy ra lỗi không xác định';
+                notification.error({
+                    message: 'Lỗi',
+                    description: errorMessage,
+                });
+            } else {
+                notification.error({ message: 'Đã xảy ra lỗi không xác định' });
+            }
         }
+    };
+
+    const handleAddShowtime = (value) => {
+        const currentValues = form.getFieldValue('gio_chieu') || [];
+        if (value && !currentValues.includes(value)) {
+            form.setFieldsValue({ gio_chieu: [...currentValues, value] });
+        }
+    };
+
+    const handleRemoveShowtime = (value) => {
+        const currentValues = form.getFieldValue('gio_chieu') || [];
+        const updatedValues = currentValues.filter(time => time !== value);
+        form.setFieldsValue({ gio_chieu: updatedValues });
     };
 
     return (
@@ -88,11 +117,10 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Phim ID"
                             name="phim_id"
-                            rules={[{ required: true, message: 'Chọn ID phim!' }]} // Updated message
-                        >
+                            rules={[{ required: true, message: 'Chọn ID phim!' }]}>
                             <Select placeholder="Chọn ID phim">
                                 {showtimeData?.data?.movies?.map(movie => (
-                                    <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option> // Use movie ID as value
+                                    <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option>
                                 ))}
                             </Select>
                         </Form.Item>
@@ -100,12 +128,11 @@ function ShowtimeFormPage() {
                     <Col span={12}>
                         <Form.Item
                             label="Room ID"
-                            name="room_id"
-                            rules={[{ required: true, message: 'Chọn ID phòng!' }]} // Updated message
-                        >
-                            <Select placeholder="Chọn ID phòng">
+                            name="room_ids"
+                            rules={[{ required: true, message: 'Chọn ID phòng!' }]}>
+                            <Select mode="multiple" placeholder="Chọn ID phòng">
                                 {showtimeData?.data?.rooms?.map(room => (
-                                    <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option> // Use room ID as value
+                                    <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option>
                                 ))}
                             </Select>
                         </Form.Item>
@@ -114,8 +141,7 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Ngày chiếu"
                             name="ngay_chieu"
-                            rules={[{ required: true, message: 'Chọn ngày chiếu!' }]} // Updated message
-                        >
+                            rules={[{ required: true, message: 'Chọn ngày chiếu!' }]}>
                             <DatePicker placeholder="Chọn ngày chiếu" format="YYYY-MM-DD" />
                         </Form.Item>
                     </Col>
@@ -123,12 +149,25 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Giờ chiếu"
                             name="gio_chieu"
-                            rules={[{ required: true, message: 'Chọn giờ chiếu!' }]}>
-                            <Select mode="multiple" placeholder="Chọn giờ chiếu">
-                                <Select.Option value="07:00">07:00</Select.Option>
-                                <Select.Option value="09:00">09:00</Select.Option>
-                                <Select.Option value="11:00">11:00</Select.Option>
-                            </Select>
+                            rules={[{ required: true, message: 'Nhập giờ chiếu!' }]}>
+                            <Input
+                                placeholder="Nhập giờ chiếu (HH:mm)"
+                                onPressEnter={(e) => {
+                                    const value = e.target.value;
+                                    if (value) {
+                                        handleAddShowtime(value);
+                                        e.target.value = ''; // Clear input after adding
+                                    }
+                                }}
+                            />
+                            <div>
+                                {form.getFieldValue('gio_chieu')?.map((time) => (
+                                    <div key={time} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>{time}</span>
+                                        <Button type="link" onClick={() => handleRemoveShowtime(time)}>Xóa</Button>
+                                    </div>
+                                ))}
+                            </div>
                         </Form.Item>
                     </Col>
                 </Row>

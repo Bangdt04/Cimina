@@ -10,6 +10,11 @@ const { Title, Text } = Typography;
 
 const baseColumns = [
     {
+        title: 'Ảnh', 
+        dataIndex: 'anh_phim',
+        render: (text) => <img src={`http://localhost:8000${text}`} alt="Movie Poster" style={{ width: '100px', borderRadius: '8px' }} />, // Render the image
+    },
+    {
         title: 'Tên Phim',
         dataIndex: 'ten_phim',
     },
@@ -39,6 +44,7 @@ function transformData(dt, navigate, setIsDisableOpen, setViewData) {
             dao_dien: item.dao_dien,
             dien_vien: item.dien_vien,
             gia_ve: item.gia_ve,
+            anh_phim: item.anh_phim,
             action: (
                 <div className="action-btn flex gap-3">
                     <Button
@@ -131,22 +137,25 @@ function MovieData({ setParams, params }) {
                 />
             )}
             <Modal
-                title="Chi tiết phim"
-                visible={!!viewData}
-                onCancel={handleViewClose}
-                footer={null}
-                width={600}
-            >
-                {viewData && (
-                    <div style={{ padding: '20px' }}>
-                        <Title level={4}>Thông tin phim</Title>
-                        <p><strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text></p>
-                        <p><strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text></p>
-                        <p><strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text></p>
-                        <p><strong>Giá vé:</strong> <Text>{viewData.gia_ve}</Text></p>
-                    </div>
-                )}
-            </Modal>
+    title="Chi tiết phim"
+    visible={!!viewData}
+    onCancel={handleViewClose}
+    footer={null}
+    width={600}
+>
+    {viewData && (
+        <div style={{ padding: '20px', textAlign: 'center' }}> 
+            {viewData.anh_phim && ( // Check if the image URL exists
+                <img src={`http://localhost:8000${viewData.anh_phim}`} alt="Movie Poster" style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }} />
+            )}
+            <Title level={4}>Thông tin phim</Title>
+            <p><strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text></p>
+            <p><strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text></p>
+            <p><strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text></p>
+            <p><strong>Giá vé:</strong> <Text>{viewData.gia_ve}</Text></p>
+        </div>
+    )}
+</Modal>
         </div>
     );
 }
