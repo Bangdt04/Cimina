@@ -29,7 +29,7 @@ const Payment = () => {
   }
 
   const handlePaymentMethodChange = (event) => {
-    setSelectedPaymentMethod(event.target.value.toLowerCase());
+    setSelectedPaymentMethod(event.target.value);
     console.log("Payment", selectedPaymentMethod)
   };
   const handleApplyPromoCode = () => {
@@ -131,7 +131,7 @@ const Payment = () => {
   const callPaymentMethod = async (data) => {
     try {
 
-      const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/${selectedPaymentMethod}`, data, {
+      const result = await axios.post(`http://127.0.0.1:8000/api/payment/${data?.data.id}/${selectedPaymentMethod.toLocaleLowerCase()}`, data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`, // Add the bearer token here
           'Content-Type': 'application/json',
@@ -201,14 +201,14 @@ const Payment = () => {
             <h2 className="text-2xl font-bold mb-6 text-red-500">Phương thức thanh toán</h2>
             <div className="space-y-4 mb-6">
               {["Visa", "NCB", "Master card", "Momo"].map((method) => (
-                <label key={method} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg cursor-pointer transition duration-300 hover:bg-red-600">
+                <label key={method} className={`flex items-center space-x-3 p-3 ${selectedPaymentMethod === method ? 'bg-red-600' : 'bg-gray-700'} rounded-lg cursor-pointer transition duration-300 hover:bg-red-600`}>
                   <input
                     type="radio"
                     name="paymentMethod"
                     value={method} 
                     className="form-radio text-red-500"
                     checked={selectedPaymentMethod === method} 
-                    onChange={handlePaymentMethodChange} 
+                    onChange={handlePaymentMethodChange} n
                   />
                   <span className="text-lg">{method}</span>
                 </label>
