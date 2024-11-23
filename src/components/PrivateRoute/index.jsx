@@ -1,14 +1,16 @@
-import { Navigate, useNavigate } from 'react-router-dom';
-import { isTokenStoraged } from '../../utils/storage';
+import { Navigate } from 'react-router-dom';
+import { isTokenStoraged, getRoles } from '../../utils/storage';
 import config from '../../config';
-import { useGetMe } from '../../hooks/api/useUserApi';
-
-
+import { message } from 'antd'; 
 function PrivateRoute({ children, roles }) {
-    // const { data, isLoading } = useGetMe();
-    console.log("Private Route", roles)
     if (!isTokenStoraged()) {
         return <Navigate to={config.routes.web.login} replace />;
+    }
+
+    const userRole = getRoles();
+    if (!roles.includes(userRole)) {
+        message.warning("Bạn không đủ quyền truy cập");
+        return <Navigate to={config.routes.web.home} replace />;
     }
 
     return children;

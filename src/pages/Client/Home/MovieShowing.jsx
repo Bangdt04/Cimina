@@ -15,7 +15,7 @@ const MovieShowing = () => {
         return groups;
     };
 
-    const movieGroups = groupMovies(data?.data || [], 4)
+    const movieGroups = groupMovies(data?.data?.slice(0, 8) || [], 4) // Chỉ lấy 8 phim đầu tiên
 
     return (
         <>
@@ -27,7 +27,7 @@ const MovieShowing = () => {
                         </span>
                         Phim đang chiếu
                     </h2>
-                    <a className="text-blue-400" href="#">
+                    <a className="text-blue-400" href={config.routes.web.moviesShowing}>
                         Xem tất cả
                     </a>
                 </div>

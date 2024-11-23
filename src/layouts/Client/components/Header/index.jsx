@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Dropdown, Menu, Spin } from 'antd';
 import { clearToken, isTokenStoraged, getRoles, getInfoAuth } from '../../../../utils/storage';
 import { useGetGernes } from "../../../../hooks/api/useGenreApi";
+import Search from "../../../../pages/Client/Home/Search"; // Add this import
 
 function Header() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -17,14 +18,11 @@ function Header() {
     let roles = getRoles();
     let info = getInfoAuth();
 
-
     const onLogout = () => {
         clearToken();
         setUser(null);
         window.location.reload();
     };
-
-
 
     const openRegisterModal = () => {
         setShowRegisterModal(true);
@@ -36,9 +34,9 @@ function Header() {
     };
 
     const openLoginModal = () => {
-        console.log("Login Modal")
+        console.log("Login Modal");
         setShowLoginModal(true);
-        setShowRegisterModal(false)
+        setShowRegisterModal(false);
     };
 
     const closeLoginModal = () => {
@@ -80,11 +78,11 @@ function Header() {
         <div>
             <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500">
                 <div className="flex items-center" style={{ marginLeft: 100 }}>
-                    <img alt="NCC logo" className="mr-2" height="50" src={Logo} width="50" />
+                    <img alt="NCC logo" className="mr-0" height="50" src={Logo} width="50"  />
                     <nav className="flex space-x-4">
                         <nav className="flex space-x-4 relative">
                             <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
+                                className={({ isActive }) => (isActive ? ' ml-5 pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.home}
                             >
                                 Trang chủ
@@ -95,7 +93,7 @@ function Header() {
                             >
                                 Lịch Chiếu
                             </NavLink>
-                            <Dropdown  className="pr-4 text-gray-400" overlay={menuNavLink} trigger={['hover']}>
+                            <Dropdown className="pr-4 text-gray-400" overlay={menuNavLink} trigger={['hover']}>
                                 <NavLink
                                     className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                     to={config.routes.web.theLoai}
@@ -103,12 +101,6 @@ function Header() {
                                     Thể Loại
                                 </NavLink>
                             </Dropdown>
-                            <NavLink
-                                className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
-                                to={config.routes.web.tinTuc}
-                            >
-                                Tin Tức
-                            </NavLink>
                             <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
@@ -136,9 +128,13 @@ function Header() {
                         </nav>
                     </nav>
                 </div>
+                <div className="flex items-center"> {/* Add this div for Search */}
+                    <Search /> {/* Add Search component here */}
+                </div>
                 {isTokenStoraged() ? (
                     <>
                         <div className="relative flex items-center space-x-2" style={{ marginRight: 100 }}>
+
                             {roles === 'admin' ? (<>
                                 {/* <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink> nút quản trị viên  */}
                             </>) : (<></>)}
@@ -150,9 +146,8 @@ function Header() {
                             </Dropdown>
                         </div>
                     </>
-                )
-                    :
-                    (<>
+                ) : (
+                    <>
                         <div className="flex items-center" style={{ marginRight: 100 }}>
                             <button
                                 className="border border-white text-white py-2 px-4 pr-6 pl-6 rounded-full mr-6 hover-zoom"
@@ -166,10 +161,9 @@ function Header() {
                                 Đăng nhập
                             </button>
                         </div>
-                    </>)}
-
+                    </>
+                )}
             </header>
-
 
             {showLoginModal && (
                 <LoginModal

@@ -1,78 +1,114 @@
-import { Button, Col, Form, Input, Row, notification, Typography, Select } from 'antd';
+import { Button, Col, Form, Input, Row, notification, Typography, Select, Upload } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import axios from 'axios';
 import config from '../../../config';
-import { useCreateFood, useShowFood, useUpdateFood } from '../../../hooks/api/useFoodApi';
+import { UploadOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
 function FoodFormPage() {
     const navigate = useNavigate();
     let { id } = useParams();
-    const { isLoading, data: food } = id ? useShowFood(id) : { isLoading: null, data: null };
-
     const [form] = Form.useForm();
-    const mutateAdd = useCreateFood({
-        success: () => {
-            notification.success({ message: 'Thêm mới thành công' });
-            navigate(config.routes.admin.food);
-        },
-        error: () => {
-            notification.error({ message: 'Thêm mới thất bại' });
-        },
-    });
-
-    const mutateEdit = useUpdateFood({
-        id,
-        success: () => {
-            notification.success({ message: 'Cập nhật thành công' });
-            navigate(config.routes.admin.food);
-        },
-        error: () => {
-            notification.error({ message: 'Cập nhật thất bại' });
-        },
-    });
 
     useEffect(() => {
-        if (!food) return;
-        form.setFieldsValue({
-            ten_do_an: food?.data?.ten_do_an,
-            gia: food?.data?.gia,
-            ghi_chu: food?.data?.ghi_chu,
-            trang_thai: food?.data?.trang_thai,
-        });
-    }, [food]);
-
-    const onAddFinish = async (formData) => {
-        await mutateAdd.mutateAsync(formData);
-    };
-
-    const onEditFinish = async (formData) => {
-        await mutateEdit.mutateAsync({ id, body: formData });
-    };
-
-    const onFinish = async () => {
-        const formData = {
-            ten_do_an: form.getFieldValue('ten_do_an'),
-            gia: form.getFieldValue('gia'),
-            ghi_chu: form.getFieldValue('ghi_chu'),
-            trang_thai: form.getFieldValue('trang_thai'),
-        };
-
         if (id) {
-            await onEditFinish(formData);
-        } else {
-            await onAddFinish(formData);
+            const fetchFood = async () => {
+                try {
+                    const { data } = await axios.get(`http://127.0.0.1:8000/api/editFood/${id}`);
+                    form.setFieldsValue({
+                        ten_do_an: data.data.ten_do_an,
+                        gia: data.data.gia,
+                        ghi_chu: data.data.ghi_chu,
+                        anh_do_an: [
+                            {
+                                uid: '-1',
+                                name: data.data.anh_do_an.split('/').pop(),
+                                status: 'done',
+                                url: `http://127.0.0.1:8000${data.data.anh_do_an}`,
+                            },
+                        ],
+                    });
+                } catch (error) {
+                    notification.error({
+                        message: 'Không thể tải dữ liệu',
+                        description: 'Vui lòng thử lại sau!',
+                    });
+                }
+            };
+            fetchFood();
+        }
+    }, [id, form]);
+
+    const onFinish = async (values) => {
+        const formData = new FormData();
+    
+        Object.keys(values).forEach((key) => {
+            if (key === 'anh_do_an') {
+                if (values[key] && values[key][0]?.originFileObj) {
+                    // Trường hợp có ảnh mới được upload
+                    formData.append(key, values[key][0].originFileObj);
+                } else if (id && Array.isArray(values[key]) && values[key][0]?.url) {
+                    // Trường hợp không có ảnh mới nhưng đã tồn tại ảnh cũ
+                    formData.append(key, values[key][0].url.replace('http://127.0.0.1:8000', ''));
+                }
+            } else {
+                formData.append(key, values[key]);
+            }
+        });
+
+        try {
+            const url = id
+                ? `http://127.0.0.1:8000/api/updateFood/${id}`
+                : 'http://127.0.0.1:8000/api/storeFood';
+
+            const response = await axios.post(url, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            notification.success({
+                message: id ? 'Cập nhật món ăn thành công' : 'Thêm mới món ăn thành công',
+                description: response.data.message,
+            });
+
+            navigate(config.routes.admin.food);
+        } catch (error) {
+            if (error.response) {
+                const { data } = error.response;
+                notification.error({
+                    message: id ? 'Cập nhật món ăn thất bại' : 'Thêm mới món ăn thất bại',
+                    description: data.message || 'Có lỗi xảy ra khi thao tác với món ăn.',
+                });
+            }
         }
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}> {/* Improved styling */}
-            <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div
+            className="form-container"
+            style={{
+                padding: '40px',
+                maxWidth: '800px',
+                margin: 'auto',
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.1)',
+            }}
+        >
+            <Title
+                level={2}
+                style={{
+                    textAlign: 'center',
+                    marginBottom: '30px',
+                    color: '#4CAF50',
+                    fontWeight: 600,
+                }}
+            >
                 {id ? 'Cập nhật thông tin món ăn' : 'Thêm món ăn mới'}
             </Title>
             <Form form={form} layout="vertical" onFinish={onFinish}>
-                <Row gutter={16}>
+                <Row gutter={[24, 24]}>
                     <Col span={12}>
                         <Form.Item
                             label="Tên món ăn"
@@ -84,40 +120,64 @@ function FoodFormPage() {
                     </Col>
                     <Col span={12}>
                         <Form.Item
-                            label="Giá"
+                            label="Giá (VND)"
                             name="gia"
                             rules={[{ required: true, message: 'Nhập giá món ăn!' }]}
                         >
-                            <Input placeholder="Nhập giá món ăn" />
+                            <Input type="number" placeholder="Nhập giá món ăn" />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Ghi chú"
-                            name="ghi_chu"
-                        >
-                            <Input placeholder="Nhập ghi chú" />
+                        <Form.Item label="Ghi chú" name="ghi_chu">
+                            <Input.TextArea rows={2} placeholder="Nhập ghi chú" />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+        
+                    <Col span={24}>
                         <Form.Item
-                            label="Trạng thái"
-                            name="trang_thai"
-                            rules={[{ required: true, message: 'Nhập trạng thái!' }]}
+                            label="Ảnh món ăn"
+                            name="anh_do_an"
+                            valuePropName="fileList"
+                            getValueFromEvent={(e) => e?.fileList}
+                            extra="Chọn ảnh món ăn (Tối đa 2MB)"
                         >
-                            <Select placeholder="Chọn trạng thái">
-                                <Select.Option value={0}>Còn hàng</Select.Option>
-                                <Select.Option value={1}>Hết hàng</Select.Option>
-                            </Select>
+                            <Upload
+                                beforeUpload={() => false}
+                                listType="picture-card"
+                                accept=".jpg,.jpeg,.png,.gif"
+                                maxCount={1}
+                                showUploadList={{ showRemoveIcon: true }}
+                            >
+                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                            </Upload>
                         </Form.Item>
                     </Col>
                 </Row>
-                <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%' , background:'red' }} onClick={() => navigate(-1)}>Hủy</Button> {/* Added navigation to previous page */}
-                    <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%' }}>
+                <Row justify="space-between" style={{ marginTop: '20px' }}>
+                    <Button
+                        style={{
+                            width: '48%',
+                            backgroundColor: '#f44336',
+                            color: '#ffffff',
+                            borderRadius: '8px',
+                        }}
+                        onClick={() => navigate(-1)}
+                    >
+                        Hủy
+                    </Button>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{
+                            width: '48%',
+                            backgroundColor: '#4CAF50',
+                            color: '#ffffff',
+                            borderRadius: '8px',
+                        }}
+                    >
                         {id ? 'Cập nhật' : 'Thêm mới'}
                     </Button>
-                </div>
+                </Row>
             </Form>
         </div>
     );

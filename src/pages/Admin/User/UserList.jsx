@@ -1,52 +1,247 @@
-import { faEdit, faEye, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Input, Table, Tag } from 'antd';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import config from '../../../config';
-import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
-import UserDetail from './UserDetail';
-import UserEdit from './UserEdit';
-import UserActions from './UserActions';
-import { baseColumns, generateUserData } from './UserData';
+import { Button, Input, Table, Select, message, Modal, InputNumber } from 'antd';
+import { useState, useEffect } from 'react';
 
 function UserList() {
-    const [isDetailOpen, setIsDetailOpen] = useState({ id: 0, isOpen: false });
-    const [isEditOpen, setIsEditOpen] = useState({ id: 0, isOpen: false });
-    const [isDeleteOpen, setIsDeleteOpen] = useState({ id: 0, isOpen: false });
-    const navigate = useNavigate();
-    const [rawData, setRawData] = useState(generateUserData());
-    const [data, setData] = useState(rawData);
+    const [data, setData] = useState([]);
+    const [editingKey, setEditingKey] = useState('');
 
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-            name: record.name,
-        }),
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const tokenData = localStorage.getItem('token');
+                const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
+
+                const response = await fetch('http://127.0.0.1:8000/api/showAllUser', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+                if (result && Array.isArray(result.data)) {
+                    setData(result.data);
+                } else {
+                    console.error('Expected an array but got:', result);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const updateUser = async (id, updatedData) => {
+        try {
+            const tokenData = localStorage.getItem('token');
+            const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
+
+            const response = await fetch(`http://127.0.0.1:8000/api/updateUser/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (response.ok) {
+                message.success('Cập nhật thành công!');
+            } else {
+                message.error('Cập nhật thất bại!');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            message.error('Đã xảy ra lỗi khi cập nhật!');
+        }
     };
 
-    const onSearch = (value) => {
-        const filterTable = rawData.filter((o) =>
-            Object.keys(o).some((k) => String(o[k]).toLowerCase().includes(value.toLowerCase())),
+    const deleteUser = async (id) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa người dùng này?',
+            okText: 'Có',
+            okType: 'danger',
+            cancelText: 'Không',
+            onOk: async () => {
+                try {
+                    const tokenData = localStorage.getItem('token');
+                    const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
+
+                    const response = await fetch(`http://127.0.0.1:8000/api/deleteUser/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        message.success('Xóa thành công!');
+                        setData((prevData) => prevData.filter((item) => item.id !== id)); // Remove deleted user from state
+                    } else {
+                        message.error('Xóa thất bại!');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    message.error('Đã xảy ra lỗi khi xóa!');
+                }
+            },
+        });
+    };
+
+    const isEditing = (record) => record.id === editingKey;
+
+    const edit = (record) => {
+        setEditingKey(record.id);
+    };
+
+    const save = async (id) => {
+        try {
+            const updatedRow = data.find((row) => row.id === id);
+            await updateUser(id, {
+                ho_ten: updatedRow.ho_ten,
+                gioi_tinh: updatedRow.gioi_tinh,
+                vai_tro: updatedRow.vai_tro,
+                diem_thuong: updatedRow.diem_thuong,
+            });
+            setEditingKey('');
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const cancel = () => {
+        setEditingKey('');
+    };
+
+    const handleChange = (id, key, value) => {
+        setData((prevData) =>
+            prevData.map((item) =>
+                item.id === id ? { ...item, [key]: value } : item
+            )
         );
-        setData(filterTable);
     };
 
     const columns = [
-        ...baseColumns,
+        {
+            title: 'Họ Tên',
+            dataIndex: 'ho_ten',
+            key: 'ho_ten',
+        },
+        {
+            title: 'Giới Tính',
+            dataIndex: 'gioi_tinh',
+            key: 'gioi_tinh',
+            render: (text, record) =>
+                isEditing(record) ? (
+                    <Select
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'gioi_tinh', value)}
+                        style={{ width: 100 }}
+                    >
+                        <Select.Option value="nam">Nam</Select.Option>
+                        <Select.Option value="nu">Nữ</Select.Option>
+                        <Select.Option value="khac">Khác</Select.Option>
+                    </Select>
+                ) : (
+                    text === 'nam' ? 'Nam' : text === 'nu' ? 'Nữ' : 'Khác' 
+                ),
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Chức vụ',
+            dataIndex: 'vai_tro',
+            key: 'vai_tro',
+            render: (text, record) => {
+                let roleDisplay;
+                let roleColor;
+
+                // Determine the display text and color based on the role
+                switch (text) {
+                    case 'admin':
+                        roleDisplay = 'Admin';
+                        roleColor = 'text-red-500'; // Example color for Admin
+                        break;
+                    case 'nhan_vien':
+                        roleDisplay = 'Nhân viên';
+                        roleColor = 'text-blue-500'; // Example color for Nhân viên
+                        break;
+                    case 'user':
+                        roleDisplay = 'Người dùng';
+                        roleColor = 'text-green-500'; // Example color for User
+                        break;
+                    default:
+                        roleDisplay = text; // Fallback
+                        roleColor = 'text-gray-500'; // Default color
+                }
+
+                return isEditing(record) ? (
+                    <Select
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'vai_tro', value)}
+                        style={{ width: 120 }}
+                    >
+                        <Select.Option value="admin">Admin</Select.Option>
+                        <Select.Option value="nhan_vien">Nhân viên</Select.Option>
+                        <Select.Option value="user">Người dùng</Select.Option>
+                    </Select>
+                ) : (
+                    <span className={roleColor}>{roleDisplay}</span>
+                );
+            },
+        },
+        {
+            title: 'Điểm Thưởng',
+            dataIndex: 'diem_thuong',
+            key: 'diem_thuong',
+            render: (text, record) =>
+                isEditing(record) ? (
+                    <InputNumber
+                        defaultValue={text}
+                        onChange={(value) => handleChange(record.id, 'diem_thuong', value)}
+                        min={0}
+                        style={{ width: 100 }}
+                    />
+                ) : (
+                    text
+                ),
+        },
         {
             title: 'Thao tác',
             key: 'actions',
-            render: (_, record) => (
-                <UserActions
-                    record={record}
-                    setIsDetailOpen={setIsDetailOpen}
-                    setIsEditOpen={setIsEditOpen}
-                    setIsDeleteOpen={setIsDeleteOpen}
-                />
-            ),
+            render: (_, record) =>
+                isEditing(record) ? (
+                    <>
+                        <Button type="link" onClick={() => save(record.id)}>
+                            Lưu
+                        </Button>
+                        <Button type="link" onClick={cancel}>
+                            Hủy
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button type="link" onClick={() => edit(record)}>
+                            Sửa
+                        </Button>
+                        <Button 
+                            type="link" 
+                            onClick={() => deleteUser(record.id)} 
+                            style={{ color: 'red', fontWeight: 'bold' }} // Enhanced styling for delete button
+                        >
+                            Xóa
+                        </Button>
+                    </>
+                ),
         },
     ];
 
@@ -58,7 +253,6 @@ function UserList() {
                     allowClear
                     enterButton
                     placeholder="Nhập từ khoá tìm kiếm"
-                    onSearch={onSearch}
                 />
                 <Button type="primary" icon={<FontAwesomeIcon icon={faPlus} />}>
                     Thêm mới
@@ -66,12 +260,9 @@ function UserList() {
             </div>
             <div className="bg-gray-800 rounded-lg overflow-hidden flex-grow">
                 <Table
-                    rowSelection={{
-                        type: 'checkbox',
-                        ...rowSelection,
-                    }}
                     columns={columns}
                     dataSource={data}
+                    rowKey="id"
                     pagination={{
                         defaultPageSize: 10,
                         showSizeChanger: true,
@@ -81,13 +272,6 @@ function UserList() {
                     scroll={{ y: 'calc(100vh - 300px)' }}
                 />
             </div>
-            <UserDetail isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} />
-            <UserEdit isEditOpen={isEditOpen} setIsEditOpen={setIsEditOpen} />
-            <ConfirmPrompt
-                content="Bạn có chắc chắn muốn xóa người dùng này?"
-                isDisableOpen={isDeleteOpen}
-                setIsDisableOpen={setIsDeleteOpen}
-            />
         </div>
     );
 }

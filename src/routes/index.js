@@ -117,9 +117,8 @@ const publicRoutes = [
         roles: ['user'],
         private: false,
     },
-
     {
-        path: config.routes.web.profile ,
+        path: config.routes.web.profile,
         component: ProfilePage,
         layout: ClientLayout,
         roles: ['user'],
@@ -146,7 +145,6 @@ const publicRoutes = [
         roles: ['user'],
         private: false,
     },
-
     {
         path: config.routes.web.transaction,
         component: TransactionSuccess,
@@ -169,189 +167,192 @@ const privateRoutes = [
         path: config.routes.admin.dashboard,
         component: DashboardPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.setting,
         component: SettingPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.auto,
         component: AutoApprovePage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },{
+    },
+    {
         path: config.routes.admin.genres,
         component: GenrePage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.genres + '/create',
         component: GenreFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },    
+    },
     {
         path: config.routes.admin.genres + '/update/:id',
         component: GenreFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },{
+    },
+    {
         path: config.routes.admin.voucher,
         component: Voucher,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.voucher + '/create',
         component: VoucherFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.voucher + '/update/:id',
         component: VoucherFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.blogs,
         component: BlogsPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },{
+    },
+    {
         path: config.routes.admin.users,
         component: UserPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },{
+    },
+    {
         path: config.routes.admin.movies,
         component: MoviePage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.movies + '/create',
         component: MovieFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.movies + '/update/:id',
         component: MovieFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.room,
         component: RoomPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.room + '/create',
         component: RoomFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.room + '/update/:id',
         component: RoomFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
-    },  {
+    },
+    {
         path: config.routes.admin.room,
         component: RoomData,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
-
     {
         path: config.routes.admin.seat,
         component: SeatPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.seat + '/create',
         component: SeatFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.seat + '/update/:id',
         component: SeatFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.food,
         component: FoodPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.food + '/create',
         component: FoodFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.food + '/update/:id',
         component: FoodFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.showTime,
         component: ShowTimePage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.showTime + '/create',
         component: ShowTimeFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
         path: config.routes.admin.showTime + '/update/:id',
         component: ShowTimeFormPage,
         layout: AdminLayout,
-        roles: ['admin'],
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
-]
-
+];
 
 const routes = [...publicRoutes, ...privateRoutes];
 export default routes;

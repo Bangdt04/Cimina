@@ -1,30 +1,37 @@
-import { Button, Input, Table, notification, Modal, Typography } from 'antd';
+import { Button, Input, Table, notification, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PauseOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import config from '../../../config';
-import { useDeleteFood, useGetFoods } from '../../../hooks/api/useFoodApi';
-import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const baseColumns = [
+    {
+        title: 'Ảnh',
+        dataIndex: 'anh_do_an',
+        render: (text) => (
+            <img
+                src={`http://localhost:8000${text}`}
+                alt="Food"
+                style={{ width: '100px', height: '80px', borderRadius: '8px', objectFit: 'cover' }}
+            />
+        ),
+    },
     {
         title: 'Tên món ăn',
         dataIndex: 'ten_do_an',
         sorter: true,
     },
     {
-        title: 'Giá',
+        title: 'Giá (VND)',
         dataIndex: 'gia',
+        render: (gia) => gia.toLocaleString(),
     },
     {
         title: 'Ghi chú',
         dataIndex: 'ghi_chu',
-    },
-    {
-        title: 'Trạng thái',
-        dataIndex: 'trang_thai',
     },
     {
         title: 'Thao tác',
@@ -32,134 +39,129 @@ const baseColumns = [
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen, setViewData) {
-    return dt?.map((item) => {
-        return {
-            key: item.id,
-            ten_do_an: item.ten_do_an,
-            gia: item.gia,
-            ghi_chu: item.ghi_chu,
-            trang_thai: (
-                <span className={item.trang_thai === 0 ? 'text-green-500' : 'text-red-500'}>
-                    {item.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}
-                </span>
-            ),
-            action: (
-                <div className="action-btn flex gap-3">
+function transformData(data, navigate, handleStop, handleOpen, handleDelete) {
+    return data.map((item) => ({
+        key: item.id,
+        ten_do_an: item.ten_do_an,
+        gia: item.gia,
+        ghi_chu: item.ghi_chu,
+        anh_do_an: item.anh_do_an,
+        action: (
+            <div className="action-btn flex gap-2">
+                <Button
+                    icon={<EditOutlined />}
+                    type="primary"
+                    onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
+                >
+                    Sửa
+                </Button>
+                {item.trang_thai === 0 ? (
                     <Button
-                        icon={<EyeOutlined />}
-                        className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
-                        onClick={() => setViewData(item)}
+                        icon={<PauseOutlined />}
+                        type="dashed"
+                        danger
+                        onClick={() => handleStop(item.id)}
                     >
-                        Xem
+                        Dừng bán
                     </Button>
+                ) : (
                     <Button
-                        icon={<EditOutlined />}
-                        className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
-                        onClick={() => navigate(`${config.routes.admin.food}/update/${item.id}`)}
+                        icon={<PlayCircleOutlined />}
+                        type="success"
+                        onClick={() => handleOpen(item.id)}
                     >
-                        Sửa
+                        Mở bán
                     </Button>
-                    <Button
-                        icon={<DeleteOutlined />}
-                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        Xóa
-                    </Button>
-                </div>
-            ),
-        };
-    });
+                )}
+                <Button
+                    icon={<DeleteOutlined />}
+                    type="primary"
+                    danger
+                    onClick={() => handleDelete(item.id)}
+                >
+                    Xóa
+                </Button>
+            </div>
+        ),
+    }));
 }
 
-function FoodData({ setParams, params }) {
-    const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
-    const [searchValue, setSearchValue] = useState('');
-    const [viewData, setViewData] = useState(null);
+function FoodData() {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { data, isLoading, refetch } = useGetFoods();
-    const [tdata, setTData] = useState([]);
+
+    const fetchFoods = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('http://localhost:8000/api/foods');
+            setData(response.data.data);
+        } catch (error) {
+            notification.error({ message: 'Không thể tải dữ liệu!' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStop = async (id) => {
+        try {
+            await axios.put(`http://localhost:8000/api/stopFood/${id}`);
+            notification.success({ message: 'Đã dừng bán món ăn!' });
+            fetchFoods();
+        } catch (error) {
+            notification.error({ message: 'Không thể dừng bán món ăn!' });
+        }
+    };
+
+    const handleOpen = async (id) => {
+        try {
+            await axios.put(`http://localhost:8000/api/openFood/${id}`);
+            notification.success({ message: 'Đã mở bán món ăn!' });
+            fetchFoods();
+        } catch (error) {
+            notification.error({ message: 'Không thể mở bán món ăn!' });
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/foods/${id}`);
+            notification.success({ message: 'Xóa món ăn thành công!' });
+            fetchFoods();
+        } catch (error) {
+            notification.error({ message: 'Xóa món ăn thất bại!' });
+        }
+    };
 
     useEffect(() => {
-        if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDisableOpen, setViewData);
-        setTData(dt);
-    }, [isLoading, data]);
+        fetchFoods();
+    }, []);
 
-    const mutationDelete = useDeleteFood({
-        success: () => {
-            setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-            notification.success({ message: 'Xóa thành công' });
-            refetch();
-        },
-        error: () => {
-            notification.error({ message: 'Xóa thất bại' });
-        },
-        obj: { id: isDisableOpen.id },
-    });
-
-    const onDelete = async (id) => {
-        await mutationDelete.mutateAsync(id);
-    };
-
-    const onSearch = (value) => {
-        setSearchValue(value);
-        const filteredData = data?.data.filter(item =>
-            item.ten_do_an.toLowerCase().includes(value.toLowerCase())
-        );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen, setViewData));
-    };
-
-    const handleViewClose = () => {
-        setViewData(null);
-    };
+    const transformedData = transformData(data, navigate, handleStop, handleOpen, handleDelete);
 
     return (
-        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
-            <div className="mb-3 flex items-center">
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+            <div className="mb-4">
                 <Input.Search
-                    className="xl:w-1/4 md:w-1/2"
+                    placeholder="Tìm kiếm món ăn..."
+                    onSearch={(value) =>
+                        setData(
+                            data.filter((item) =>
+                                item.ten_do_an.toLowerCase().includes(value.toLowerCase())
+                            )
+                        )
+                    }
                     allowClear
-                    enterButton
-                    placeholder="Nhập từ khoá tìm kiếm"
-                    onSearch={onSearch}
+                    style={{ width: '50%' }}
                 />
             </div>
             <Table
-                loading={isLoading}
+                loading={loading}
                 columns={baseColumns}
-                dataSource={tdata}
+                dataSource={transformedData}
                 pagination={{ showSizeChanger: true }}
-                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200')}
                 bordered
-                size="middle"
             />
-            {isDisableOpen.id !== 0 && (
-                <ConfirmPrompt
-                    content="Bạn có muốn xóa món ăn này?"
-                    isDisableOpen={isDisableOpen}
-                    setIsDisableOpen={setIsDisableOpen}
-                    handleConfirm={onDelete}
-                />
-            )}
-            <Modal
-                title="Chi tiết món ăn"
-                visible={!!viewData}
-                onCancel={handleViewClose}
-                footer={null}
-                width={600}
-            >
-                {viewData && (
-                    <div style={{ padding: '20px' }}>
-                        <Title level={4}>Thông tin món ăn</Title>
-                        <p><strong>Tên món ăn:</strong> <Text>{viewData.ten_do_an}</Text></p>
-                        <p><strong>Giá:</strong> <Text>{viewData.gia}</Text></p>
-                        <p><strong>Ghi chú:</strong> <Text>{viewData.ghi_chu}</Text></p>
-                        <p><strong>Trạng thái:</strong> <Text>{viewData.trang_thai === 0 ? 'Còn hàng' : 'Hết hàng'}</Text></p>
-                    </div>
-                )}
-            </Modal>
         </div>
     );
 }
