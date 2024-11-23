@@ -100,7 +100,7 @@ const FoodMenu = () => {
                         <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
                             <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                             <div className="p-4">
-                                <p className="font-bold text-lg text-green-400">Giá: {item.gia}đ</p>
+                                <p className="font-bold text-lg text-green-400">Giá: {Number(item.gia).toLocaleString()}đ</p>
                                 <p className="font-bold text-xl text-white">{item.ten_do_an}</p>
                                 <div className="flex items-center mt-2">
                                     <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>

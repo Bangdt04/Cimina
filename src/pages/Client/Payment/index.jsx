@@ -226,13 +226,14 @@ const Payment = () => {
 
         </div>
       </div>
+
       <PromoCodeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         promoCodes={promoCodes}
         onSelectPromoCode={handleSelectPromoCode}
       />
-    </div>
+    </div >
 
 
   );
@@ -245,22 +246,37 @@ const PromoCodeModal = ({ isOpen, onClose, promoCodes, onSelectPromoCode }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/3">
-        <h2 className="text-lg font-bold mb-4">Các mã khuyến mãi</h2>
-        <ul>
-          {promoCodes.map((code, index) => (
-            <li key={index} className="mb-2 " style={{ cursor: 'pointer', color: 'black' }} onClick={() => onSelectPromoCode(code)}>
-              {code}
-            </li>
-          ))}
-        </ul>
-        <button
-          className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-          onClick={onClose}
-        >
-          Đóng
-        </button>
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-lg w-96">
+        <div className="bg-yellow-500 text-white text-lg font-semibold p-4 rounded-t-lg flex justify-between items-center">
+          <span>Chọn Yoonly Voucher</span>
+          <button className="text-xl" onClick={onClose}>×</button>
+        </div>
+        <div className="p-4">
+          <input className="w-full p-2 border rounded-md mb-4" placeholder="Nhập mã khuyến mãi" type="text" />
+          <div className="space-y-4">
+            {promoCodes.map((code, index) => (
+              <div key={index} className="border rounded-md p-4 flex items 
+              center justify-between" style={{ cursor: 'pointer' }} onClick={() => onSelectPromoCode(code)}>
+                <div className="flex items-center">
+                  <img alt="Voucher image" className="w-16 h-16 mr-4" src="https://storage.googleapis.com/a1aa/image/mtqkgsnb9j70L1wtUJ3YU0JKLgMdco5IhPhoctBgPdNs238E.jpg" />
+                  <div>
+                    <div className="text-red-600 font-semibold">Giảm giá {code.discount}đ</div>
+                    <div className="text-gray-600">Đơn tối thiểu {code.minOrder}đ</div>
+                    <div className="text-gray-600">Hạn dùng: <span className="text-red-600">{code.expiryDate}</span></div>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">{code.usageCount}</div>
+                  <input className="form-radio" name="voucher" type="radio" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-gray-100 p-4 flex justify-end space-x-4 rounded-b-lg">
+          <button className="bg-gray-500 text-white px-4 py-2 rounded-md" onClick={onClose}>Quay lại</button>
+        </div>
       </div>
     </div>
   );
