@@ -105,8 +105,7 @@ function Header() {
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
                             >
-                                Khuyến Mãi
-                            </NavLink>
+                                Săn voucher                            </NavLink>
                             <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.giaVe}
@@ -134,9 +133,11 @@ function Header() {
                 {isTokenStoraged() ? (
                     <>
                         <div className="relative flex items-center space-x-2" style={{ marginRight: 100 }}>
-                            {roles === 'admin' ? (
-                                <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink>
-                            ) : null}
+
+                            {roles === 'admin' ? (<>
+                                {/* <NavLink className="mr-4 bg-red-600 px-2 py-2 rounded-full hover-zoom" to={config.routes.admin.dashboard}>Quản trị viên</NavLink> nút quản trị viên  */}
+                            </>) : (<></>)}
+
                             <Dropdown overlay={menu} trigger={['click']}>
                                 <span id="user-name" className="user-name cursor-pointer">
                                     {info.ho_ten} ▼
