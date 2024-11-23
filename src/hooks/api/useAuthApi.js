@@ -11,3 +11,6 @@ export const useRegister = (updater) => {
 export const useConfirmEmail = (updater) => {
     return usePost(apiRoutes.common.auth.confirmed, updater);
 }
+export const useGetUser = () => {
+    return useGet(apiRoutes.common.auth.user);
+}
