@@ -1,8 +1,8 @@
-import { Button } from "antd";
 import MyProfile from "./MyProfile";
 import ScoreHistory from "./ScoreHistory";
 import TicketHistory from "./TicketHistory";
 import { useState } from "react";
+import { getTokenOfUser } from "../../../utils/storage";
 
 const ProfilePage = () => {
     const [activeComponent, setActiveComponent] = useState('profile'); // Default component
