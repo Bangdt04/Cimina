@@ -1,4 +1,3 @@
-// src/pages/Admin/Voucher/VoucherPage.jsx
 import VoucherData from "./VoucherData";
 import { useState } from "react";
 import VoucherHead from "./VoucherHead";

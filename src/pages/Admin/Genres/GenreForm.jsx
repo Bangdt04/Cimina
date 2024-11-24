@@ -71,14 +71,14 @@ function GenreFormPage() {
             <div className="flex items-center gap-4 mb-4">
                 <FontAwesomeIcon
                     onClick={() => navigate(config.routes.admin.genres)}
-                    className="text-2xl bg-primary p-3 rounded-full text-white cursor-pointer"
+                    className="text-2xl bg-primary p-3 rounded-full text-white cursor-pointer hover:bg-blue-600 transition-colors duration-300"
                     icon={faChevronLeft}
                 />
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-2xl font-bold text-gray-800">
                     {id ? 'Cập nhật thông tin' : 'Thêm thể loại phim'}
                 </h1>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
                 <Form
                     name="genre-form"
                     layout="vertical"
@@ -89,22 +89,34 @@ function GenreFormPage() {
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
-                                label="Tên danh mục"
+                                label="Tên thể loại"
                                 name="name"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Nhập tên danh mục!',
+                                        message: 'Nhập tên thể loại phim!',
                                     },
                                 ]}
                             >
-                                <Input placeholder="Nhập tên thể loại phim" />
+                                <Input
+                                    placeholder="Nhập tên thể loại phim"
+                                    className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+                                />
                             </Form.Item>
                         </Col>
                     </Row>
-                    <div className="flex justify-between items-center">
-                        <Button htmlType="reset" className="min-w-[10%]">Đặt lại</Button>
-                        <Button htmlType="submit" className="bg-blue-500 text-white min-w-[10%]">
+
+                    <div className="flex justify-between items-center mt-4">
+                        <Button
+                            htmlType="reset"
+                            className="min-w-[10%] text-gray-700 border border-gray-300 rounded-lg py-2 px-4 hover:bg-gray-100 transition-colors duration-300"
+                        >
+                            Đặt lại
+                        </Button>
+                        <Button
+                            htmlType="submit"
+                            className="bg-blue-500 text-white rounded-lg py-2 px-4 hover:bg-blue-600 transition-colors duration-300"
+                        >
                             {id ? 'Cập nhật' : 'Thêm mới'}
                         </Button>
                     </div>

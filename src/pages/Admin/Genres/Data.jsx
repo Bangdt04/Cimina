@@ -1,21 +1,14 @@
-import { faEdit, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Input, Table, Tag, notification } from 'antd';
+import { Button, Input, Table, Tooltip, notification } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 import { useDeleteGerne, useGetGernes } from '../../../hooks/api/useGenreApi';
 
-
 const baseColumns = [
-    {
-        title: 'Id',
-        dataIndex: 'id',
-        sorter: true,
-        width: 50,
-    },
     {
         title: 'Tên thể loại',
         dataIndex: 'name',
@@ -26,42 +19,40 @@ const baseColumns = [
     },
 ];
 
-function transformData(dt, navigate, setIsDetailOpen, setIsDisableOpen) {
-    let id = 1; // Initialize the id variable
+function transformData(dt, navigate, setIsDisableOpen) {
+    let id = 1; 
     return dt?.map((item) => {
         id++; 
         return {
-            key: id - 1, // Use the current id as the key
-            id: id - 1, //  Use the current id as the id
+            key: id - 1,
             name: item.ten_loai_phim,
             action: (
                 <div className="action-btn flex gap-3">
-                    <Button
-                        className="text-green-500 border border-green-500"
-                        onClick={() =>
-                            navigate(`${config.routes.admin.genres}/update/${item.id}`)
-                        }
-                    >
-                        <FontAwesomeIcon icon={faEdit} />
-                    </Button>
-                    <Button
-                        className={'text-red-500 border border-red-500'}
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        <FontAwesomeIcon icon={faTrash} />
-                    </Button>
+                    <Tooltip title="Chỉnh sửa">
+                        <Button
+                            className="text-green-500 border border-green-500"
+                            onClick={() =>
+                                navigate(`${config.routes.admin.genres}/update/${item.id}`)
+                            }
+                        >
+                            <FontAwesomeIcon icon={faEdit} />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <Button
+                            className="text-red-500 border border-red-500"
+                            onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </Button>
+                    </Tooltip>
                 </div>
             ),
         };
-        // Increment the id for the next item
     });
 }
 
 function Data({ setProductCategoryIds, params, setParams }) {
-    const [isDetailOpen, setIsDetailOpen] = useState({
-        id: 0,
-        isOpen: false,
-    });
     const [isDisableOpen, setIsDisableOpen] = useState({
         id: 0,
         isOpen: false,
@@ -79,7 +70,7 @@ function Data({ setProductCategoryIds, params, setParams }) {
 
     useEffect(() => {
         if (isLoading || !data) return;
-        let dt = transformData(data?.data, navigate, setIsDetailOpen, setIsDisableOpen);
+        let dt = transformData(data?.data, navigate, setIsDisableOpen);
         setTData(dt);
         setTableParams({
             ...tableParams,
@@ -91,7 +82,7 @@ function Data({ setProductCategoryIds, params, setParams }) {
     }, [isLoading, data]);
 
     const onSearch = (value) => {
-        const dt = transformData(data?.data, navigate, setIsDetailOpen, setIsDisableOpen);
+        const dt = transformData(data?.data, navigate, setIsDisableOpen);
         if (!value) return;
         const filterTable = dt.filter((o) =>
             Object.keys(o).some((k) => String(o[k]).toLowerCase().includes(value.toLowerCase())),
@@ -121,7 +112,7 @@ function Data({ setProductCategoryIds, params, setParams }) {
             });
             refetch();
         },
-        error: (err) => {
+        error: () => {
             notification.error({
                 message: 'Xóa thể loại thất bại',
             });
@@ -145,6 +136,7 @@ function Data({ setProductCategoryIds, params, setParams }) {
                     enterButton
                     placeholder="Nhập từ khoá tìm kiếm"
                     onSearch={onSearch}
+                    style={{ borderRadius: '8px' }}
                 />
             </div>
 
@@ -154,15 +146,13 @@ function Data({ setProductCategoryIds, params, setParams }) {
                 dataSource={tdata}
                 pagination={{ ...tableParams.pagination, showSizeChanger: true }}
                 onChange={handleTableChange}
+                rowClassName="table-row"
+                scroll={{ x: 'max-content' }}
             />
-
-            {/* {isDetailOpen.id !== 0 && (
-                <CategoryDetail isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen} />
-            )} */}
 
             {isDisableOpen.id !== 0 && (
                 <ConfirmPrompt
-                    content="Bạn có muốn ẩn thể loại này ?"
+                    content="Bạn có muốn ẩn thể loại này?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
                     handleConfirm={onDelete}

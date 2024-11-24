@@ -32,6 +32,6 @@ export const useShowVoucher = (id) => {
 //     return useFetch({ url: `${apiRoutes.ú.showVoucher}/${id}`, key: 'showFood' });
 // };
 
-export const useDeleteVoucher = (id) => {
-    return useDelete(apiRoutes.admin.voucher + '/' + id); // updated to match new route
+export const useDeleteVoucher = (updater) => {
+    return useDelete(apiRoutes.admin.voucher, updater); // updated to match new route
 };
