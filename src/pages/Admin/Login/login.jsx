@@ -59,7 +59,7 @@ const LoginPage = () => {
     }
     return (
         <>
-            <section class="bg-gray-50 dark:bg-gray-900">
+            <section class="bg-gray-900 dark:bg-gray-900">
                 <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                     <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
                         <img class="w-20 h-16 mr-2" src="https://chieuphimquocgia.com.vn/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75" alt="logo" />
@@ -74,7 +74,7 @@ const LoginPage = () => {
                                     <FormItem
                                         name={'email'}
                                         layout="vertical"
-                                        label={<label style={{ color: "white" }}>Email</label>}
+                                        label={<label style={{ color: "black" }}>Email</label>}
                                         rules={[
                                             {
                                                 type: 'email',
@@ -98,7 +98,7 @@ const LoginPage = () => {
                                     <FormItem
                                         name={'password'}
                                         layout="vertical"
-                                        label={<label style={{ color: "white" }}>Mật khẩu</label>}
+                                        label={<label style={{ color: "black" }}>Mật khẩu</label>}
                                         rules={[
                                             {
                                                 required: true,
