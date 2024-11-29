@@ -30,24 +30,17 @@ const VoucherPage = () => {
     };
 
     const fetchSavedVouchers = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/auth/user/voucher-codes', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-            if (!response.ok) {
-                throw new Error('Vui lòng đăng nhập để có thể săn vé!');
-            }
-            const data = await response.json();
-            setSavedVouchers(data); // Adjust according to your API response structure
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setLoadingSavedVouchers(false);
-        }
+
+        const response = await fetch('http://127.0.0.1:8000/api/auth/user/voucher-codes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        const data = await response.json();
+        setSavedVouchers(data); // Adjust according to your API response structure
+
     };
 
     const handleSaveVoucher = async (voucher) => {
@@ -109,11 +102,11 @@ const VoucherPage = () => {
             <div className="mt-8">
                 <h2 className="text-xl font-bold">Vouchers đã lưu</h2>
                 {loadingSavedVouchers ? (
-                    <div>Loading saved vouchers...</div>
+                    <div>Mã giảm giá chưa có...</div>
                 ) : (
                     <ul>
                         {savedVouchers.map((savedVoucher) => (
-                            <div  className="bg-gray-800 border border-gray-700 text-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105 mt-4">
+                            <div className="bg-gray-800 border border-gray-700 text-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105 mt-4">
                                 <div className="p-4">
                                     <p className="text-sm text-gray-400">{savedVoucher.mota}</p>
                                     <p className="font-bold text-lg">Mã: {savedVoucher.ma_giam_gia}</p>
