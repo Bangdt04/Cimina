@@ -23,6 +23,7 @@ import SeatFormPage from "../pages/Admin/Seats/SeatForm";
 import ShowTimePage from "../pages/Admin/ShowTime";
 import ShowTimeFormPage from "../pages/Admin/ShowTime/ShowTimeForm";
 import MembershipPage from "../pages/Admin/Membership";
+import MembershipFormPage from "../pages/Admin/Membership/MembershipForm";
 
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
@@ -360,6 +361,21 @@ const privateRoutes = [
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
+    {
+        path: config.routes.admin.membership + '/create',
+        component: MembershipFormPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.membership + '/update/:id',
+        component: MembershipFormPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+   
 ];
 
 const routes = [...publicRoutes, ...privateRoutes];
