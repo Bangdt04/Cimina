@@ -5,7 +5,7 @@ const Voucher = () => {
                 <h2 className="text-xl font-bold">
                     Khuyến mãi
                 </h2>
-                <a className="text-blue-400" href="#">
+                <a className="text-blue-400" href="/voucher">
                     Xem tất cả
                 </a>
             </div>
@@ -23,7 +23,7 @@ const Voucher = () => {
                         alt="Promotion banner for combo deals"
                         className="rounded-lg hover-zoom"
                         style={{ height: 150, width: 400 }}
-                        src="https://storage.googleapis.com/a1aa/image/wWeeo8RYgQoaPkTicOW9Vu9aK0HBI7h7QDk4iq2AGw7iKFjTA.jpg"
+                        src="https://inannamnguyen.com/wp-content/uploads/2022/10/gifl-voucher-chuan1-500x305.jpg"
                     />
                 </div>
                 <div className="w-full">
