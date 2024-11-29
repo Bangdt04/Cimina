@@ -19,7 +19,8 @@ const routes = {
         roomDetail: '/admin/room/detail',
         seat: '/admin/seats',
         showTime: '/admin/showtime',
-        login: '/admin/login'
+        login: '/admin/login',
+        membership: '/admin/membership',
     },
     web: {
         home: '/',
