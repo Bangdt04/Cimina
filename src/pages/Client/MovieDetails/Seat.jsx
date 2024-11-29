@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGetShowSeatById } from '../../../hooks/api/useMovieApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spin } from 'antd';
-import { getTokenOfUser  } from '../../../utils/storage';
+import { getInfoAuth, getTokenOfUser } from '../../../utils/storage';
 import RoomList from './RoomList';
 
 
@@ -15,9 +15,10 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     const [selectedSeatIds, setSelectedSeatIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [notification, setNotification] = useState('');
-    const accessToken = getTokenOfUser ();
+    const accessToken = getTokenOfUser();
+    const info = getInfoAuth();
     const navigate = useNavigate();
-    const [selectedRoom, setSelectedRoom] = useState(null); 
+    const [selectedRoom, setSelectedRoom] = useState(null);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -42,7 +43,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     }
 
     const rooms = data?.roomsWithSeats;
-    
+
     if (!rooms) {
         return <center className='mb-4'>Không có phòng đang chiếu phim này.</center>;
     }
@@ -50,18 +51,19 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     const toggleSeatSelection = (seat) => {
         if (seat.trang_thai === "đã đặt") {
             setNotification(`Ghế ${seat.ten_ghe_ngoi} đã được đặt!`);
-            return; 
+            return;
         }
 
-        setNotification(''); 
-        
+        setNotification('');
+
         setSelectedSeats((prev) => {
             const isSelected = prev.includes(seat.id);
             const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
-            const seatPrice = Number(movieDetail.gia_ve) || 0; 
-            const priceChange = isSelected ? -seatPrice : seatPrice;
+            const seatPrice = Number(movieDetail.gia_ve) || 0;
+            const priceChange = isSelected ? -(seatPrice +  Number([...prev, seat.gia_ghe])) : (seatPrice + Number([...prev, seat.gia_ghe]));
+            console.log("TICKET PRICE", priceChange);
             setTotalPrice(prevPrice => prevPrice + priceChange);
-        
+
             return updatedSeats;
         });
 
@@ -74,7 +76,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     };
 
     const renderSeat = (seat, room) => {
-        
+
         setSelectedRoom(room);
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
@@ -117,7 +119,9 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         setSelectedSeatIds([])
     };
     const handleFood = () => {
-        navigate(`/food/${id}`, {
+        const path = info['vai_tro'] === 'admin' ? `/admin/bookings/food/${id}` : `/food/${id}`;
+
+        navigate(path, {
             state: {
                 selectedSeats,
                 totalAmount: totalPrice,
@@ -126,11 +130,12 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                 selectedSeatIds,
                 movieDetail,
                 showtimeState: selectedRoom,
-                availableShowtimes: availableShowtimes, 
+                availableShowtimes: availableShowtimes,
                 timeId
             }
         });
     };
+
     return (
         <div className="bg-gray-900 text-white p-6 relative">
             {notification && (
@@ -151,7 +156,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900"></div>
                 </div>
-                <RoomList rooms={rooms} renderSeat={renderSeat} handleRoomChange={handleRoomChange}/>
+                <RoomList rooms={rooms} renderSeat={renderSeat} handleRoomChange={handleRoomChange} />
                 <div className="flex flex-wrap justify-center gap-4 mb-8">
                     <div className="flex items-center">
                         <div className="w-6 h-6 bg-gray-700 mr-2 flex items-center justify-center text-white font-bold">X</div>

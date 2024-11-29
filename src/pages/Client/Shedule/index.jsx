@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useGetShowtimes } from "../../../hooks/api/useShowtimeApi";
+import { useNavigate } from "react-router-dom";
 
 const ShedulePage = () => {
+    const navigative = useNavigate();
     const { data, isLoading } = useGetShowtimes();
     const [selectedDate, setSelectedDate] = useState(new Date()); // Bắt đầu với ngày hôm nay
 
@@ -16,6 +18,16 @@ const ShedulePage = () => {
     };
 
     const dateButtons = getNextThreeDays();
+
+    const handleShowtimeMovie = (movieId, item, time) => {
+        navigative(`/admin/bookings/seat/${movieId}`, {
+            state: {
+                time: time,
+                detail: item,
+                day: new Date().toISOString().split('T')[0]
+            }
+        })
+    }
 
     if (isLoading) {
         return <div className="text-center py-10">Loading...</div>;
@@ -75,7 +87,7 @@ const ShedulePage = () => {
                                         Lịch chiếu
                                     </p>
                                     <div className="flex space-x-2 mt-1">
-                                        <button className="bg-[#fff0] text-white border py-1 px-2 rounded-lg">
+                                        <button className="bg-[#fff0] text-white border py-1 px-2 rounded-lg" onClick={() => handleShowtimeMovie(item?.movie?.id, item, item?.gio_chieu)}>
                                             {item.gio_chieu}
                                         </button>
                                     </div>

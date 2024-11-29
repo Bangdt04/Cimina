@@ -38,6 +38,10 @@ import Test from "../pages/Client/Test";
 import SearchResults from "../pages/Client/Home/SearchResults";
 import TransactionSuccess from "../pages/Client/Transaction";
 import LoginPage from "../pages/Admin/Login/login";
+import BookingPage from "../pages/Admin/Booking";
+import ShowtimePage from "../pages/Admin/POS";
+import SeatChoosePage from "../pages/Admin/POS/seat";
+import Payment from "../pages/Client/Payment";
 
 const publicRoutes = [
     {
@@ -352,6 +356,43 @@ const privateRoutes = [
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
+    {
+        path: config.routes.admin.booking ,
+        component: BookingPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.booking + "/create" ,
+        component: ShowtimePage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    }
+    ,
+    {
+        path: config.routes.admin.booking + "/seat/:id" ,
+        component: SeatChoosePage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.booking + "/food/:id" ,
+        component: FoodMenu,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.booking + "/payment/:id" ,
+        component: Payment,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    }
+
 ];
 
 const routes = [...publicRoutes, ...privateRoutes];

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './food.scss';
 import { useGetFoods } from '../../../hooks/api/useFoodApi';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getInfoAuth } from '../../../utils/storage';
 
 const FoodMenu = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -11,6 +12,7 @@ const FoodMenu = () => {
     const [movieDetail, setMovieDetail] = useState();
     const [showtime, setShowtime] = useState();
     const [ticketPrice, setTicketPrice] = useState();
+    const info = getInfoAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -75,7 +77,8 @@ const FoodMenu = () => {
 
 
     const handlePayment = () => {
-        navigate(`/payment`, {
+        const path = info['vai_tro'] === 'admin' ? `/admin/bookings/payment/${id}` : `/payment`;
+        navigate(path, {
             state: {
                 selectedSeats,
                 totalAmount,

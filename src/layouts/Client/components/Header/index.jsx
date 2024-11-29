@@ -98,12 +98,12 @@ function Header() {
                             >
                                 Trang chủ
                             </NavLink>
-                            <NavLink
+                            {/* <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.lichChieu}
                             >
                                 Lịch Chiếu
-                            </NavLink>
+                            </NavLink> */}
                             <Dropdown className="pr-4 text-gray-400" overlay={menuNavLink} trigger={['hover']}>
                                 <NavLink
                                     className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}

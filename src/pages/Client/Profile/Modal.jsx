@@ -14,7 +14,7 @@ const Modal = ({ isOpen, onClose, ticket }) => {
         doc.text(`Trạng thái: ${ticket.trang_thai}`, 20, 50);
         doc.text(`Số lượng: ${ticket.so_luong}`, 20, 60);
         doc.text(`Ghế ngồi: ${ticket.ghe_ngoi}`, 20, 70);
-        doc.text(`Tổng tiền: ${Number(ticket.tong_tien).toLocaleString()} VNĐ`, 20, 80);
+        doc.text(`Tổng tiền: ${Number(ticket.tong_tien_thanh_toan).toLocaleString()} VNĐ`, 20, 80);
         doc.text(`Ghi chú: ${ticket.ghi_chu || "Không có ghi chú"}`, 20, 90);
         doc.text(`Mã giảm giá: ${ticket.ma_giam_gia || "Không có mã giảm giá"}`, 20, 100);
         doc.text(`Đồ ăn: ${ticket.do_an || "Không có đồ ăn"}`, 20, 110);
@@ -44,7 +44,7 @@ const Modal = ({ isOpen, onClose, ticket }) => {
                     <div className="modal-section">
                         <span className="icon">💵</span>
                         <h3>Thanh toán</h3>
-                        <p><strong>Tổng tiền:</strong> {Number(ticket.tong_tien).toLocaleString()} VNĐ</p>
+                        <p><strong>Tổng tiền:</strong> {Number(ticket.tong_tien_thanh_toan).toLocaleString()} VNĐ</p>
                         <p><strong>Phương thức thanh toán:</strong> {ticket.phuong_thuc_thanh_toan}</p>
                     </div>
                     <div className="modal-section">
