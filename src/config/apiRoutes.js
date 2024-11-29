@@ -51,7 +51,7 @@ const apiRoutes = {
         showShowtime:'/showShowtime',
         deleteShowtime:'/deleteShowtime',
         editShowtime:'/editShowtime',
-        membership:'/membership',
+        booking:'booking-detail-all',
     },
     web: {
         user: '/auth/upload-profile',

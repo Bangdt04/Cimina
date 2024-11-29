@@ -6,22 +6,12 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const Search: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate();
 
     const handleSearch = (value: string) => {
         console.log("Searching for:", value);
         setSearchTerm(''); 
-        setIsModalVisible(false); // Đóng modal sau khi tìm kiếm
-        navigate(`/search?query=${encodeURIComponent(value)}`);
-    };
-
-    const showModal = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
+        navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
     };
 
     return (
@@ -42,18 +32,17 @@ const Search: React.FC = () => {
                 size="large"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onClick={showModal} // Mở modal khi nhấn vào input
                 style={{
                     width: '200px',
                     border: 'none', 
                     borderRadius: '30px', 
-                    color: '#FFFFFFFF', 
+                    color: '#242020FF', 
                     fontSize: '14px', 
                     backgroundColor: 'transparent', 
                 }}
             />
             <button
-                onClick={showModal} // Mở modal khi nhấn vào nút
+                onClick={handleSearch} // Mở modal khi nhấn vào nút
                 style={{
                     border: 'none',
                     backgroundColor: '#FF1E00FF', 
@@ -67,26 +56,6 @@ const Search: React.FC = () => {
             >
                 <FontAwesomeIcon icon={faSearch} /> 
             </button>
-
-            <Modal
-                visible={isModalVisible}
-                onCancel={handleCancel}
-                footer={null}
-            >
-                <Input
-                    className='mt-2 px-6 py-2'
-                    placeholder="Nhập từ khóa tìm kiếm..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onPressEnter={() => handleSearch(searchTerm)}
-                />
-                <button
-                    onClick={() => handleSearch(searchTerm)}
-                    className='text-white bg-red-600  px-6 py-2 rounded-full hover:bg-red-500 mt-3'
-                >
-                    Tìm kiếm
-                </button>
-            </Modal>
         </div>
     );
 };

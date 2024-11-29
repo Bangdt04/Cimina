@@ -13,6 +13,7 @@ const routes = {
         genres: '/admin/genres',
         users: '/admin/users',
         food: '/admin/food',
+        booking: '/admin/bookings',
         voucher: '/admin/voucher',
         forbidden: '/forbidden',
         room: '/admin/room',

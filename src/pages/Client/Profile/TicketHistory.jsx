@@ -81,10 +81,10 @@ const TicketHistory = () => {
                             currentTickets?.map((ticket, index) => (
                                 <tr key={index}>
                                     <td className="py-4 text-center">{convertDateString(ticket.ngay_mua)}</td>
-                                    <td className="py-4 text-center cursor-pointer text-red-600" onClick={() => handleOpenModal(ticket)}>Phim ABC</td>
+                                    <td className="py-4 text-center cursor-pointer text-red-600" onClick={() => handleOpenModal(ticket)}>{ticket.ten_phim}</td>
                                     <td className="py-4 text-center">{ticket.so_luong}</td>
                                     <td className="py-4 text-center">{ticket.ghe_ngoi}</td>
-                                    <td className="py-4 text-center">{Number(ticket.tong_tien).toLocaleString()} VNĐ</td>
+                                    <td className="py-4 text-center">{Number(ticket.tong_tien_thanh_toan).toLocaleString()} VNĐ</td>
                                     <td className="py-4 text-center">
                                         {
                                             ticket.trang_thai ?
