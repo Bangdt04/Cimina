@@ -8,11 +8,14 @@ import { Dropdown, Menu, Spin } from 'antd';
 import { clearToken, isTokenStoraged, getRoles, getInfoAuth } from '../../../../utils/storage';
 import { useGetGernes } from "../../../../hooks/api/useGenreApi";
 import Search from "../../../../pages/Client/Home/Search"; // Add this import
+import VerifyOtpModal from "../../../../pages/Client/VerifyOtp";
 
 function Header() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [email, setEmail] = useState();
     const [user, setUser] = useState(null);
     const { data, isLoading } = useGetGernes();
     let roles = getRoles();
@@ -32,6 +35,14 @@ function Header() {
     const closeRegisterModal = () => {
         setShowRegisterModal(false);
     };
+
+    const closeVerifyModal = () => {
+        setShowVerifyModal(false);
+    }
+
+    const handleSaveEmail = (email) => {
+        setEmail(email);
+    }
 
     const openLoginModal = () => {
         console.log("Login Modal");
@@ -78,7 +89,7 @@ function Header() {
         <div>
             <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500">
                 <div className="flex items-center" style={{ marginLeft: 100 }}>
-                    <img alt="NCC logo" className="mr-0" height="50" src={Logo} width="50"  />
+                    <img alt="NCC logo" className="mr-0" height="50" src={Logo} width="50" />
                     <nav className="flex space-x-4">
                         <nav className="flex space-x-4 relative">
                             <NavLink
@@ -105,7 +116,7 @@ function Header() {
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
                                 to={config.routes.web.khuyenMai}
                             >
-                                Săn Voucher                           
+                                Săn Voucher
                             </NavLink>
                             <NavLink
                                 className={({ isActive }) => (isActive ? 'pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
@@ -174,9 +185,21 @@ function Header() {
             {showRegisterModal && (
                 <RegisterModal
                     closeModal={closeRegisterModal}
+                    openVerifyModal={() => { setShowVerifyModal(true); setShowRegisterModal(false) }}
                     openLoginModal={() => { setShowLoginModal(true); setShowRegisterModal(false) }}
+                    handleSaveEmail={handleSaveEmail}
                 />
             )}
+
+            {
+                showVerifyModal && (
+                    <VerifyOtpModal
+                        closeModal={closeVerifyModal}
+                        openLoginModal={() => { setShowLoginModal(true), setShowVerifyModal(false); }}
+                        email={email}
+                    />
+                )
+            }
         </div>
     );
 }

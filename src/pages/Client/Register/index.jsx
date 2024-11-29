@@ -6,7 +6,7 @@ import { useRegister } from '../../../hooks/api/useAuthApi';
 import { useState } from 'react';
 import { isTokenStoraged } from '../../../utils/storage';
 
-const RegisterModal = ({ closeModal, openLoginModal }) => {
+const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSaveEmail}) => {
     const navigate = useNavigate();
     const [processing, setProcessing] = useState(false);
     const [form] = Form.useForm();
@@ -16,7 +16,8 @@ const RegisterModal = ({ closeModal, openLoginModal }) => {
             notification.success({
                 message: 'Đăng ký thành công'
             });
-            openLoginModal();
+            openVerifyModal();
+            handleSaveEmail(form.getFieldValue('email'));
         },
         error: (err) => {
             let description = 'Có lỗi xảy ra khi đăng ký, vui lòng thử lại sau';
