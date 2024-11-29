@@ -59,9 +59,16 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         setSelectedSeats((prev) => {
             const isSelected = prev.includes(seat.id);
             const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
+            
             const seatPrice = Number(movieDetail.gia_ve) || 0;
-            const priceChange = isSelected ? -(seatPrice +  Number([...prev, seat.gia_ghe])) : (seatPrice + Number([...prev, seat.gia_ghe]));
+            const seatAdditionalPrice = Number(seat.gia_ghe) || 0; 
+            
+
+            const priceChange = isSelected ? -(seatPrice + seatAdditionalPrice) : (seatPrice + seatAdditionalPrice);
+            
             console.log("TICKET PRICE", priceChange);
+            
+
             setTotalPrice(prevPrice => prevPrice + priceChange);
 
             return updatedSeats;
