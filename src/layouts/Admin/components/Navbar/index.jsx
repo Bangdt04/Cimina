@@ -34,6 +34,8 @@ const menuItems = [
   { name: 'Blog', icon: IconArticle, path: '/admin/blog' },
   { name: 'Feedback', icon: IconMessageCircle2, path: '/admin/feedback' },
   { name: 'Lucky Wheel', icon: IconWheel, path: '/admin/lucky-wheel' },
+  { name: 'Membership', icon: IconUsers, path: '/admin/membership' }, // {{ edit_1 }}
+
 ];
 
 function Sidebar() {
