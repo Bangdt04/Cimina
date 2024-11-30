@@ -256,7 +256,7 @@ const Payment = () => {
             </div>
 
             {/* Input mã khuyến mãi */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <input
                 type="text"
                 value={promoCode}
@@ -271,8 +271,8 @@ const Payment = () => {
               >
                 Áp dụng
               </button>
-            </div>
-
+            </div> */}
+          {/* chưa có voucher */}
             <button
               className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-full transition duration-300 mb-4"
               onClick={handlePayment}

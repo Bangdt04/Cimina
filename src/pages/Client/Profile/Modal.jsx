@@ -31,7 +31,7 @@ const Modal = ({ isOpen, onClose, ticket }) => {
                         <span className="icon">🎥</span>
                         <h3>Thông tin phim</h3>
                         <p><strong>Tên phim:</strong> {ticket.ten_phim}</p>
-                        <p><strong>Tên phòng:</strong> {ticket.ten_phong}</p>
+                        <p><strong>Tên phòng:</strong> {ticket.ten_phong_chieu}</p>
                         <p><strong>Ngày mua:</strong> {ticket.ngay_mua}</p>
                     </div>
                     <div className="modal-section">

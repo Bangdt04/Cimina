@@ -104,13 +104,24 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                 </div>
             );
         }
+        switch (seat.loai_ghe_ngoi?.toLowerCase()) { // Chuyển tất cả về chữ thường
+            case 'vip': // Ghế VIP
+                seatClass += ' bg-orange-400';
+                break;
+            case 'thường': // Ghế thường
+                seatClass += ' bg-gray-600';
+                break;
+            case 'đôi': // Ghế đôi
+                seatClass += ' bg-red-400';
+                break;
+            default: // Mặc định là ghế thường
+                seatClass += ' bg-gray-600';
+        }
 
 
 
         if (selectedSeats.includes(seat.id)) {
-            seatClass += ' bg-blue-500';
-        } else {
-            seatClass += seat.ten_ghe_ngoi.includes("VIP") ? ' bg-orange-400' : ' bg-gray-600';
+            seatClass = seatClass.replace(/bg-\w+-\d+/, 'bg-blue-500');
         }
 
         return (

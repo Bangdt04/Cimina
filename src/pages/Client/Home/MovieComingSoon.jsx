@@ -18,24 +18,24 @@ const MovieCommingSoon = () => {
                     </a>
                 </div>
                 <div className="flex space-x-4 mt-6 mb-5">
-                <NavLink className="w-1/4" to={config.routes.web.phim + `/2`}>
-                    <div>
-                        <img
-                            alt="Movie poster of Joker: Folie à Deux"
-                            className="rounded-2xl hover-zoom mb-2"
-                            style={{ height: 350, width: '100%' }}
-                            src={ImageMovie}
-                        />
-                        <p className="text-gray-400">
-                            Kinh dị, Tâm lý, tình cảm, Nhạc kịch
-                        </p>
-                        <p className="text-gray-400">
-                            04/10/2024
-                        </p>
-                        <p className="font-bold">
-                            JOKER: FOLIE À DEUX ĐIÊN CÓ ĐÔI-T18
-                        </p>
-                    </div>
+                    <NavLink className="w-1/4" to={config.routes.web.phim + `/2`}>
+                        <div>
+                            <img
+                                alt="Movie poster of Joker: Folie à Deux"
+                                className="rounded-2xl hover-zoom mb-2"
+                                style={{ height: 350, width: '100%' }}
+                                src={`src/assets/image/joker.webp`}
+                            />
+                            <p className="text-gray-400">
+                                Kinh dị, Tâm lý, tình cảm, Nhạc kịch
+                            </p>
+                            <p className="text-gray-400">
+                                04/10/2024
+                            </p>
+                            <p className="font-bold">
+                                JOKER: FOLIE À DEUX - T18
+                            </p>
+                        </div>
                     </NavLink>
                     <div className="w-1/4">
                         <img
@@ -45,10 +45,10 @@ const MovieCommingSoon = () => {
                             src={ImageMovie}
                         />
                         <p className="text-gray-400">
-                            04/10/2024
+                            10/10/2024
                         </p>
                         <p className="font-bold">
-                            HẸN HÒ VỚI SÁT NHÂN-T16
+                            HẸN HÒ VỚI SÁT NHÂN - T16
                         </p>
                     </div>
                     <div className="w-1/4">
@@ -59,10 +59,10 @@ const MovieCommingSoon = () => {
                             src={ImageMovie}
                         />
                         <p className="text-gray-400">
-                            04/10/2024
+                            15/10/2024
                         </p>
                         <p className="font-bold">
-                            MỘ ĐOM ĐÓM-K
+                            MỘ ĐOM ĐÓM - K
                         </p>
                     </div>
                     <div className="w-1/4">
@@ -73,10 +73,10 @@ const MovieCommingSoon = () => {
                             src={ImageMovie}
                         />
                         <p className="text-gray-400">
-                            04/10/2024
+                            20/10/2024
                         </p>
                         <p className="font-bold">
-                            KUMANTHONG: CHIÊU HỒN VONG NHI-T18
+                            KUMANTHONG: CHIÊU HỒN VONG NHI - T18
                         </p>
                     </div>
                 </div>

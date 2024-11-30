@@ -14,7 +14,7 @@ const routes = {
         users: '/admin/users',
         food: '/admin/food',
         booking: '/admin/bookings',
-        voucher: '/admin/voucher',
+        // voucher: '/admin/voucher',
         forbidden: '/forbidden',
         room: '/admin/room',
         roomDetail: '/admin/room/detail',

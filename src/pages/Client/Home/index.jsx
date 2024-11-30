@@ -11,9 +11,9 @@ const HomePage = () => {
                     <div className="flex mb-6">
                         <MovieShowing />
                     </div>
-                    {/* <div className="flex mb-6">
+                    <div className="flex mb-6">
                         <MovieCommingSoon />
-                    </div> */}
+                    </div>
                 </div>
             </main>
             

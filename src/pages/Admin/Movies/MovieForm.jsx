@@ -196,8 +196,8 @@ function MovieFormPage() {
                             rules={[{ required: true, message: 'Chọn hình thức phim!' }]} 
                         >
                             <Select placeholder="Chọn hình thức chiếu">
-                                <Option value="dang_chieu">Đang chiếu</Option> // Added option
-                                <Option value="sap_chieu">Sắp chiếu</Option> // Added option
+                                <Option value="Đang chiếu">Đang chiếu</Option> // Added option
+                                <Option value="Sắp Công Chiếu">Sắp công chiếu</Option> // Added option
                             </Select>
                         </Form.Item>
                     </Col>
