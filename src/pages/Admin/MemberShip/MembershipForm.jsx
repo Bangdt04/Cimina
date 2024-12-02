@@ -67,7 +67,7 @@ function MembershipFormPage() {
             className="form-container"
             style={{
                 padding: '40px',
-                maxWidth: '800px',
+                maxWidth: '1800px',
                 margin: 'auto',
                 backgroundColor: '#ffffff',
                 borderRadius: '12px',

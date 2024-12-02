@@ -93,11 +93,11 @@ function VoucherData() {
   const mutationDelete = useDeleteVoucher({
     success: () => {
       setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-      notification.success({ message: "Xóa thành công!" });
+      notification.success({ message: "Xóa thành công!", placement: 'topRight' });
       refetch();
     },
     error: () => {
-      notification.error({ message: "Xóa thất bại!" });
+      notification.error({ message: "Xóa thất bại!", placement: 'topRight' });
     },
   });
 

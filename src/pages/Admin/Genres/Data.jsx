@@ -12,6 +12,7 @@ const baseColumns = [
     {
         title: 'Tên thể loại',
         dataIndex: 'name',
+        sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
         title: 'Thao tác',
@@ -20,9 +21,9 @@ const baseColumns = [
 ];
 
 function transformData(dt, navigate, setIsDisableOpen) {
-    let id = 1; 
+    let id = 1;
     return dt?.map((item) => {
-        id++; 
+        id++;
         return {
             key: id - 1,
             name: item.ten_loai_phim,
@@ -30,7 +31,7 @@ function transformData(dt, navigate, setIsDisableOpen) {
                 <div className="action-btn flex gap-3">
                     <Tooltip title="Chỉnh sửa">
                         <Button
-                            className="text-green-500 border border-green-500"
+                            className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white"
                             onClick={() =>
                                 navigate(`${config.routes.admin.genres}/update/${item.id}`)
                             }
@@ -40,7 +41,7 @@ function transformData(dt, navigate, setIsDisableOpen) {
                     </Tooltip>
                     <Tooltip title="Xóa">
                         <Button
-                            className="text-red-500 border border-red-500"
+                            className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
                             onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                         >
                             <FontAwesomeIcon icon={faTrash} />
@@ -109,12 +110,14 @@ function Data({ setProductCategoryIds, params, setParams }) {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
             notification.success({
                 message: 'Xóa thể loại thành công',
+                placement: 'topRight', // Hiển thị ở góc trên bên phải
             });
             refetch();
         },
         error: () => {
             notification.error({
                 message: 'Xóa thể loại thất bại',
+                placement: 'topRight', // Hiển thị ở góc trên bên phải
             });
         },
         obj: {
@@ -122,19 +125,20 @@ function Data({ setProductCategoryIds, params, setParams }) {
             params: params,
         },
     });
+    
 
     const onDelete = async (id) => {
         await mutationDelete.mutateAsync(id);
     };
 
     return (
-        <div>
-            <div className="p-4 bg-white mb-3 flex items-center rounded-lg">
+        <div className="p-6 bg-white rounded-lg shadow-md">
+            <div className="flex justify-between items-center mb-4">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear
                     enterButton
-                    placeholder="Nhập từ khoá tìm kiếm"
+                    placeholder="Tìm kiếm thể loại..."
                     onSearch={onSearch}
                     style={{ borderRadius: '8px' }}
                 />
@@ -148,6 +152,7 @@ function Data({ setProductCategoryIds, params, setParams }) {
                 onChange={handleTableChange}
                 rowClassName="table-row"
                 scroll={{ x: 'max-content' }}
+                bordered
             />
 
             {isDisableOpen.id !== 0 && (

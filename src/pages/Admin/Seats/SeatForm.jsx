@@ -17,22 +17,22 @@ function SeatFormPage() {
     const [form] = Form.useForm();
     const mutateAdd = useCreateSeat({
         success: () => {
-            notification.success({ message: 'Thêm mới thành công' });
+            notification.success({ message: 'Thêm mới thành công', placement: 'topRight' });
             navigate(config.routes.admin.seat);
         },
         error: () => {
-            notification.error({ message: 'Thêm mới thất bại' });
+            notification.error({ message: 'Thêm mới thất bại', placement: 'topRight' });
         },
     });
 
     const mutateEdit = useUpdateSeat({
         id,
         success: () => {
-            notification.success({ message: 'Cập nhật thành công' });
+            notification.success({ message: 'Cập nhật thành công', placement: 'topRight' });
             navigate(config.routes.admin.seat);
         },
         error: () => {
-            notification.error({ message: 'Cập nhật thất bại' });
+            notification.error({ message: 'Cập nhật thất bại', placement: 'topRight' });
         },
     });
 
@@ -73,7 +73,7 @@ function SeatFormPage() {
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: '#f0f2f5', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+        <div className="form-container" style={{ padding: '20px', maxWidth: '1800px', margin: 'auto', backgroundColor: '#f0f2f5', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center', color: '#1890ff' }}>
                 {id ? 'Cập nhật thông tin ghế' : 'Thêm ghế mới'}
             </Title>

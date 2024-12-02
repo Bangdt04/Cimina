@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect } from 'react';
-import './category.scss';
 import config from '../../../config';
 import { useCreateGerne, useGetGerne, useUpdateGerne } from '../../../hooks/api/useGenreApi';
 

@@ -14,22 +14,23 @@ function RoomFormPage() {
     const [form] = Form.useForm();
     const mutateAdd = useCreateRoom({
         success: () => {
-            notification.success({ message: 'Thêm mới phòng thành công' });
-            navigate(config.routes.admin.seat.create);
+            notification.success({ message: 'Thêm mới phòng thành công', placement: 'topRight' });
+            navigate(config.routes.admin.room);
         },
+        
         error: () => {
-            notification.error({ message: 'Thêm mới phòng thất bại' });
+            notification.error({ message: 'Thêm mới phòng thất bại', placement: 'topRight' });
         },
     });
 
     const mutateEdit = useUpdateRoom({
         id,
         success: () => {
-            notification.success({ message: 'Cập nhật phòng thành công' });
+            notification.success({ message: 'Cập nhật phòng thành công', placement: 'topRight' });
             navigate(config.routes.admin.room);
         },
         error: () => {
-            notification.error({ message: 'Cập nhật phòng thất bại' });
+            notification.error({ message: 'Cập nhật phòng thất bại', placement: 'topRight' });
         },
     });
 
@@ -53,7 +54,7 @@ function RoomFormPage() {
     };
 
     return (
-        <div className="form-container" style={{ padding: '80px', maxWidth: '1000px', margin: 'auto', backgroundColor: '#f9f9f9', borderRadius: '10px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)' }}>
+        <div className="form-container" style={{ padding: '80px', maxWidth: '1800px', margin: 'auto', backgroundColor: '#f9f9f9', borderRadius: '10px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
                 {id ? 'Cập nhật thông tin phòng' : 'Thêm mới thông tin phòng'}
             </Title>

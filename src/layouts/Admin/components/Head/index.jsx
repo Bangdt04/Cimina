@@ -1,41 +1,54 @@
-import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faAdd, faHashtag } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from 'antd';
+import { Button, Typography, Box } from '@mui/material';
+import { Add } from '@mui/icons-material'; // MUI icons
 import { useNavigate } from 'react-router-dom';
 
-function Head({ route, title, isAdd = true, isDisableAll = true, handleDisableAll = () => {} }) {
+function Head({ route, title, isAdd = true }) {
     const navigate = useNavigate();
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[1rem]">
-                <FontAwesomeIcon
-                    className="text-[2rem] bg-[--primary-color] p-4 rounded-xl text-white"
-                    icon={faHashtag}
-                />
-                <h1 className="font-bold">{title}</h1>
-            </div>
-            <div className="flex gap-[1rem] text-[1.4rem]">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            {/* Title and Hashtag Icon */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box
+                    sx={{
+                        width: 40,
+                        height: 40,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'primary.main',  // Màu chủ đạo của theme
+                        borderRadius: '50%',
+                        color: 'white',
+                    }}
+                >
+                    <Typography variant="h6">#</Typography> {/* Ký tự # */}
+                </Box>
+                <Typography variant="h4" fontWeight="bold" sx={{ color: 'white' }}>{title}</Typography> {/* Tiêu đề */}
+            </Box>
+
+            {/* Action Button */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
                 {isAdd && (
                     <Button
+                        variant="outlined"
+                        color="primary" // Màu chủ đạo của theme cho "Thêm mới"
+                        startIcon={<Add />}
                         onClick={() => navigate(route)}
-                        className="border border-blue-400 text-blue-400"
-                        icon={<FontAwesomeIcon icon={faAdd} />}
+                        sx={{
+                            textTransform: 'none',
+                            fontSize: '1rem',
+                            borderColor: '#fff',  // Viền nút màu trắng để nổi bật trên nền tối
+                            color: '#fff',  // Màu chữ trắng
+                            '&:hover': {
+                                backgroundColor: '#fff', // Đổi màu nền khi hover
+                                color: 'primary.main', // Chữ màu chủ đạo khi hover
+                            },
+                        }}
                     >
                         Thêm mới
                     </Button>
                 )}
-                {isDisableAll && (
-                    <Button
-                        onClick={handleDisableAll}
-                        className="border border-red-400 text-red-400"
-                        icon={<FontAwesomeIcon icon={faTrashCan} />}
-                    >
-                        Vô hiệu hoá hàng loạt
-                    </Button>
-                )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }
 
