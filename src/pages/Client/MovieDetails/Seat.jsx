@@ -49,7 +49,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     }
 
     const toggleSeatSelection = (seat) => {
-        if (seat.trang_thai === "đã đặt") {
+        if (seat.trang_thai === "Đã đặt") {
             setNotification(`Ghế ${seat.ten_ghe_ngoi} đã được đặt!`);
             return;
         }
@@ -87,7 +87,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         setSelectedRoom(room);
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
-        if (seat.trang_thai === "đã đặt") {
+        if (seat.trang_thai === "Đã đặt") {
             seatClass += ' bg-gray-700';
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
@@ -96,7 +96,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             );
         }
 
-        if (seat.trang_thai === "bảo trì") {
+        if (seat.trang_thai === "Bảo trì") {
             seatClass += ' bg-red-700';
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>

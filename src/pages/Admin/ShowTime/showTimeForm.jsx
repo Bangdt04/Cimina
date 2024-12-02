@@ -56,6 +56,7 @@ function ShowtimeFormPage() {
             gio_chieu: gioChieuArray, // Use the formatted array
         });
     }, [showtime, showtimeData]);
+
     const onAddFinish = async (formData) => {
         await mutateAdd.mutateAsync(formData);
     };
@@ -94,15 +95,17 @@ function ShowtimeFormPage() {
     };
 
     const handleAddShowtime = (value) => {
-        const currentValues = form.getFieldValue('gio_chieu') || [];
-        if (value && !currentValues.includes(value)) {
-            form.setFieldsValue({ gio_chieu: [...currentValues, value] });
+        // Instead of appending new value, we clear the previous showtimes and add only the new one
+        if (value) {
+            form.setFieldsValue({ gio_chieu: [value] });
         }
     };
 
     const handleRemoveShowtime = (value) => {
         const currentValues = form.getFieldValue('gio_chieu') || [];
         const updatedValues = currentValues.filter(time => time !== value);
+        
+        // Update form with the new list of showtimes
         form.setFieldsValue({ gio_chieu: updatedValues });
     };
 
@@ -117,7 +120,7 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Phim ID"
                             name="phim_id"
-                            rules={[{ required: true, message: 'Chọn ID phim!' }]}>
+                            rules={[{ required: true, message: 'Chọn ID phim!' }]} >
                             <Select placeholder="Chọn ID phim">
                                 {showtimeData?.data?.movies?.map(movie => (
                                     <Select.Option key={movie.id} value={movie.id}>{movie.ten_phim}</Select.Option>
@@ -129,7 +132,7 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Room ID"
                             name="room_ids"
-                            rules={[{ required: true, message: 'Chọn ID phòng!' }]}>
+                            rules={[{ required: true, message: 'Chọn ID phòng!' }]} >
                             <Select mode="multiple" placeholder="Chọn ID phòng">
                                 {showtimeData?.data?.rooms?.map(room => (
                                     <Select.Option key={room.id} value={room.id}>{room.ten_phong_chieu}</Select.Option>
@@ -141,21 +144,25 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Ngày chiếu"
                             name="ngay_chieu"
-                            rules={[{ required: true, message: 'Chọn ngày chiếu!' }]}>
-                            <DatePicker placeholder="Chọn ngày chiếu" format="YYYY-MM-DD" />
+                            rules={[{ required: true, message: 'Chọn ngày chiếu!' }]} >
+                            <DatePicker
+                                placeholder="Chọn ngày chiếu"
+                                format="YYYY-MM-DD"
+                                disabledDate={(current) => current && current < moment().startOf('day')} // Disable past dates
+                            />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item
                             label="Giờ chiếu"
                             name="gio_chieu"
-                            rules={[{ required: true, message: 'Nhập giờ chiếu!' }]}>
+                            rules={[{ required: true, message: 'Nhập giờ chiếu!' }]} >
                             <Input
                                 placeholder="Nhập giờ chiếu (HH:mm)"
                                 onPressEnter={(e) => {
                                     const value = e.target.value;
                                     if (value) {
-                                        handleAddShowtime(value);
+                                        handleAddShowtime(value); // Replace old times with new one
                                         e.target.value = ''; // Clear input after adding
                                     }
                                 }}
