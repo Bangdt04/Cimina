@@ -109,6 +109,16 @@ function ShowtimeFormPage() {
         form.setFieldsValue({ gio_chieu: updatedValues });
     };
 
+    // Trình xác thực tùy chỉnh để kiểm tra xem thời gian có ở trong quá khứ không
+    const validateShowtime = (_, value) => {
+        const currentTime = moment(); // Nhận thời gian hiện tại
+        const showtime = moment(value, 'HH:mm'); // Chuyển đổi thời gian đã nhập thành đối tượng thời điểm
+        if (showtime.isBefore(currentTime, 'minute')) {
+            return Promise.reject('Giờ chiếu không thể trước giờ hiện tại');
+        }
+        return Promise.resolve();
+    };
+
     return (
         <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -156,13 +166,16 @@ function ShowtimeFormPage() {
                         <Form.Item
                             label="Giờ chiếu"
                             name="gio_chieu"
-                            rules={[{ required: true, message: 'Nhập giờ chiếu!' }]} >
+                            rules={[
+                                { required: true, message: 'Nhập giờ chiếu!' },
+                                { validator: validateShowtime } // Apply the custom validator here
+                            ]} >
                             <Input
                                 placeholder="Nhập giờ chiếu (HH:mm)"
                                 onPressEnter={(e) => {
                                     const value = e.target.value;
                                     if (value) {
-                                        handleAddShowtime(value); // Replace old times with new one
+                                        handleAddShowtime(value); // Thay thế giờ chiếu cũ bằng giờ chiếu mới
                                         e.target.value = ''; // Clear input after adding
                                     }
                                 }}
