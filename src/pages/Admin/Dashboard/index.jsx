@@ -5,6 +5,13 @@ import axios from "axios";
 import Chart from "chart.js/auto";
 import { FaTicketAlt, FaFilm, FaHamburger } from "react-icons/fa"; // Import icons for better visualization
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
+
 const DashBoardPage = () => {
   const [doanhThuThang, setDoanhThuThang] = useState([]);
   const [soLuongPhim, setSoLuongPhim] = useState(null);
@@ -15,9 +22,6 @@ const DashBoardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -173,7 +177,7 @@ const DashBoardPage = () => {
               Doanh Thu Bán Vé
             </Typography>
             <Typography variant="h5" color="secondary">
-              {doanhThuVe} VND
+            {formatCurrency(doanhThuVe)}
             </Typography>
           </Card>
         </Grid>
@@ -184,7 +188,7 @@ const DashBoardPage = () => {
               Doanh Thu Đồ Ăn
             </Typography>
             <Typography variant="h5" color="warning">
-              {doanhThuDoAn} VND
+            {formatCurrency(doanhThuDoAn)}
             </Typography>
           </Card>
         </Grid>
