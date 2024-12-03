@@ -35,7 +35,7 @@ const TicketHistory = () => {
             setTicketData(result.data.data); // Assuming result.data contains the ticket history
         } catch (error) {
             console.error('Error:', error);
-            setError('Failed to fetch ticket history');
+            setError('Không thể lấy lịch sử vé');
         } finally {
             setLoading(false);
         }

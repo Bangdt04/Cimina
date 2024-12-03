@@ -15,6 +15,10 @@ const DashBoardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+};
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,19 +45,19 @@ const DashBoardPage = () => {
           (a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year)
         );
   
-        // Kiểm tra và thêm dữ liệu giả cho tháng 9 và tháng 10 nếu chưa có
-        const monthsAvailable = doanhThuThangData.map(item => item.month);
-        if (!monthsAvailable.includes(9)) {
-          doanhThuThangData.push({ month: 9, year: 2024, total: 35000000 });
-        }
-        if (!monthsAvailable.includes(10)) {
-          doanhThuThangData.push({ month: 10, year: 2024, total: 42000000 });
-        }
+        // // Kiểm tra và thêm dữ liệu giả cho tháng 9 và tháng 10 nếu chưa có
+        // const monthsAvailable = doanhThuThangData.map(item => item.month);
+        // if (!monthsAvailable.includes(9)) {
+        //   doanhThuThangData.push({ month: 9, year: 2024, total: 35000000 });
+        // }
+        // if (!monthsAvailable.includes(10)) {
+        //   doanhThuThangData.push({ month: 10, year: 2024, total: 42000000 });
+        // }
   
-        // Sắp xếp lại sau khi thêm dữ liệu giả
-        doanhThuThangData = doanhThuThangData.sort(
-          (a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year)
-        );
+        // // Sắp xếp lại sau khi thêm dữ liệu giả
+        // doanhThuThangData = doanhThuThangData.sort(
+        //   (a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year)
+        // );
   
         setDoanhThuThang(doanhThuThangData);
         setSoLuongPhim(soLuongPhimResponse.data.data);
@@ -158,7 +162,7 @@ const DashBoardPage = () => {
               Số Lượng Phim
             </Typography>
             <Typography variant="h5" color="primary">
-              {soLuongPhim}
+              {soLuongPhim} Phim
             </Typography>
           </Card>
         </Grid>

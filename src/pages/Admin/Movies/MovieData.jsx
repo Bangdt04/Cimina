@@ -8,11 +8,23 @@ import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
 const { Title, Text } = Typography;
 
+// Hàm định dạng tiền tệ Việt Nam
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+};
+
+// Cột trong bảng
 const baseColumns = [
     {
-        title: 'Ảnh', 
+        title: 'Ảnh',
         dataIndex: 'anh_phim',
-        render: (text) => <img src={`http://localhost:8000${text}`} alt="Movie Poster" style={{ width: '100px', borderRadius: '8px' }} />, // Render the image
+        render: (text) => (
+            <img
+                src={`http://localhost:8000${text}`}
+                alt="Movie Poster"
+                style={{ width: '100px', borderRadius: '8px' }}
+            />
+        ),
     },
     {
         title: 'Tên Phim',
@@ -29,6 +41,7 @@ const baseColumns = [
     {
         title: 'Giá Vé',
         dataIndex: 'gia_ve',
+        render: (gia_ve) => formatCurrency(gia_ve),
     },
     {
         title: 'Thao Tác',
@@ -37,6 +50,7 @@ const baseColumns = [
     },
 ];
 
+// Hàm transform dữ liệu
 function transformData(dt, navigate, setIsDisableOpen, setViewData) {
     return dt?.map((item) => {
         return {
@@ -107,6 +121,7 @@ function MovieData({ setParams, params }) {
     const handleViewClose = () => {
         setViewData(null);
     };
+
     return (
         <div className="bg-white text-black p-4 rounded-lg shadow-lg">
             <div className="mb-3 flex items-center">
@@ -124,7 +139,9 @@ function MovieData({ setParams, params }) {
                 dataSource={tdata}
                 rowKey="key"
                 pagination={{ showSizeChanger: true }}
-                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200')}
+                rowClassName={(record, index) =>
+                    index % 2 === 0 ? 'bg-gray-100 hover:bg-gray-200' : 'bg-white hover:bg-gray-200'
+                }
                 bordered
                 size="middle"
             />
@@ -137,25 +154,37 @@ function MovieData({ setParams, params }) {
                 />
             )}
             <Modal
-    title="Chi tiết phim"
-    visible={!!viewData}
-    onCancel={handleViewClose}
-    footer={null}
-    width={600}
->
-    {viewData && (
-        <div style={{ padding: '20px', textAlign: 'center' }}> 
-            {viewData.anh_phim && ( // Check if the image URL exists
-                <img src={`http://localhost:8000${viewData.anh_phim}`} alt="Movie Poster" style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }} />
-            )}
-            <Title level={4}>Thông tin phim</Title>
-            <p><strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text></p>
-            <p><strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text></p>
-            <p><strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text></p>
-            <p><strong>Giá vé:</strong> <Text>{viewData.gia_ve}</Text></p>
-        </div>
-    )}
-</Modal>
+                title="Chi tiết phim"
+                visible={!!viewData}
+                onCancel={handleViewClose}
+                footer={null}
+                width={600}
+            >
+                {viewData && (
+                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                        {viewData.anh_phim && (
+                            <img
+                                src={`http://localhost:8000${viewData.anh_phim}`}
+                                alt="Movie Poster"
+                                style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }}
+                            />
+                        )}
+                        <Title level={4}>Thông tin phim</Title>
+                        <p>
+                            <strong>Tên phim:</strong> <Text>{viewData.ten_phim}</Text>
+                        </p>
+                        <p>
+                            <strong>Đạo diễn:</strong> <Text>{viewData.dao_dien}</Text>
+                        </p>
+                        <p>
+                            <strong>Diễn viên:</strong> <Text>{viewData.dien_vien}</Text>
+                        </p>
+                        <p>
+                            <strong>Giá vé:</strong> <Text>{formatCurrency(viewData.gia_ve)}</Text>
+                        </p>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }
