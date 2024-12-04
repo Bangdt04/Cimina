@@ -39,7 +39,7 @@ const MovieDetailsPage = () => {
                             {movie.data.ten_phim}
                         </h1>
                         <p className="mb-2">
-                            {`${allMovieGenres} | Nước Ngoài | ${movie.data.thoi_gian_phim} phút | Đạo diễn: ${movie.data.dao_dien}`}
+                            {`${allMovieGenres} | ${movie.data.thoi_gian_phim} phút | Đạo diễn: ${movie.data.dao_dien}`}
                         </p>
                         <p className="mb-2">
                             Diễn viên: {movie.data.dien_vien}
