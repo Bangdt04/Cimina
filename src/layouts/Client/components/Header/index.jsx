@@ -166,11 +166,13 @@ function Header() {
                             >
                                 Đăng kí
                             </button>
-                            <button className="bg-red-500 text-white py-2 px-4 rounded-full hover-zoom"
+                            <button 
+                                className="bg-gradient-to-r from-red-500 via-red-600 to-pink-500 text-white py-2 px-6 rounded-full font-semibold hover:bg-gradient-to-r hover:from-red-600 hover:to-pink-500 transition duration-300 ease-in-out transform hover:scale-105"
                                 onClick={openLoginModal}
                             >
                                 Đăng nhập
                             </button>
+
                         </div>
                     </>
                 )}

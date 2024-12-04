@@ -15,49 +15,23 @@ const Search: React.FC = () => {
     };
 
     return (
-        <div
-            className="search-container"
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '6px', 
-                backgroundColor: '#FFFFFFE5', 
-                borderRadius: '40px', 
-                padding: '3px', 
-                boxShadow: '0 4px 15px rgba(55, 43, 43, 0.25)', 
-            }}
-        >
-            <Input
+        <div className="flex justify-center mt-1 bg-transparent bg-opacity-90 rounded-3xl p-1 shadow-lg ">
+            <input
                 placeholder="Tìm Kiếm Phim ..."
-                size="large"
+                className="w-48 border-none rounded-2xl text-gray-900 text-sm bg-transparent focus:outline-none pl-5 text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                    width: '200px',
-                    border: 'none', 
-                    borderRadius: '30px', 
-                    color: '#242020FF', 
-                    fontSize: '14px', 
-                    backgroundColor: 'transparent', 
-                }}
             />
             <button
                 onClick={handleSearch} // Mở modal khi nhấn vào nút
-                style={{
-                    border: 'none',
-                    backgroundColor: '#FF1E00FF', 
-                    color: 'white',
-                    padding: '0 20px',
-                    borderRadius: '30px', 
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    marginLeft: '10px', 
-                }}
+                className="ml-2 bg-red-600 text-white py-1 px-5 rounded-2xl cursor-pointer text-lg"
             >
-                <FontAwesomeIcon icon={faSearch} /> 
+                <FontAwesomeIcon icon={faSearch} />
             </button>
         </div>
     );
+    
+    
 };
 
 export default Search;
