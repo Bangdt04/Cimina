@@ -61,7 +61,7 @@ const MovieDetailsPage = () => {
                 <button className="bg-gray-800 text-white py-2 px-4 rounded-full hover-zoom">
                     Chi tiết nội dung
                 </button>
-                <button className="btn-primary text-yellow-400 py-2 px-4 rounded-full hover-zoom" id="trailerBtn" onClick={openTrailerModal}>
+                <button className="border border-yellow-500 rounded-full py-2 px-10 text-yellow-500 hover-zoom hover:scale-105" id="trailerBtn" onClick={openTrailerModal}>
                     Xem Trailer
                 </button>
             </div>
