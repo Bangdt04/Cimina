@@ -1,8 +1,9 @@
-import { Button, Col, Form, Input, Row, notification, Typography, Select } from 'antd';
+import { Button, Col, Form, Input, Row, notification, Typography, Select, Card } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import config from '../../../config';
 import { useCreateSeat, useGetSeatById, useUpdateSeat, useGetAddSeat } from '../../../hooks/api/useSeatApi';
+import axios from 'axios';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -15,24 +16,41 @@ function SeatFormPage() {
     const roomData = roomDataResponse?.data || [];
 
     const [form] = Form.useForm();
+    const [price, setPrice] = useState(0);  // State to manage price
+
     const mutateAdd = useCreateSeat({
         success: () => {
-            notification.success({ message: 'Thêm mới thành công', placement: 'topRight' });
+            notification.success({
+                message: 'Thêm mới thành công',
+                placement: 'topRight',
+            });
             navigate(config.routes.admin.seat);
         },
-        error: () => {
-            notification.error({ message: 'Thêm mới thất bại', placement: 'topRight' });
-        },
+        error: (error) => {
+            const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
+            const errorDetails = error?.response?.data?.existing_seats?.join(", ") || ""; // Nếu có thông tin chi tiết về ghế trùng
+            const fullMessage = errorDetails ? `${errorMessage} ${errorDetails}` : errorMessage;
+            
+            notification.error({ 
+                message: fullMessage, 
+                placement: 'topRight' 
+            });
+        }
+        
     });
 
     const mutateEdit = useUpdateSeat({
         id,
         success: () => {
-            notification.success({ message: 'Cập nhật thành công', placement: 'topRight' });
+            notification.success({
+                message: 'Cập nhật thành công',
+                placement: 'topRight',
+            });
             navigate(config.routes.admin.seat);
         },
-        error: () => {
-            notification.error({ message: 'Cập nhật thất bại', placement: 'topRight' });
+        error: (error) => {
+            const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
+            notification.error({ message: errorMessage, placement: 'topRight' });
         },
     });
 
@@ -41,18 +59,33 @@ function SeatFormPage() {
         form.setFieldsValue({
             so_ghe_ngoi: seat?.data?.so_ghe_ngoi,
             loai_ghe_ngoi: seat?.data?.loai_ghe_ngoi,
-            trang_thai: seat?.data?.trang_thai,
             gia_ghe: seat?.data?.gia_ghe,
             room_id: seat?.data?.room_id,
         });
     }, [seat]);
+
+    const onChangeLoạiGhế = (value) => {
+        // Cập nhật giá ghế dựa trên loại ghế
+        let priceValue = 0;
+        if (value === 'Thường') {
+            priceValue = 5000;
+        } else if (value === 'Đôi') {
+            priceValue = 20000;
+        } else if (value === 'Víp') {
+            priceValue = 12000;
+        }
+        setPrice(priceValue);
+        form.setFieldsValue({
+            gia_ghe: priceValue,
+        });
+    };
 
     const onFinish = async () => {
         const formData = {
             room_id: form.getFieldValue('room_id'),
             seats: [
                 {
-                    range: form.getFieldValue('so_ghe_ngoi'),
+                    range: `${form.getFieldValue('so_ghe_bat_dau')}-${form.getFieldValue('so_ghe_ket_thuc')}`,
                     loai_ghe_ngoi: form.getFieldValue('loai_ghe_ngoi'),
                     gia_ghe: parseFloat(form.getFieldValue('gia_ghe')),
                 }
@@ -68,22 +101,60 @@ function SeatFormPage() {
             };
             await mutateEdit.mutateAsync({ id, body: editData });
         } else {
-            await mutateAdd.mutateAsync(formData);
+            // Kiểm tra nếu chỉ có ghế bắt đầu
+            const so_ghe_bat_dau = form.getFieldValue('so_ghe_bat_dau');
+            const so_ghe_ket_thuc = form.getFieldValue('so_ghe_ket_thuc');
+
+            if (so_ghe_bat_dau && !so_ghe_ket_thuc) {
+                // Gọi API storeOneSeat để thêm 1 ghế
+                try {
+                    await axios.post('http://127.0.0.1:8000/api/storeOneSeat', {
+                        room_id: form.getFieldValue('room_id'),
+                        so_ghe_ngoi: so_ghe_bat_dau,
+                        loai_ghe_ngoi: form.getFieldValue('loai_ghe_ngoi'),
+                        gia_ghe: parseFloat(form.getFieldValue('gia_ghe')),
+                    });
+
+                    notification.success({
+                        message: 'Thêm ghế thành công',
+                        placement: 'topRight',
+                    });
+                    navigate(config.routes.admin.seat);
+                } catch (error) {
+                    const errorMessage = error?.response?.data?.message || 'Có lỗi xảy ra';
+                    // Handle specific error case for existing seats
+                    if (errorMessage.includes("Có ghế trùng trong phòng này")) {
+                        notification.error({
+                            message: 'Có ghế trùng trong phòng này, không thể thêm ghế mới',
+                            description: error?.response?.data?.existing_seats.join(', '),
+                            placement: 'topRight',
+                        });
+                    } else {
+                        notification.error({
+                            message: errorMessage,
+                            placement: 'topRight',
+                        });
+                    }
+                }
+            } else {
+                // Nếu có ghế bắt đầu và kết thúc, gọi mutateAdd
+                await mutateAdd.mutateAsync(formData);
+            }
         }
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '1800px', margin: 'auto', backgroundColor: '#f0f2f5', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
-            <Title level={2} style={{ textAlign: 'center', color: '#1890ff' }}>
+        <Card style={{ padding: '20px', maxWidth: '1200px', margin: 'auto', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+            <Title level={2} style={{ textAlign: 'center', color: '#1890ff', marginBottom: '20px' }}>
                 {id ? 'Cập nhật thông tin ghế' : 'Thêm ghế mới'}
             </Title>
             <Form form={form} layout="vertical" onFinish={onFinish}>
-                <Row gutter={16}>
+                <Row gutter={[24, 16]}>
                     <Col span={12}>
                         <Form.Item
                             label="Chọn phòng"
                             name="room_id"
-                            rules={[{ required: true, message: 'Chọn phòng!' }]}
+                            rules={[{ required: true, message: 'Vui lòng chọn phòng chiếu.' }]}
                         >
                             <Select placeholder="Chọn phòng" loading={loadingRooms} style={{ borderRadius: '4px' }} disabled={!!id}>
                                 {roomData.map(room => (
@@ -94,55 +165,75 @@ function SeatFormPage() {
                             </Select>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
-                        <Form.Item
-                            label="Số ghế ngồi (Range)"
-                            name="so_ghe_ngoi"
-                            rules={[{ required: true, message: 'Nhập số ghế ngồi!' }]}
-                        >
-                            <Input placeholder="Nhập số ghế ngồi (e.g., D1-D15)" style={{ borderRadius: '4px' }} />
-                        </Form.Item>
-                    </Col>
+
+                    {/* Only show these fields if it's the "add" form (not edit form) */}
+                    {!id && (
+                        <>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Số ghế ngồi bắt đầu"
+                                    name="so_ghe_bat_dau"
+                                    rules={[{ required: true, message: 'Vui lòng nhập số ghế ngồi bắt đầu.' }]}
+                                >
+                                    <Input placeholder="Ví dụ: A1" style={{ borderRadius: '4px' }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Số ghế ngồi kết thúc"
+                                    name="so_ghe_ket_thuc"
+                                    rules={[{ required: false, message: 'Vui lòng nhập số ghế ngồi kết thúc.' }]}
+                                >
+                                    <Input placeholder="Ví dụ: A5" style={{ borderRadius: '4px' }} />
+                                </Form.Item>
+                            </Col>
+                        </>
+                    )}
+
+                    {/* For the update form, show only the "Number of Seats" field */}
+                    {id && (
+                        <Col span={12}>
+                            <Form.Item
+                                label="Số ghế ngồi (Range)"
+                                name="so_ghe_ngoi"
+                                rules={[{ required: true, message: 'Vui lòng nhập số ghế ngồi.' }]}
+                            >
+                                <Input placeholder="Ví dụ: A1-A5" style={{ borderRadius: '4px' }} disabled={id} />
+                            </Form.Item>
+                        </Col>
+                    )}
+
                     <Col span={12}>
                         <Form.Item
                             label="Loại ghế ngồi"
                             name="loai_ghe_ngoi"
-                            rules={[{ required: true, message: 'Chọn loại ghế ngồi!' }]}
+                            rules={[{ required: true, message: 'Vui lòng chọn loại ghế ngồi.' }]}
                         >
-                            <Select placeholder="Chọn loại ghế ngồi" style={{ borderRadius: '4px' }}>
+                            <Select placeholder="Chọn loại ghế ngồi" style={{ borderRadius: '4px' }} onChange={onChangeLoạiGhế}>
                                 <Option value="Thường">Thường</Option>
                                 <Option value="Đôi">Đôi</Option>
                                 <Option value="Víp">Víp</Option>
                             </Select>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
-                        <Form.Item
-                            label="Trạng thái"
-                            name="trang_thai"
-                            rules={[{ required: true, message: 'Nhập trạng thái!' }]}
-                        >
-                            <Input placeholder="Nhập trạng thái" style={{ borderRadius: '4px' }} />
-                        </Form.Item>
-                    </Col>
+
                     <Col span={12}>
                         <Form.Item
                             label="Giá ghế"
                             name="gia_ghe"
-                            rules={[{ required: true, message: 'Nhập giá ghế!' }]}
+                            rules={[{ required: true, message: 'Vui lòng nhập giá ghế.' }]}
                         >
-                            <Input placeholder="Nhập giá ghế" style={{ borderRadius: '4px' }} />
+                            <Input value={price} disabled={true} style={{ borderRadius: '4px' }} />
                         </Form.Item>
                     </Col>
                 </Row>
-                <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%' }}>Đặt lại</Button>
-                    <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%' }}>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" block style={{ borderRadius: '4px' }}>
                         {id ? 'Cập nhật' : 'Thêm mới'}
                     </Button>
-                </div>
+                </Form.Item>
             </Form>
-        </div>
+        </Card>
     );
 }
 
