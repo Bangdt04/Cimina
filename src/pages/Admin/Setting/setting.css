@@ -1,0 +1,6 @@
+.setting-container .ant-input-search-button {
+  background-color: var(--primary-color);
+}
+.setting-container .ant-input-search-button:hover {
+  background-color: var(--primary-color) !important;
+}/*# sourceMappingURL=setting.css.map */

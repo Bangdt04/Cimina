@@ -71,11 +71,11 @@ function RoomData({ setParams, params }) {
     const mutationDelete = useDeleteRoom({
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-            notification.success({ message: 'Xóa phòng thành công' });
+            notification.success({ message: 'Xóa phòng thành công', placement: 'topRight' });
             refetch();
         },
         error: () => {
-            notification.error({ message: 'Xóa phòng thất bại' });
+            notification.error({ message: 'Xóa phòng thất bại', placement: 'topRight' });
         },
         obj: { id: isDisableOpen.id },
     });
@@ -100,7 +100,7 @@ function RoomData({ setParams, params }) {
         setIsModalVisible(false);
         setSelectedRoomId(null);
     };
-    
+
     const handleMaintenance = async (seat) => {
         const action = seat.trang_thai === 2 ? 'tắt bảo trì' : 'bảo trì';
         Modal.confirm({
@@ -108,10 +108,9 @@ function RoomData({ setParams, params }) {
             content: `Bạn có muốn ${action} ghế ${seat.so_ghe_ngoi}?`,
             onOk: async () => {
                 try {
-                    // Xây dựng endpoint dựa trên trạng thái hiện tại của ghế
                     const endpoint = seat.trang_thai === 2 
-                        ? `http://127.0.0.1:8000/api/tatbaoTriSeat/${seat.id}` // Tắt bảo trì
-                        : `http://127.0.0.1:8000/api/baoTriSeat/${seat.id}`; // Bật bảo trì
+                        ? `http://127.0.0.1:8000/api/tatbaoTriSeat/${seat.id}` 
+                        : `http://127.0.0.1:8000/api/baoTriSeat/${seat.id}`;
 
                     const response = await fetch(endpoint, {
                         method: 'PUT',
@@ -126,21 +125,16 @@ function RoomData({ setParams, params }) {
                     }
 
                     const responseData = await response.json();
-
-                    // Cập nhật trạng thái ghế
-                    const newStatus = seat.trang_thai === 2 ? 0 : 2; // 0: có thể thuê, 2: đang bảo trì
+                    const newStatus = seat.trang_thai === 2 ? 0 : 2;
                     notification.success({ message: responseData.message });
-                    // Cập nhật dữ liệu ghế
+
                     setTData(prevData => prevData.map(item => 
                         item.id === seat.id ? { ...item, trang_thai: newStatus } : item
                     ));
-                    handleModalClose(); // Đóng modal sau khi thực hiện hành động
+                    handleModalClose(); 
                 } catch (error) {
                     notification.error({ message: `Có lỗi xảy ra: ${error.message}` });
                 }
-            },
-            onCancel() {
-                // Xử lý hành động hủy nếu cần
             },
         });
     };
@@ -227,10 +221,10 @@ const SeatLayout = ({ roomId, onClose, handleMaintenance }) => {
     const seats = data?.data || [];
 
     const getSeatClass = (loai_ghe_ngoi, trang_thai) => {
-        if (trang_thai === 2) return 'selected'; // 2: Đang bảo trì (màu xanh)
-        if (loai_ghe_ngoi === 'VIP') return 'vip'; // Ghế VIP
-        if (loai_ghe_ngoi === 'Đôi') return 'double'; // Ghế đôi
-        return 'regular'; // Ghế thường
+        if (trang_thai === 2) return 'selected'; 
+        if (loai_ghe_ngoi === 'VIP') return 'vip'; 
+        if (loai_ghe_ngoi === 'Đôi') return 'double'; 
+        return 'regular'; 
     };
 
     const rows = {};

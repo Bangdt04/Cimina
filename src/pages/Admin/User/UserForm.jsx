@@ -2,7 +2,7 @@ import { Modal, Form, Input, Select, Button } from 'antd';
 import { useState, useEffect } from 'react';
 import { generateUserData } from './UserData';
 
-function UserEdit({ isEditOpen, setIsEditOpen }) {
+function UserForm({ isEditOpen, setIsEditOpen }) {
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -71,4 +71,4 @@ function UserEdit({ isEditOpen, setIsEditOpen }) {
     );
 }
 
-export default UserEdit;
+export default UserForm;

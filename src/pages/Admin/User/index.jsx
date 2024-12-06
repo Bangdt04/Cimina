@@ -1,12 +1,16 @@
-import UserList from "./UserList";
+import UserData from "./UserData";
+import { useState } from "react";
 import UserHead from "./UserHead";
-import './user.scss'
 
-function UserPage(){
+function UserPage() {
+    const [params, setParams] = useState({
+        pageNo: 1,
+        pageSize: 5,
+    });
     return (
-        <div className="user-container h-full flex flex-col">
+        <div className="p-4 bg-gray-700 mb-3 flex flex-col rounded-lg">
             <UserHead />
-            <UserList />
+            <UserData params={params} setParams={setParams} />
         </div>
     );
 }

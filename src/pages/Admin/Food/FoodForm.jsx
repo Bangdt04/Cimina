@@ -70,6 +70,7 @@ function FoodFormPage() {
             notification.success({
                 message: id ? 'Cập nhật món ăn thành công' : 'Thêm mới món ăn thành công',
                 description: response.data.message,
+                placement: 'topRight',
             });
 
             navigate(config.routes.admin.food);
@@ -79,6 +80,7 @@ function FoodFormPage() {
                 notification.error({
                     message: id ? 'Cập nhật món ăn thất bại' : 'Thêm mới món ăn thất bại',
                     description: data.message || 'Có lỗi xảy ra khi thao tác với món ăn.',
+                    placement: 'topRight',
                 });
             }
         }
@@ -89,7 +91,7 @@ function FoodFormPage() {
             className="form-container"
             style={{
                 padding: '40px',
-                maxWidth: '800px',
+                maxWidth: '1600px',
                 margin: 'auto',
                 backgroundColor: '#ffffff',
                 borderRadius: '12px',

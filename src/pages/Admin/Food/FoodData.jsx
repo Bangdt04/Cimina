@@ -97,7 +97,7 @@ function FoodData() {
             const response = await axios.get('http://localhost:8000/api/foods');
             setData(response.data.data);
         } catch (error) {
-            notification.error({ message: 'Không thể tải dữ liệu!' });
+            notification.error({ message: 'Không thể tải dữ liệu!', placement: 'topRight' });
         } finally {
             setLoading(false);
         }
@@ -106,30 +106,30 @@ function FoodData() {
     const handleStop = async (id) => {
         try {
             await axios.put(`http://localhost:8000/api/stopFood/${id}`);
-            notification.success({ message: 'Đã dừng bán món ăn!' });
+            notification.success({ message: 'Đã dừng bán món ăn!', placement: 'topRight' });
             fetchFoods();
         } catch (error) {
-            notification.error({ message: 'Không thể dừng bán món ăn!' });
+            notification.error({ message: 'Không thể dừng bán món ăn!', placement: 'topRight' });
         }
     };
 
     const handleOpen = async (id) => {
         try {
             await axios.put(`http://localhost:8000/api/openFood/${id}`);
-            notification.success({ message: 'Đã mở bán món ăn!' });
+            notification.success({ message: 'Đã mở bán món ăn!', placement: 'topRight' });
             fetchFoods();
         } catch (error) {
-            notification.error({ message: 'Không thể mở bán món ăn!' });
+            notification.error({ message: 'Không thể mở bán món ăn!', placement: 'topRight' });
         }
     };
 
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:8000/api/foods/${id}`);
-            notification.success({ message: 'Xóa món ăn thành công!' });
+            notification.success({ message: 'Xóa món ăn thành công!', placement: 'topRight' });
             fetchFoods();
         } catch (error) {
-            notification.error({ message: 'Xóa món ăn thất bại!' });
+            notification.error({ message: 'Xóa món ăn thất bại!', placement: 'topRight' });
         }
     };
 

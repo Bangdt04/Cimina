@@ -26,22 +26,22 @@ import {
     const [form] = Form.useForm();
     const mutateAdd = useCreateVoucher({
       success: () => {
-        notification.success({ message: "Thêm mới voucher thành công!" });
+        notification.success({ message: "Thêm mới voucher thành công!", placement: 'topRight' });
         navigate(config.routes.admin.voucher);
       },
       error: () => {
-        notification.error({ message: "Thêm mới voucher thất bại!" });
+        notification.error({ message: "Thêm mới voucher thất bại!", placement: 'topRight' });
       },
     });
   
     const mutateEdit = useUpdateVoucher({
       id,
       success: () => {
-        notification.success({ message: "Cập nhật voucher thành công!" });
+        notification.success({ message: "Cập nhật voucher thành công!", placement: 'topRight' });
         navigate(config.routes.admin.voucher);
       },
       error: () => {
-        notification.error({ message: "Cập nhật voucher thất bại!" });
+        notification.error({ message: "Cập nhật voucher thất bại!", placement: 'topRight' });
       },
     });
   
@@ -78,7 +78,7 @@ import {
       <div
         style={{
           padding: "30px",
-          maxWidth: "700px",
+          maxWidth: "1800px",
           margin: "auto",
           backgroundColor: "#ffffff",
           borderRadius: "8px",
