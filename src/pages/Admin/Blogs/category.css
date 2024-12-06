@@ -1,0 +1,6 @@
+.category-container .ant-input-search-button {
+  background-color: var(--primary-color);
+}
+.category-container .ant-input-search-button:hover {
+  background-color: var(--primary-color) !important;
+}/*# sourceMappingURL=category.css.map */

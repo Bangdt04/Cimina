@@ -38,7 +38,9 @@
     "react-router-dom": "^6.26.2",
     "react-toastify": "^10.0.6",
     "react-world-flags": "^1.6.0",
+    "recharts": "^2.14.0",
     "sass": "^1.80.6",
+    "socket.io-client": "^4.8.1",
     "swiper": "^11.1.14",
     "vite-plugin-require": "^1.1.11"
   },
