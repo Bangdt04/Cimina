@@ -7,6 +7,13 @@ import config from '../../../config';
 
 const { Title } = Typography;
 
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(amount);
+  };
+
 const baseColumns = [
     {
         title: 'Ảnh',
@@ -27,7 +34,7 @@ const baseColumns = [
     {
         title: 'Giá (VND)',
         dataIndex: 'gia',
-        render: (gia) => gia.toLocaleString(),
+        render: (gia) => formatCurrency(gia),
     },
     {
         title: 'Ghi chú',

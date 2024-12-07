@@ -21,6 +21,13 @@ const theme = createTheme({
   },
 });
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
+};
+
 const DashBoardPage = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
@@ -42,33 +49,63 @@ const DashBoardPage = () => {
     { name: 'Thanh toán tại quầy', value: 40 },
   ];
 
+
   useEffect(() => {
-    setMonthlyRevenue([
-      { month: 'Tháng 9', revenue: 400000 },
-      { month: 'Tháng 10', revenue: 450000 },
-      { month: 'Tháng 11', revenue: 300000 },
-      
-    ]);
-    setTopMovies([
-      { name: 'Movie 1', revenue: 800000, releaseYear: 2023, posterUrl: 'https://via.placeholder.com/50' },
-      { name: 'Movie 2', revenue: 750000, releaseYear: 2023, posterUrl: 'https://via.placeholder.com/50' },
-      { name: 'Movie 3', revenue: 700000, releaseYear: 2023, posterUrl: 'https://via.placeholder.com/50' },
-      { name: 'Movie 4', revenue: 650000, releaseYear: 2023, posterUrl: 'https://via.placeholder.com/50' },
-      { name: 'Movie 5', revenue: 600000, releaseYear: 2023, posterUrl: 'https://via.placeholder.com/50' },
-    ]);
-    setTopCustomers([
-      { name: 'Nguyễn Văn A', totalSpend: 2000000 },
-      { name: 'Trần Thị B', totalSpend: 1500000 },
-      { name: 'Lê Văn C', totalSpend: 1200000 },
-      { name: 'Phạm Thị D', totalSpend: 1000000 },
-      { name: 'Hoàng Văn E', totalSpend: 900000 },
-    ]);
-    
-    // Set values for new state variables
-    setTotalMovies(15);
-    setTotalRevenue(950000);
-    setTotalShowings(50);
-    setTotalTicketsSold(50);
+    const fetchData = async () => {
+      try {
+        setError(false);
+        setLoading(true);
+  
+        const [
+          doanhThuThangResponse,
+          soLuongPhimResponse,
+          doanhThuVeResponse,
+          doanhThuDoAnResponse,
+          soLuongVoucherResponse,
+          phanLoaiVeResponse,
+        ] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/getDoanhThuThang"),
+          axios.get("http://127.0.0.1:8000/api/getCountMovie"),
+          axios.get("http://127.0.0.1:8000/api/getDoanhThuVe"),
+          axios.get("http://127.0.0.1:8000/api/getDoanhDoAn"),
+          axios.get("http://127.0.0.1:8000/api/getSoLuongVoucher"),
+          axios.get("http://127.0.0.1:8000/api/getPhanLoaiVe"),
+        ]);
+  
+        let doanhThuThangData = doanhThuThangResponse.data.data.sort(
+          (a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year)
+        );
+  
+        // // Kiểm tra và thêm dữ liệu giả cho tháng 9 và tháng 10 nếu chưa có
+        // const monthsAvailable = doanhThuThangData.map(item => item.month);
+        // if (!monthsAvailable.includes(9)) {
+        //   doanhThuThangData.push({ month: 9, year: 2024, total: 35000000 });
+        // }
+        // if (!monthsAvailable.includes(10)) {
+        //   doanhThuThangData.push({ month: 10, year: 2024, total: 42000000 });
+        // }
+  
+        // // Sắp xếp lại sau khi thêm dữ liệu giả
+        // doanhThuThangData = doanhThuThangData.sort(
+        //   (a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year)
+        // );
+  
+        setDoanhThuThang(doanhThuThangData);
+        setSoLuongPhim(soLuongPhimResponse.data.data);
+        setDoanhThuVe(doanhThuVeResponse.data.data);
+        setDoanhThuDoAn(doanhThuDoAnResponse.data.data);
+        setVoucherData(soLuongVoucherResponse.data.data);
+        setPhanLoaiVeData(phanLoaiVeResponse.data.data);
+  
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(true);
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, []);
 
   return (
@@ -124,28 +161,41 @@ const DashBoardPage = () => {
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={6} lg={3}>
-            <Card sx={{
-              p: 3,
-              backgroundColor: '#4caf50', // Changed color
-              color: 'white',
-              boxShadow: 5,
-              borderRadius: 3,
-              '&:hover': {
-                transform: 'scale(1.05)',
-                boxShadow: 10,
-                transition: 'all 0.3s ease-in-out',
-                backgroundColor: '#388e3c', // Hover effect change color
-              },
-            }}>
-              <Typography variant="h6" color="inherit">
-                Tổng Số Xuất Chiếu
-              </Typography>
-              <Typography variant="h5" color="inherit">
-                {totalShowings}
-              </Typography>
-            </Card>
-          </Grid>
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, boxShadow: 2 }}>
+            <FaFilm size={40} color="#1e88e5" />
+            <Typography variant="h6" sx={{ marginBottom: 2, color: "#555" }}>
+              Số Lượng Phim
+            </Typography>
+            <Typography variant="h5" color="primary">
+              {soLuongPhim} Phim
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, boxShadow: 2 }}>
+            <FaTicketAlt size={40} color="#1e88e5" />
+            <Typography variant="h6" sx={{ marginBottom: 2, color: "#555" }}>
+              Doanh Thu Bán Vé
+            </Typography>
+            <Typography variant="h5" color="secondary">
+            {formatCurrency(doanhThuVe)}
+            </Typography>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, boxShadow: 2 }}>
+            <FaHamburger size={40} color="#1e88e5" />
+            <Typography variant="h6" sx={{ marginBottom: 2, color: "#555" }}>
+              Doanh Thu Đồ Ăn
+            </Typography>
+            <Typography variant="h5" color="warning">
+            {formatCurrency(doanhThuDoAn)}
+            </Typography>
+          </Card>
+        </Grid>
+      </Grid>
 
           <Grid item xs={12} md={6} lg={3}>
             <Card sx={{

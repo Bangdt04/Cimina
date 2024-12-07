@@ -56,7 +56,7 @@ const MyProfile = () => {
                 </Form.Item>
                 <Form.Item
                     className="mb-16"
-                    label={<label style={{ color: "white" }}>Email</label>}
+                    label={<label style={{ color: "while" }}>Email</label>} 
                     layout="vertical"
                     name="email"
                 >

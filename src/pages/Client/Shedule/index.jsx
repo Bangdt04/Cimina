@@ -74,9 +74,9 @@ const ShedulePage = () => {
                                     <h2 className="title text-lg font-bold">
                                         {item.movie.ten_phim} (Phụ đề)
                                     </h2>
-                                    <p className="text-sm">
+                                    {/* <p className="text-sm">
                                         Xuất xứ: Nước Ngoài
-                                    </p>
+                                    </p> */}
                                     <p className="text-sm">
                                        Trạng thái: {item.movie.hinh_thuc_phim}
                                     </p>

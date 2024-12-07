@@ -1,11 +1,11 @@
-import { Button, Form, Input, notification, Modal } from 'antd'; // Thêm import Modal từ antd
+import { Button, Form, Input, notification, Modal } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { useLogin } from '../../../hooks/api/useAuthApi';
 import config from '../../../config';
 import { useState } from 'react';
 import { saveToken, getRoles, isTokenStoraged } from '../../../utils/storage';
 import { NavLink, Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Thêm import axios để gọi API
+import axios from 'axios';
 
 const LoginModal = ({ closeModal, openRegisterModal }) => {
     const [processing, setProcessing] = useState(false);
@@ -53,9 +53,8 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
         });
     };
 
-    // Thêm state cho modal quên mật khẩu
     const [isForgotPasswordModalVisible, setForgotPasswordModalVisible] = useState(false);
-    const [email, setEmail] = useState(''); // Thêm state cho email
+    const [email, setEmail] = useState('');
 
     const handleForgotPassword = async () => {
         try {
@@ -64,7 +63,7 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
                 message: 'Thành công',
                 description: 'Đã gửi yêu cầu khôi phục mật khẩu.',
             });
-            setForgotPasswordModalVisible(false); // Đóng modal sau khi gửi yêu cầu
+            setForgotPasswordModalVisible(false);
         } catch (error) {
             notification.error({
                 message: 'Lỗi',
@@ -78,59 +77,51 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
         return <Navigate to={url} replace />;
     }
 
+    // Hàm xử lý click ngoài modal
+    const handleOverlayClick = (e) => {
+        // Kiểm tra xem click có phải vào vùng ngoài modal không (khi click vào lớp overlay)
+        if (e.target.id === 'loginModal') {
+            closeModal(); // Đóng modal nếu click ngoài modal
+        }
+    };
+
     return (
         <>
-            <div className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50" id="loginModal">
-                <div className="bg-black bg-opacity-90 p-8 rounded-lg shadow-lg w-96 relative">
-                    <button className="absolute top-2 right-2 text-white" onClick={closeModal}>
-                        X
+            <div
+                className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50"
+                id="loginModal"
+                onClick={handleOverlayClick} // Xử lý click ra ngoài modal
+            >
+                <div className="bg-black bg-opacity-90 p-8 rounded-lg shadow-lg w-96 relative border border-slate-700" onClick={(e) => e.stopPropagation()}>
+                    <button className="absolute top-4 right-4 text-white" onClick={closeModal}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
                     </button>
-                    <h2 className="text-white text-2xl mb-6">
-                        Đăng nhập
-                    </h2>
+                    <h2 className="text-white text-2xl mb-6">Đăng nhập</h2>
                     <Form form={form} onFinish={onLogin}>
                         <div className="mb-24">
                             <FormItem
                                 name={'email'}
                                 layout="vertical"
-                                label={<label style={{ color: "white" }}>Email</label>}
+                                label={<label style={{ color: 'white' }}>Email</label>}
                                 rules={[
-                                    {
-                                        type: 'email',
-                                        message: 'Email không hợp lý!',
-                                    },
-                                    {
-                                        required: true,
-                                        message: "Vui lòng nhập email."
-                                    },
+                                    { type: 'email', message: 'Email không hợp lý!' },
+                                    { required: true, message: 'Vui lòng nhập email.' },
                                 ]}
                             >
-                                <Input
-                                    className="w-full p-2 rounded-lg border border-gray-300"
-                                    id="email"
-                                    placeholder="Email"
-                                    type="email"
-                                />
+                                <Input className="w-full p-2 rounded-lg border border-gray-300" id="email" placeholder="Email" type="email" />
                             </FormItem>
                         </div>
                         <div className="mb-24">
                             <FormItem
                                 name={'password'}
                                 layout="vertical"
-                                label={<label style={{ color: "white" }}>Mật khẩu</label>}
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Vui lòng nhập mật khẩu."
-                                    },
-                                ]}
+                                label={<label style={{ color: 'white' }}>Mật khẩu</label>}
+                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu.' }]}
                             >
-                                <Input.Password
-                                    className="w-full p-2 rounded-lg border border-gray-300"
-                                    id="password"
-                                    placeholder="Mật khẩu"
-                                    type="password"
-                                />
+                                <Input.Password className="w-full p-2 rounded-lg border border-gray-300" id="password" placeholder="Mật khẩu" type="password" />
                             </FormItem>
                         </div>
                         <div className="flex justify-between items-center mb-6">
@@ -138,15 +129,12 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
                                 Quên mật khẩu?
                             </a>
                         </div>
-                        <button
-                            className="w-full bg-red-500 text-white py-2 rounded-lg hover-zoom"
-                            type="submit"
-                        >
+                        <button className="w-full bg-red-500 text-white py-2 rounded-lg hover-zoom" type="submit">
                             Đăng Nhập
                         </button>
                     </Form>
                     <p className="text-white mt-4 text-center">
-                        Bạn chưa có tài khoản?
+                        Bạn chưa có tài khoản?{' '}
                         <a className="text-red-500" href="#" onClick={openRegisterModal}>
                             Đăng kí
                         </a>
@@ -161,14 +149,10 @@ const LoginModal = ({ closeModal, openRegisterModal }) => {
                 onCancel={() => setForgotPasswordModalVisible(false)}
                 onOk={handleForgotPassword}
             >
-                <Input
-                    placeholder="Nhập email của bạn"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                <Input placeholder="Nhập email của bạn" value={email} onChange={(e) => setEmail(e.target.value)} />
             </Modal>
         </>
     );
-}
+};
 
 export default LoginModal;

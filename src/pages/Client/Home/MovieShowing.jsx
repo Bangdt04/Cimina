@@ -15,7 +15,9 @@ const MovieShowing = () => {
         return groups;
     };
 
-    const movieGroups = groupMovies(data?.data?.slice(0, 8) || [], 4) // Chỉ lấy 8 phim đầu tiên
+    // tìm kiếm phim đang chiếu
+    const showingMovies = data?.data?.filter(movie => movie.hinh_thuc_phim === "Đang chiếu") || [];
+    const movieGroups = groupMovies(showingMovies.slice(0, 8) || [], 4) // Chỉ lấy 8 phim đầu tiên
 
     return (
         <>

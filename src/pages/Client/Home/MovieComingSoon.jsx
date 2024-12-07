@@ -1,88 +1,57 @@
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import ImageMovie from "../../../assets/image/joker.webp";
 import config from "../../../config";
 
 const MovieCommingSoon = () => {
+    const [movies, setMovies] = useState([]);
+
+    useEffect(() => {
+        const fetchMovies = async () => {
+            const response = await fetch('http://127.0.0.1:8000/api/movies');
+            const data = await response.json();
+            if (data.message === "Hiện thị dữ liệu phim thành công") {
+                // Lọc phim có hinh_thuc_phim là "Đang chiếu" và lấy 4 phim đầu tiên
+                const filteredMovies = data.data
+                    .filter(movie => movie.hinh_thuc_phim === "Sắp chiếu")
+                    .slice(0, 4); // Lấy tối đa 4 bộ phim
+                setMovies(filteredMovies); // Lưu phim đã lọc vào state
+            }
+        };
+
+        fetchMovies();
+    }, []);
+
     return (
-        <>
-            <div className="w-3/4 mb">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold flex items-center">
-                        <span className="text-red-500 mr-2">
-                            ●
-                        </span>
-                        Phim sắp chiếu
-                    </h2>
-                    <a className="text-blue-400" href="http://localhost:5173/genre">
-                        Xem tất cả
-                    </a>
-                </div>
-                <div className="flex space-x-4 mt-6 mb-5">
-                    <NavLink className="w-1/4" to={config.routes.web.phim + `/2`}>
+        <div className="w-3/4 mb">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold flex items-center">
+                    <span className="text-red-500 mr-2">●</span>
+                    Phim sắp chiếu
+                </h2>
+                <a className="text-blue-400" href="http://localhost:5173/genre">
+                    Xem tất cả
+                </a>
+            </div>
+            <div className="flex space-x-4 mt-6 mb-5">
+                {/* Dùng map để hiển thị danh sách phim đã lọc */}
+                {movies.map((movie) => (
+                    <NavLink key={movie.id} className="w-1/4" to={config.routes.web.phim + `/${movie.id}`}>
                         <div>
                             <img
-                                alt="Movie poster of Joker: Folie à Deux"
+                                alt={`Movie poster of ${movie.ten_phim}`}
                                 className="rounded-2xl hover-zoom mb-2"
                                 style={{ height: 350, width: '100%' }}
-                                src={`src/assets/image/joker.webp`}
+                                src={`http://127.0.0.1:8000${movie.anh_phim}`} // Sử dụng URL ảnh từ API
                             />
-                            <p className="text-gray-400">
-                                Kinh dị, Tâm lý, tình cảm, Nhạc kịch
-                            </p>
-                            <p className="text-gray-400">
-                                04/10/2024
-                            </p>
-                            <p className="font-bold">
-                                JOKER: FOLIE À DEUX - T18
-                            </p>
+                            <p className="text-gray-400">{movie.movie_genres[0]?.ten_loai_phim}</p> {/* Hiển thị thể loại phim */}
+                            <p className="text-gray-400">{movie.hinh_thuc_phim}</p> {/* Hiển thị trạng thái phim */}
+                            <p className="font-bold">{movie.ten_phim}</p> {/* Tên phim */}
                         </div>
                     </NavLink>
-                    <div className="w-1/4">
-                        <img
-                            alt="Movie poster of Hẹn Hò Với Sát Nhân"
-                            className="rounded-2xl hover-zoom mb-2 hover-zoom"
-                            style={{ height: 350, width: '100%' }}
-                            src={ImageMovie}
-                        />
-                        <p className="text-gray-400">
-                            10/10/2024
-                        </p>
-                        <p className="font-bold">
-                            HẸN HÒ VỚI SÁT NHÂN - T16
-                        </p>
-                    </div>
-                    <div className="w-1/4">
-                        <img
-                            alt="Movie poster of Mộ Đom Đóm"
-                            className="rounded-2xl hover-zoom mb-2 hover-zoom"
-                            style={{ height: 350, width: '100%' }}
-                            src={ImageMovie}
-                        />
-                        <p className="text-gray-400">
-                            15/10/2024
-                        </p>
-                        <p className="font-bold">
-                            MỘ ĐOM ĐÓM - K
-                        </p>
-                    </div>
-                    <div className="w-1/4">
-                        <img
-                            alt="Movie poster of Kumanthong: Chiêu Hồn Vong Nhi"
-                            className="rounded-2xl hover-zoom mb-2 hover-zoom"
-                            style={{ height: 350, width: '100%' }}
-                            src={ImageMovie}
-                        />
-                        <p className="text-gray-400">
-                            20/10/2024
-                        </p>
-                        <p className="font-bold">
-                            KUMANTHONG: CHIÊU HỒN VONG NHI - T18
-                        </p>
-                    </div>
-                </div>
+                ))}
             </div>
-        </>
+        </div>
     );
-}
+};
 
 export default MovieCommingSoon;
