@@ -55,11 +55,29 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
         return <Navigate to={url} replace />;
     }
 
+    // Hàm xử lý click ngoài modal
+    const handleOverlayClick = (e) => {
+        // Kiểm tra xem click có phải vào vùng ngoài modal không (khi click vào lớp overlay)
+        if (e.target.id === 'registerModal') {
+            closeModal(); // Đóng modal nếu click ngoài modal
+        }
+    };
+
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50 mt-12" id="registerModal">
-            <div className="bg-black bg-opacity-90 p-8 rounded-lg shadow-lg w-120 relative border border-slate-700">
+        <div 
+             className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-50 mt-12"
+            id="registerModal"
+            onClick={handleOverlayClick} // Xử lý click ra ngoài modal
+        >
+            <div 
+                className="bg-black bg-opacity-90 p-8 rounded-lg shadow-lg w-120 relative border border-slate-700"
+                onClick={(e) => e.stopPropagation()} // Ngừng sự kiện click khi click vào modal
+            >
                 <button className="absolute top-4 right-4 text-white" onClick={closeModal}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
                 </button>
                 <h2 className="text-white text-2xl mb-2">
                     Đăng kí
@@ -71,12 +89,7 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             name="fullName"
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Họ và tên</label>}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập họ và tên."
-                                },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng nhập họ và tên." }]}
                         >
                             <Input
                                 className="p-2 rounded-lg border border-gray-300"
@@ -92,14 +105,8 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Email</label>}
                             rules={[
-                                {
-                                    type: 'email',
-                                    message: 'Email không hợp lý!',
-                                },
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập email."
-                                },
+                                { type: 'email', message: 'Email không hợp lý!' },
+                                { required: true, message: "Vui lòng nhập email." }
                             ]}
                         >
                             <Input
@@ -115,12 +122,7 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             name="phone"
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Số điện thoại</label>}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập số điện thoại."
-                                },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng nhập số điện thoại." }]}
                         >
                             <Input
                                 className="p-2 rounded-lg border border-gray-300"
@@ -132,33 +134,21 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             name="gender"
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Giới tính</label>}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng chọn giới tính."
-                                },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng chọn giới tính." }]}
                         >
-                            <Select
-                                className="w-full"
-                                placeholder="Chọn giới tính"
-                            >
+                            <Select className="w-full" placeholder="Chọn giới tính">
                                 <Select.Option value="nam">Nam</Select.Option>
                                 <Select.Option value="nu">Nữ</Select.Option>
                             </Select>
                         </FormItem>
                     </div>
+
                     <div className="grid grid-cols-2 gap-4 mb-16">
                         <FormItem
                             name="password"
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Mật khẩu</label>}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập mật khẩu."
-                                },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng nhập mật khẩu." }]}
                         >
                             <Input.Password
                                 className="p-2 rounded-lg border border-gray-300"
@@ -172,18 +162,15 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             layout="vertical"
                             label={<label style={{ color: "white" }}>Xác nhận mật khẩu</label>}
                             rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập xác nhận mật khẩu."
-                                },
+                                { required: true, message: "Vui lòng nhập xác nhận mật khẩu." },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         if (!value || getFieldValue('password') === value) {
                                             return Promise.resolve();
                                         }
                                         return Promise.reject(new Error('Mật khẩu xác nhận chưa đúng'));
-                                    },
-                                }),
+                                    }
+                                })
                             ]}
                         >
                             <Input.Password
@@ -193,6 +180,7 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                             />
                         </FormItem>
                     </div>
+
                     <button
                         className="w-full bg-red-600 text-white p-2 rounded-lg hover-zoom"
                         type="primary"
@@ -201,6 +189,7 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
                         Đăng ký
                     </button>
                 </Form>
+
                 <p className="text-white mt-4 text-center">
                     Bạn đã có tài khoản?
                     <a className="text-red-500" href="#" onClick={openLoginModal}>
@@ -210,6 +199,6 @@ const RegisterModal = ({ closeModal, openVerifyModal, openLoginModal , handleSav
             </div>
         </div>
     );
-}
+};
 
 export default RegisterModal;
