@@ -1,4 +1,5 @@
-import { Button, Input, Table, notification, Modal, Typography } from 'antd';
+// src/pages/Admin/Seats/SeatData.jsx
+import { Button, Input, Table, notification, Modal, Typography, Tooltip } from 'antd'; // Added Tooltip import
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -44,20 +45,24 @@ function transformData(dt, roomData, navigate, setIsDisableOpen, setViewData) {
             ten_phong_chieu: room ? room.ten_phong_chieu : 'Không xác định', 
             action: (
                 <div className="action-btn flex gap-3">
-                    <Button
-                        icon={<EditOutlined />}
-                        className="text-green-500 border border-green-500"
-                        onClick={() => navigate(`${config.routes.admin.seat}/update/${item.id}`)}
-                    >
-                        Sửa
-                    </Button>
-                    <Button
-                        icon={<DeleteOutlined />}
-                        className={'text-red-500 border border-red-500'}
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    >
-                        Xóa
-                    </Button>
+                    <Tooltip title="Sửa">
+                        <Button
+                            icon={<EditOutlined />}
+                            className="text-green-500 border border-green-500 hover:bg-green-100 transition-all"
+                            onClick={() => navigate(`${config.routes.admin.seat}/update/${item.id}`)}
+                        >
+                            Sửa
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <Button
+                            icon={<DeleteOutlined />}
+                            className={'text-red-500 border border-red-500 hover:bg-red-100 transition-all'}
+                            onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                        >
+                            Xóa
+                        </Button>
+                    </Tooltip>
                 </div>
             ),
         };
@@ -66,7 +71,7 @@ function transformData(dt, roomData, navigate, setIsDisableOpen, setViewData) {
 
 function SeatData({ setParams, params }) {
     const [isDisableOpen, setIsDisableOpen] = useState({ id: 0, isOpen: false });
-    const [viewData, setViewData] = useState(null); // State for view data
+    const [viewData, setViewData] = useState(null);
     const navigate = useNavigate();
     const { data: seatData, isLoading, refetch } = useGetSeats();
     const { data: roomDataResponse } = useGetAddSeat();
@@ -75,18 +80,27 @@ function SeatData({ setParams, params }) {
 
     useEffect(() => {
         if (isLoading || !seatData) return;
+        
         let dt = transformData(seatData?.data, roomData, navigate, setIsDisableOpen, setViewData);
+    
+        // Sắp xếp dữ liệu theo tên phòng chiếu
+        dt = dt.sort((a, b) => {
+            if (a.ten_phong_chieu < b.ten_phong_chieu) return -1;
+            if (a.ten_phong_chieu > b.ten_phong_chieu) return 1;
+            return 0;
+        });
+    
         setTData(dt);
     }, [isLoading, seatData, roomData]);
-
+    
     const mutationDelete = useDeleteSeat({
         success: () => {
             setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-            notification.success({ message: 'Xóa thành công' });
+            notification.success({ message: 'Xóa thành công', placement: 'topRight' });
             refetch();
         },
         error: () => {
-            notification.error({ message: 'Xóa thất bại' });
+            notification.error({ message: 'Xóa thất bại', placement: 'topRight' });
         },
         obj: { id: isDisableOpen.id },
     });
@@ -107,21 +121,25 @@ function SeatData({ setParams, params }) {
     };
 
     return (
-        <div className="bg-white text-black p-4 rounded-lg shadow-lg">
-            <div className="p-4 mb-3 flex items-center rounded-lg">
+        <div className="bg-white text-black p-6 rounded-lg shadow-lg">
+            <div className="p-4 mb-4 flex items-center rounded-lg">
                 <Input.Search
                     className="xl:w-1/4 md:w-1/2"
                     allowClear
                     enterButton
                     placeholder="Nhập từ khoá tìm kiếm"
                     onSearch={onSearch}
+                    style={{ borderRadius: '8px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)' }}
                 />
             </div>
             <Table
                 loading={isLoading}
                 columns={baseColumns}
                 dataSource={tdata}
-                pagination={{ showSizeChanger: true }}
+                pagination={{ showSizeChanger: true, pageSize: 10, size: 'middle' }}
+                rowClassName="hover:bg-gray-50"
+                bordered
+                style={{ borderRadius: '10px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}
             />
             {isDisableOpen.isOpen && (
                 <ConfirmPrompt
@@ -137,10 +155,12 @@ function SeatData({ setParams, params }) {
                 onCancel={handleViewClose}
                 footer={null}
                 width={600}
+                centered
+                bodyStyle={{ padding: '20px', backgroundColor: '#f9f9f9' }}
             >
                 {viewData && (
                     <div style={{ padding: '20px' }}>
-                        <Title level={4}>Thông tin ghế</Title>
+                        <Title level={4} style={{ color: '#1890ff' }}>Thông tin ghế</Title>
                         <p><strong>Số ghế ngồi:</strong> <Text>{viewData.so_ghe_ngoi}</Text></p>
                         <p><strong>Loại ghế ngồi:</strong> <Text>{viewData.loai_ghe_ngoi}</Text></p>
                         <p><strong>Giá ghế:</strong> <Text>{viewData.gia_ghe}</Text></p>

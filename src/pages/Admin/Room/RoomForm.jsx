@@ -10,29 +10,31 @@ function RoomFormPage() {
     const navigate = useNavigate();
     let { id } = useParams();
     const { data: room } = id ? useGetRoom(id) : { data: null };
-
+    
     const [form] = Form.useForm();
     const mutateAdd = useCreateRoom({
         success: () => {
-            notification.success({ message: 'Thêm mới phòng thành công' });
-            navigate(config.routes.admin.seat.create);
+            notification.success({ message: 'Thêm mới phòng thành công', placement: 'topRight' });
+            navigate(-1);  // Quay lại trang trước
         },
-        error: () => {
-            notification.error({ message: 'Thêm mới phòng thất bại' });
+        error: (error) => {
+            const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
+            notification.error({ message: errorMessage, placement: 'topRight' });
         },
     });
-
+    
     const mutateEdit = useUpdateRoom({
         id,
         success: () => {
-            notification.success({ message: 'Cập nhật phòng thành công' });
-            navigate(config.routes.admin.room);
+            notification.success({ message: 'Cập nhật phòng thành công', placement: 'topRight' });
+            navigate(-1);  // Quay lại trang trước
         },
-        error: () => {
-            notification.error({ message: 'Cập nhật phòng thất bại' });
+        error: (error) => {
+            const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
+            notification.error({ message: errorMessage, placement: 'topRight' });
         },
     });
-
+    
     useEffect(() => {
         if (!room) return;
         form.setFieldsValue({
@@ -53,8 +55,8 @@ function RoomFormPage() {
     };
 
     return (
-        <div className="form-container" style={{ padding: '80px', maxWidth: '1000px', margin: 'auto', backgroundColor: '#f9f9f9', borderRadius: '10px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)' }}>
-            <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div className="form-container" style={{ padding: '40px 60px', maxWidth: '1000px', margin: 'auto', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: '30px', color: '#4C4C6C' }}>
                 {id ? 'Cập nhật thông tin phòng' : 'Thêm mới thông tin phòng'}
             </Title>
             <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -62,12 +64,17 @@ function RoomFormPage() {
                     label="Tên Phòng"
                     name="room_name"
                     rules={[{ required: true, message: 'Nhập tên phòng!' }]}
+                    style={{ marginBottom: '20px' }}
                 >
-                    <Input placeholder="Nhập tên phòng" style={{ borderRadius: '5px' }} />
+                    <Input placeholder="Nhập tên phòng" style={{ borderRadius: '8px', padding: '10px' }} />
                 </Form.Item>
-                <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%', borderRadius: '5px' }}>Đặt lại</Button>
-                    <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%', borderRadius: '5px' }}>
+                <div className="form-footer" style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+                    <Button type="" onClick={() => navigate(-1)} className="cancel-button" style={{ backgroundColor: 'red', color: 'white' }}>Hủy</Button>
+                    <Button 
+                        htmlType="submit" 
+                        className="bg-blue-500 text-white" 
+                        style={{ width: '48%', borderRadius: '8px', backgroundColor: '#4D76D7', padding: '10px', fontWeight: '500' }}
+                    >
                         {id ? 'Cập nhật' : 'Thêm mới'}
                     </Button>
                 </div>

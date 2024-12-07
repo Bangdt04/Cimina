@@ -35,7 +35,6 @@ function ShowtimeFormPage() {
             navigate(config.routes.admin.showTime);
         },
         error: () => {
-            notification.error({ message: 'Cập nhật thất bại' });
         },
     });
 
@@ -53,7 +52,7 @@ function ShowtimeFormPage() {
             phim_id: movieId,
             room_ids: roomIds,
             ngay_chieu: moment(showtime.ngay_chieu),
-            gio_chieu: gioChieuArray, // Use the formatted array
+            gio_chieu: gioChieuArray, 
         });
     }, [showtime, showtimeData]);
 
@@ -87,9 +86,10 @@ function ShowtimeFormPage() {
                 notification.error({
                     message: 'Lỗi',
                     description: errorMessage,
+                    placement: 'topRight',
                 });
             } else {
-                notification.error({ message: 'Đã xảy ra lỗi không xác định' });
+                notification.error({ message: 'Đã xảy ra lỗi không xác định', placement: 'topRight' });
             }
         }
     };
@@ -120,7 +120,7 @@ function ShowtimeFormPage() {
     };
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+        <div className="form-container" style={{ padding: '20px', maxWidth: '1800px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
             <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
                 {id ? 'Cập nhật thông tin suất chiếu' : 'Thêm suất chiếu mới'}
             </Title>

@@ -37,10 +37,17 @@ function MovieFormPage() {
             const fetchMovie = async () => {
                 try {
                     const response = await axios.get(`http://127.0.0.1:8000/api/editMovie/${id}`);
-                    const movieData = response.data.data;
+                    const movieData = response.data.movie;
                     form.setFieldsValue({
                         ten_phim: movieData.ten_phim,
-                        anh_phim: movieData.anh_phim,
+                        anh_phim: [
+                            {
+                                uid: '-1',
+                                name: movieData.anh_phim.split('/').pop(),
+                                status: 'done',
+                                url: `http://127.0.0.1:8000${movieData.anh_phim}`,
+                            },
+                        ],
                         dao_dien: movieData.dao_dien,
                         dien_vien: movieData.dien_vien,
                         noi_dung: movieData.noi_dung,
@@ -107,127 +114,106 @@ function MovieFormPage() {
             notification.error({ message: 'Có lỗi xảy ra khi lưu phim' });
         }
     };
-    
 
     return (
-        <div className="form-container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
-            <Title level={2} style={{ textAlign: 'center' }}>
+        <div className="form-container" style={{ padding: '30px', maxWidth: '1400px', margin: 'auto', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', fontFamily: 'Arial, sans-serif' }}>
+            <Title level={2} style={{ textAlign: 'center', color: '#333' }}>
                 {id ? 'Cập nhật thông tin phim' : 'Thêm phim mới'}
             </Title>
             <Form form={form} layout="vertical" onFinish={onFinish}>
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item
-                            label="Tên Phim"
-                            name="ten_phim"
-                            rules={[{ required: true, message: 'Nhập tên phim!' }]}
-                        >
-                            <Input placeholder="Nhập tên phim" />
+                        <Form.Item label="Tên Phim" name="ten_phim" rules={[{ required: true, message: 'Nhập tên phim!' }]}>
+                            <Input placeholder="Nhập tên phim" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Ảnh Phim"
-                            name="anh_phim"
-                            valuePropName="fileList"
-                            getValueFromEvent={(e) => e?.fileList}
-                            rules={[{ required: true, message: 'Chọn ảnh phim!' }]}
-                        >
-                            <Upload
-                                beforeUpload={() => false}
-                                listType="picture-card"
-                                accept=".jpg,.jpeg,.png,.gif"
-                                maxCount={1}
-                                showUploadList={{ showRemoveIcon: true }}
-                            >
-                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                        <Form.Item label="Ảnh Phim" name="anh_phim" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList} rules={[{ required: true, message: 'Chọn ảnh phim!' }]}>
+                            <Upload beforeUpload={() => false} listType="picture-card" accept=".jpg,.jpeg,.png,.gif" maxCount={1} showUploadList={{ showRemoveIcon: true }}>
+                                <Button icon={<UploadOutlined />} style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }}>Chọn ảnh</Button>
                             </Upload>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Đạo Diễn"
-                            name="dao_dien"
-                            rules={[{ required: true, message: 'Nhập tên đạo diễn!' }]}
-                        >
-                            <Input placeholder="Nhập tên đạo diễn" />
+                        <Form.Item label="Đạo Diễn" name="dao_dien" rules={[{ required: true, message: 'Nhập tên đạo diễn!' }]}>
+                            <Input placeholder="Nhập tên đạo diễn" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Diễn Viên"
-                            name="dien_vien"
-                            rules={[{ required: true, message: 'Nhập tên diễn viên!' }]}
-                        >
-                            <Input placeholder="Nhập tên diễn viên" />
+                        <Form.Item label="Diễn Viên" name="dien_vien" rules={[{ required: true, message: 'Nhập tên diễn viên!' }]}>
+                            <Input placeholder="Nhập tên diễn viên" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Nội Dung"
-                            name="noi_dung"
-                            rules={[{ required: true, message: 'Nhập nội dung phim!' }]}
-                        >
-                            <Input.TextArea placeholder="Nhập nội dung phim" />
+                        <Form.Item label="Nội Dung" name="noi_dung" rules={[{ required: true, message: 'Nhập nội dung phim!' }]}>
+                            <Input.TextArea placeholder="Nhập nội dung phim" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Trailer"
-                            name="trailer"
-                            rules={[{ required: true, message: 'Nhập đường dẫn trailer!' }]}
-                        >
-                            <Input placeholder="Nhập đường dẫn trailer" />
+                        <Form.Item label="Trailer" name="trailer" rules={[{ required: true, message: 'Nhập đường dẫn trailer!' }]}>
+                            <Input placeholder="Nhập đường dẫn trailer" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Giá Vé"
-                            name="gia_ve"
-                            rules={[{ required: true, message: 'Nhập giá vé!' }]}
-                        >
-                            <Input type="number" placeholder="Nhập giá vé" />
+                        <Form.Item label="Giá Vé" name="gia_ve" rules={[{ required: true, message: 'Nhập giá vé!' }]}>
+                            <Input type="number" placeholder="Nhập giá vé" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Hình Thức Phim" 
-                            name="hinh_thuc_phim" 
-                            rules={[{ required: true, message: 'Chọn hình thức phim!' }]} 
-                        >
-                            <Select placeholder="Chọn hình thức chiếu">
-                                <Option value="Đang chiếu">Đang chiếu</Option> // Added option
-                                <Option value="Sắp Công Chiếu">Sắp công chiếu</Option> // Added option
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item
-                            label="Thể Loại Phim"
-                            name="loaiphim_ids"
-                            rules={[{ required: true, message: 'Chọn thể loại phim!' }]}
-                        >
-                            <Select mode="multiple" placeholder="Chọn thể loại phim" loading={loadingGenres}>
-                                {genres.map(genre => (
-                                    <Option key={genre.id} value={genre.id}>{genre.ten_loai_phim}</Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item
-                            label="Thời Gian Phim"
-                            name="thoi_gian_phim"
-                            rules={[{ required: true, message: 'Nhập thời gian phim!' }]}
-                        >
-                            <Input type="number" placeholder="Nhập thời gian phim (phút)" />
+                        <Form.Item label="Hình Thức Phim" name="hinh_thuc_phim" rules={[{ required: true, message: 'Chọn hình thức phim!' }]}>
+                            <Select placeholder="Chọn hình thức chiếu" style={{ borderRadius: '8px', fontSize: '14px' }}>
+                                <Option value="Đang chiếu">Đang chiếu</Option>
+                                <Option value="Sắp Công Chiếu">Sắp công chiếu</Option>
+                        </Select>
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label="Thể Loại Phim" name="loaiphim_ids" rules={[{ required: true, message: 'Chọn thể loại phim!' }]}>
+                        <Select mode="multiple" placeholder="Chọn thể loại phim" loading={loadingGenres} style={{ borderRadius: '8px', fontSize: '14px' }}>
+                            {genres.map((genre) => (
+                                <Option key={genre.id} value={genre.id}>{genre.ten_loai_phim}</Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label="Thời Gian Phim" name="thoi_gian_phim" rules={[{ required: true, message: 'Nhập thời gian phim!' }]}>
+                    <Input type="number" placeholder="Nhập thời gian phim (phút)" style={{ borderRadius: '8px', padding: '12px', fontSize: '14px' }} />
                         </Form.Item>
                     </Col>
                 </Row>
-                <div className="flex justify-between items-center gap-[1rem]">
-                    <Button htmlType="reset" style={{ width: '48%' }}>Đặt lại</Button>
-                    <Button htmlType="submit" className="bg-blue-500 text-white" style={{ width: '48%' }}>
+                <div className="form-actions" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{
+                            backgroundColor: '#145da0',
+                            color: 'white',
+                            borderRadius: '8px',
+                            padding: '10px 30px',
+                            fontSize: '16px',
+                            marginRight: '15px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                            transition: 'background-color 0.3s ease',
+                        }}
+                        loading={false} // Set to true if the form is being submitted
+                    >
                         {id ? 'Cập nhật' : 'Thêm mới'}
+                    </Button>
+                    <Button
+                        type="default"
+                        onClick={() => navigate('/admin/movies')}
+                        style={{
+                            backgroundColor: '#f0f0f0',
+                            color: '#333',
+                            borderRadius: '8px',
+                            padding: '10px 30px',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                            transition: 'background-color 0.3s ease',
+                        }}
+                    >
+                        Hủy
                     </Button>
                 </div>
             </Form>

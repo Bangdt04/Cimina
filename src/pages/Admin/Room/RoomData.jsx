@@ -1,8 +1,8 @@
-import { Button, Input, Table, notification, Modal, Card, Row, Col } from 'antd';
+import { Button, Input, Table, notification, Modal, Card, Row, Col, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-import { useDeleteRoom, useGetRooms, useSeatAllRoom } from '../../../hooks/api/useRoomApi'; // Removed useEnableMaintenanceSeat and useDisableMaintenanceSeat
+import { useDeleteRoom, useGetRooms, useSeatAllRoom } from '../../../hooks/api/useRoomApi';
 import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 import { CloseCircleOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import './RoomData.css';
@@ -13,45 +13,69 @@ const baseColumns = [
         dataIndex: 'ten_phong_chieu',
     },
     {
+        title: 'Tổng số ghế',
+        dataIndex: 'tong_ghe_phong',
+    },
+    {
         title: 'Thao tác',
         dataIndex: 'action',
         render: (text) => <div style={{ display: 'flex', gap: '8px' }}>{text}</div>,
     },
 ];
 
-function transformData(dt, navigate, setIsDisableOpen, showSeats) {
-    return dt?.map((item) => {
-        return {
-            key: item.id,
-            id: item.id,
-            ten_phong_chieu: item.ten_phong_chieu,
-            action: (
-                <div className="action-btn flex gap-3">
+function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAllSeats) {
+    return dt?.map((item) => ({
+        key: item.id,
+        id: item.id,
+        ten_phong_chieu: item.ten_phong_chieu,
+        tong_ghe_phong: item.tong_ghe_phong,
+        action: (
+            <div className="action-btn flex gap-2">
+                <Tooltip title="Chỉnh sửa phòng chiếu">
                     <Button
-                        type="primary"
+                        type="default"
                         icon={<EditOutlined />}
                         onClick={() => navigate(`${config.routes.admin.room}/update/${item.id}`)}
+                        style={{
+                            borderRadius: '8px',
+                            backgroundColor: '#e0f7fa',
+                            borderColor: '#e0f7fa',
+                        }}
                     >
                         Sửa
                     </Button>
+                </Tooltip>
+
+                <Tooltip title="Xem ghế trong phòng">
                     <Button
-                        type="default"
+                        type="primary"
                         icon={<EyeOutlined />}
                         onClick={() => showSeats(item.id)}
+                        style={{
+                            borderRadius: '8px',
+                        }}
                     >
                         Xem ghế
                     </Button>
+                </Tooltip>
+
+                <Tooltip title="Xóa toàn bộ ghế trong phòng">
                     <Button
                         type="danger"
                         icon={<DeleteOutlined />}
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                        onClick={() => handleDeleteAllSeats(item.id)}
+                        style={{
+                            borderRadius: '8px',
+                            backgroundColor: '#ffcdd2',
+                            borderColor: '#ffcdd2',
+                        }}
                     >
-                        Xóa
+                        Xóa toàn bộ ghế
                     </Button>
-                </div>
-            ),
-        };
-    });
+                </Tooltip>
+            </div>
+        ),
+    }));
 }
 
 function RoomData({ setParams, params }) {
@@ -64,31 +88,42 @@ function RoomData({ setParams, params }) {
 
     useEffect(() => {
         if (isLoading || !data) return;
-        const dt = transformData(data.data, navigate, setIsDisableOpen, showSeats);
+        const dt = transformData(data.data, navigate, setIsDisableOpen, showSeats, handleDeleteAllSeats);
         setTData(dt);
     }, [isLoading, data]);
 
-    const mutationDelete = useDeleteRoom({
-        success: () => {
-            setIsDisableOpen({ ...isDisableOpen, isOpen: false });
-            notification.success({ message: 'Xóa phòng thành công' });
-            refetch();
-        },
-        error: () => {
-            notification.error({ message: 'Xóa phòng thất bại' });
-        },
-        obj: { id: isDisableOpen.id },
-    });
+    const handleDeleteAllSeats = async (roomId) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa toàn bộ ghế',
+            content: `Bạn có chắc chắn muốn xóa toàn bộ ghế của phòng chiếu này không?`,
+            onOk: async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/delete-all-seatbyroom/${roomId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
 
-    const onDelete = async () => {
-        await mutationDelete.mutateAsync(isDisableOpen.id);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Phản hồi mạng không hợp lệ');
+                    }
+
+                    notification.success({ message: 'Xóa toàn bộ ghế thành công', placement: 'topRight' });
+                    refetch(); // Refetch to update the list of rooms
+                } catch (error) {
+                    notification.error({ message: `Xóa toàn bộ ghế thất bại: ${error.message}`, placement: 'topRight' });
+                }
+            },
+        });
     };
 
     const onSearch = (value) => {
         const filteredData = data.data.filter((item) =>
             item.ten_phong_chieu.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen, showSeats));
+        setTData(transformData(filteredData, navigate, setIsDisableOpen, showSeats, handleDeleteAllSeats));
     };
 
     const showSeats = (id) => {
@@ -100,7 +135,7 @@ function RoomData({ setParams, params }) {
         setIsModalVisible(false);
         setSelectedRoomId(null);
     };
-    
+
     const handleMaintenance = async (seat) => {
         const action = seat.trang_thai === 2 ? 'tắt bảo trì' : 'bảo trì';
         Modal.confirm({
@@ -108,10 +143,9 @@ function RoomData({ setParams, params }) {
             content: `Bạn có muốn ${action} ghế ${seat.so_ghe_ngoi}?`,
             onOk: async () => {
                 try {
-                    // Xây dựng endpoint dựa trên trạng thái hiện tại của ghế
-                    const endpoint = seat.trang_thai === 2 
-                        ? `http://127.0.0.1:8000/api/tatbaoTriSeat/${seat.id}` // Tắt bảo trì
-                        : `http://127.0.0.1:8000/api/baoTriSeat/${seat.id}`; // Bật bảo trì
+                    const endpoint = seat.trang_thai === 2
+                        ? `http://127.0.0.1:8000/api/tatbaoTriSeat/${seat.id}`
+                        : `http://127.0.0.1:8000/api/baoTriSeat/${seat.id}`;
 
                     const response = await fetch(endpoint, {
                         method: 'PUT',
@@ -126,21 +160,18 @@ function RoomData({ setParams, params }) {
                     }
 
                     const responseData = await response.json();
-
-                    // Cập nhật trạng thái ghế
-                    const newStatus = seat.trang_thai === 2 ? 0 : 2; // 0: có thể thuê, 2: đang bảo trì
+                    const newStatus = seat.trang_thai === 2 ? 0 : 2;
                     notification.success({ message: responseData.message });
-                    // Cập nhật dữ liệu ghế
-                    setTData(prevData => prevData.map(item => 
-                        item.id === seat.id ? { ...item, trang_thai: newStatus } : item
-                    ));
-                    handleModalClose(); // Đóng modal sau khi thực hiện hành động
+
+                    setTData((prevData) =>
+                        prevData.map((item) =>
+                            item.id === seat.id ? { ...item, trang_thai: newStatus } : item
+                        )
+                    );
+                    handleModalClose();
                 } catch (error) {
                     notification.error({ message: `Có lỗi xảy ra: ${error.message}` });
                 }
-            },
-            onCancel() {
-                // Xử lý hành động hủy nếu cần
             },
         });
     };
@@ -169,26 +200,30 @@ function RoomData({ setParams, params }) {
                     content="Bạn có muốn xóa phòng này?"
                     isDisableOpen={isDisableOpen}
                     setIsDisableOpen={setIsDisableOpen}
-                    handleConfirm={onDelete}
+                    handleConfirm={() => handleDeleteAllSeats(isDisableOpen.id)}
                 />
             )}
             <Modal
                 open={isModalVisible}
                 onCancel={handleModalClose}
                 footer={null}
-                width={900}
-                style={{ 
-                    top: 90,
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    maxHeight: '80vh', 
-                    overflowY: 'auto', 
-                    padding: '20px', 
+                width={1000}
+                style={{
+                    top: 100,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    maxHeight: '100vh',
+                    overflowY: 'auto',
+                    padding: '20px',
                 }}
             >
                 <div style={{ width: '100%', textAlign: 'center', padding: '20px' }}>
-                    <SeatLayout roomId={selectedRoomId} onClose={handleModalClose} handleMaintenance={handleMaintenance} />
+                    <SeatLayout
+                        roomId={selectedRoomId}
+                        onClose={handleModalClose}
+                        handleMaintenance={handleMaintenance}
+                    />
                     <div className="legend">
                         <div className="legend-item">
                             <div className="seat selected"></div>
@@ -227,27 +262,27 @@ const SeatLayout = ({ roomId, onClose, handleMaintenance }) => {
     const seats = data?.data || [];
 
     const getSeatClass = (loai_ghe_ngoi, trang_thai) => {
-        if (trang_thai === 2) return 'selected'; // 2: Đang bảo trì (màu xanh)
-        if (loai_ghe_ngoi === 'VIP') return 'vip'; // Ghế VIP
-        if (loai_ghe_ngoi === 'Đôi') return 'double'; // Ghế đôi
-        return 'regular'; // Ghế thường
+        if (trang_thai === 2) return 'selected';
+        if (loai_ghe_ngoi === 'VIP') return 'vip';
+        if (loai_ghe_ngoi === 'Đôi') return 'double';
+        return 'regular';
     };
 
     const rows = {};
-    seats.forEach(seat => {
-        const row = seat.so_ghe_ngoi.charAt(0); 
+    seats.forEach((seat) => {
+        const row = seat.so_ghe_ngoi.charAt(0);
         if (!rows[row]) rows[row] = [];
         rows[row].push(seat);
     });
 
     return (
         <div className="seat-layout">
-            {Object.keys(rows).map(row => (
+            {Object.keys(rows).map((row) => (
                 <div key={row} className="seat-row">
-                    {rows[row].map(seat => (
-                        <div 
-                            key={seat.id} 
-                            className={`seat ${getSeatClass(seat.loai_ghe_ngoi, seat.trang_thai)}`} 
+                    {rows[row].map((seat) => (
+                        <div
+                            key={seat.id}
+                            className={`seat ${getSeatClass(seat.loai_ghe_ngoi, seat.trang_thai)}`}
                             onClick={() => handleMaintenance(seat)}
                         >
                             {seat.trang_thai === 2 ? (
