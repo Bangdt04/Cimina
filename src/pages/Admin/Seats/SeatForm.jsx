@@ -1,5 +1,5 @@
 import { Button, Col, Form, Input, Row, notification, Typography, Select, Card } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import config from '../../../config';
 import { useCreateSeat, useGetSeatById, useUpdateSeat, useGetAddSeat } from '../../../hooks/api/useSeatApi';
@@ -10,7 +10,9 @@ const { Option } = Select;
 
 function SeatFormPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     let { id } = useParams();
+    const roomIdFromState = location.state?.roomId || null; // Retrieve roomId from navigation state
     const { isLoading: loadingSeat, data: seat } = id ? useGetSeatById(id) : { isLoading: null, data: null };
     const { data: roomDataResponse, isLoading: loadingRooms } = useGetAddSeat();
     const roomData = roomDataResponse?.data || [];
@@ -24,7 +26,7 @@ function SeatFormPage() {
                 message: 'Thêm mới thành công',
                 placement: 'topRight',
             });
-            navigate(config.routes.admin.seat);
+            navigate(config.routes.admin.room); // Navigate to Room page after success
         },
         error: (error) => {
             const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
@@ -36,7 +38,6 @@ function SeatFormPage() {
                 placement: 'topRight' 
             });
         }
-        
     });
 
     const mutateEdit = useUpdateSeat({
@@ -62,7 +63,15 @@ function SeatFormPage() {
             gia_ghe: seat?.data?.gia_ghe,
             room_id: seat?.data?.room_id,
         });
-    }, [seat]);
+    }, [seat, form]);
+
+    useEffect(() => {
+        if (roomIdFromState) {
+            form.setFieldsValue({
+                room_id: roomIdFromState,
+            });
+        }
+    }, [roomIdFromState, form]);
 
     const onChangeLoạiGhế = (value) => {
         // Cập nhật giá ghế dựa trên loại ghế
@@ -119,7 +128,7 @@ function SeatFormPage() {
                         message: 'Thêm ghế thành công',
                         placement: 'topRight',
                     });
-                    navigate(config.routes.admin.seat);
+                    navigate(config.routes.admin.room); // Navigate to Room page after success
                 } catch (error) {
                     const errorMessage = error?.response?.data?.message || 'Có lỗi xảy ra';
                     // Handle specific error case for existing seats
@@ -156,7 +165,12 @@ function SeatFormPage() {
                             name="room_id"
                             rules={[{ required: true, message: 'Vui lòng chọn phòng chiếu.' }]}
                         >
-                            <Select placeholder="Chọn phòng" loading={loadingRooms} style={{ borderRadius: '4px' }} disabled={!!id}>
+                            <Select 
+                                placeholder="Chọn phòng" 
+                                loading={loadingRooms} 
+                                style={{ borderRadius: '4px' }} 
+                                disabled={!!id || !!roomIdFromState} // Disable if editing or roomId is pre-selected
+                            >
                                 {roomData.map(room => (
                                     <Option key={room.id} value={room.id}>
                                         {room.ten_phong_chieu}
@@ -235,6 +249,7 @@ function SeatFormPage() {
             </Form>
         </Card>
     );
+
 }
 
 export default SeatFormPage;

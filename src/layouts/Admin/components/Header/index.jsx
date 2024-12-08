@@ -184,7 +184,7 @@ function Header() {
               }}
             >
               <Avatar alt="User Avatar" src="https://i.pravatar.cc/300" sx={{ width: 36, height: 36, marginRight: 1 }} />
-              Đỗ Trọng Bằng
+              Quản Trị Viên
             </Button>
             <Menu
               anchorEl={userMenuRef.current}
