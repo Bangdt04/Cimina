@@ -25,7 +25,7 @@ const menuItems = [
   { name: 'Movie Genre', icon: IconTags, path: '/admin/genres' },
   { name: 'Showtime', icon: IconCalendar, path: '/admin/showtime' },
   { name: 'Room', icon: IconDoor, path: '/admin/room' },
-  { name: 'Seat', icon: IconArmchair, path: '/admin/seats' },
+  // { name: 'Seat', icon: IconArmchair, path: '/admin/seats' },
   { name: 'Users', icon: IconUsers, path: '/admin/users' },
   { name: 'Bookings', icon: IconCalendar, path: '/admin/bookings' },
   { name: 'Food', icon: IconChefHat, path: '/admin/food' },
