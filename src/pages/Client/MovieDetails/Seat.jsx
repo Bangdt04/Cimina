@@ -1,30 +1,60 @@
 import { useState, useEffect } from 'react';
-import { useGetShowSeatById } from '../../../hooks/api/useMovieApi';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Spin } from 'antd';
+import { notification, Spin } from 'antd';
 import { getInfoAuth, getTokenOfUser } from '../../../utils/storage';
 import RoomList from './RoomList';
+import axios from 'axios';
 
 
 const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }) => {
     const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
     const { id } = useParams();
-    const { data, isLoading } = useGetShowSeatById(id, availableShowtimes, selectedTime);
+    const [data, setData] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [movieDetail, setMovieDetail] = useState(detail);
     const [selectedSeatIds, setSelectedSeatIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [notification, setNotification] = useState('');
     const accessToken = getTokenOfUser();
     const info = getInfoAuth();
     const navigate = useNavigate();
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [api, contextHolder] = notification.useNotification();
+
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setRemainingTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-        }, 1000);
+        const fetchData = async () => {
+            try {
+                const result = await axios.get(`http://127.0.0.1:8000/api/movie-detail/${id}/showtime-date/${availableShowtimes}/${selectedTime}`);
+                console.log(result)
+                setData(result.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
 
+        fetchData();
+
+        const intervalId = setInterval(fetchData, 5000);
+        return () => clearInterval(intervalId);
+    }, []);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setRemainingTime((prevTime) => {
+                if (prevTime > 0) {
+                    return prevTime - 1;
+                } else {
+                    clearInterval(timer);
+                    notification.error({
+                        message: `Cảnh báo`,
+                        description:
+                            `Quý khách đã hết thời gian chọn ghế vui lòng thử lại`,
+                        placement: "topRight",
+                    });
+                    navigate('/')
+                    return 0;
+                }
+            });
+        }, 1000);
         return () => clearInterval(timer);
     }, []);
 
@@ -34,12 +64,8 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    if (isLoading) {
-        return <Spin size="large" className='flex items-center justify-center'></Spin>;
-    }
-
     if (!data) {
-        return <div>No data available</div>;
+        return <Spin size="large" className='flex items-center justify-center'></Spin>;
     }
 
     const rooms = data?.roomsWithSeats;
@@ -48,42 +74,81 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         return <center className='mb-4'>Không có phòng đang chiếu phim này.</center>;
     }
 
-    const toggleSeatSelection = (seat) => {
-        if (seat.trang_thai === "Đã đặt") {
-            setNotification(`Ghế ${seat.ten_ghe_ngoi} đã được đặt!`);
+    const toggleSeatSelection = async (seat) => {
+
+        if (!accessToken) {
+            notification.error({
+                message: `Cảnh báo`,
+                description:
+                    `Vui lòng đăng nhập để có thể chọn ghế`,
+                placement: "topRight",
+            });
             return;
         }
 
-        setNotification('');
 
-        setSelectedSeats((prev) => {
-            const isSelected = prev.includes(seat.id);
-            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
-            
-            const seatPrice = Number(movieDetail.gia_ve) || 0;
-            const seatAdditionalPrice = Number(seat.gia_ghe) || 0; 
-            
+        if (seat.trang_thai === "Đã đặt") {
+            notification.error({
+                message: `Cảnh báo`,
+                description:
+                    `Ghế ${seat.ten_ghe_ngoi} đã được đặt!`,
+                placement: "topRight",
+            });
+            return;
+        }
 
-            const priceChange = isSelected ? -(seatPrice + seatAdditionalPrice) : (seatPrice + seatAdditionalPrice);
-            
-            console.log("TICKET PRICE", priceChange);
-            
 
-            setTotalPrice(prevPrice => prevPrice + priceChange);
+        const seatData = {
+            ghengoi_id: seat.id,
+            thongtinchieu_id: timeId
+        };
+        console.log(seatData);
 
-            return updatedSeats;
-        });
+        try {
 
-        setSelectedSeatIds((prev) => {
-            const isSelected = prev.includes(seat.id);
-            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.ten_ghe_ngoi];
+            await axios.post(`http://127.0.0.1:8000/api/select-seat`, seatData, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            return updatedSeats;
-        });
+
+            setSelectedSeats((prev) => {
+                const isSelected = prev.includes(seat.id);
+                const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
+
+                const seatPrice = Number(movieDetail.gia_ve) || 0;
+                const seatAdditionalPrice = Number(seat.gia_ghe) || 0;
+                const priceChange = isSelected ? -(seatPrice + seatAdditionalPrice) : (seatPrice + seatAdditionalPrice);
+
+                console.log("TICKET PRICE", priceChange);
+
+                setTotalPrice(prevPrice => prevPrice + priceChange);
+
+                return updatedSeats;
+            });
+
+
+            setSelectedSeatIds((prev) => {
+                const isSelected = prev.includes(seat.id);
+                const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.ten_ghe_ngoi];
+
+                return updatedSeats;
+            });
+        } catch (error) {
+            console.error("Error selecting seat:", error);
+            notification.error({
+                message: `Cảnh báo`,
+                description:
+                    `Đã xảy ra lỗi khi chọn ghế. Vui lòng thử lại.`,
+                placement: "topRight",
+            });
+        }
     };
 
     const renderSeat = (seat, room) => {
-
+        console.log("SEAR BY ROOM", seat?.user_id)
         setSelectedRoom(room);
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
@@ -94,6 +159,18 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                     X
                 </div>
             );
+        }
+
+        console.log(seat , info?.id)
+        if (seat?.user_id !== info?.id) {
+            if (seat.trang_thai === "Ghế đang trong hàng đợi") {
+                seatClass += ' bg-gray-700';
+                return (
+                    <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
+                        O
+                    </div>
+                );
+            }
         }
 
         if (seat.trang_thai === "Bảo trì") {
@@ -156,11 +233,6 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
 
     return (
         <div className="bg-gray-900 text-white p-6 relative">
-            {notification && (
-                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 mt-20 rounded-md shadow-lg z-50">
-                    {notification}
-                </div>
-            )}
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between mb-6 text-lg">
                     <div>Giờ chiếu: <span className="font-bold">{selectedTime}</span></div>

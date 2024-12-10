@@ -28,16 +28,18 @@ const RoomList = ({ rooms, renderSeat, handleRoomChange }) => {
             {currentRooms.length > 0 ? (
                 currentRooms.map((room) => {
                     // Calculate seats and assign rows
+                    console.log("SEAT", room)
                     const seatsWithRows = room.seats.map((seat, index) => {
                         return {
                             ...seat,
-                            row: Math.floor(index / 5) + 1 // Assuming 5 seats per row
+                            row: Math.floor(index / 10) + 1 // Assuming 5 seats per row
                         };
                     });
 
                     // Group seats by row
                     const seatsByRow = seatsWithRows.reduce((acc, seat) => {
                         const row = seat.row;
+                        console.log("SEAT ROW", seat)
                         if (!acc[row]) {
                             acc[row] = [];
                         }
