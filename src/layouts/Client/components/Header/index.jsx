@@ -87,10 +87,10 @@ function Header() {
 
     return (
         <div>
-            <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500">
+            <header className="header bg-primary/30 flex justify-between items-center p-4 transition duration-500 backdrop-blur-sm">
                 <div className="flex items-center" style={{ marginLeft: 100 }}>
                     <img alt="NCC logo" className="mr-0" height="50" src={Logo} width="50" />
-                    <nav className="flex space-x-4">
+                    <nav className="flex space-x-4 text-xl font-semibold">
                         <nav className="flex space-x-4 relative">
                             <NavLink
                                 className={({ isActive }) => (isActive ? ' ml-5 pr-5 hover-text active-link text-white' : 'pr-5 hover-text text-gray-400')}
@@ -166,11 +166,13 @@ function Header() {
                             >
                                 Đăng kí
                             </button>
-                            <button className="bg-red-500 text-white py-2 px-4 rounded-full hover-zoom"
+                            <button 
+                                className="bg-gradient-to-r from-red-500 via-red-600 to-pink-500 text-white py-2 px-6 rounded-full font-semibold hover:bg-gradient-to-r hover:from-red-600 hover:to-pink-500 transition duration-300 ease-in-out transform hover:scale-105"
                                 onClick={openLoginModal}
                             >
                                 Đăng nhập
                             </button>
+
                         </div>
                     </>
                 )}

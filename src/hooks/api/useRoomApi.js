@@ -18,16 +18,17 @@ export const useGetRooms = () => {
 
 // Lấy tất cả phòng chiếu và ghế
 export const useSeatAllRoom = (id) => {
-    const { data } = useFetch({ url: `${apiRoutes.admin.seatAllRoom}/${id}`, key: 'seatAllRoom' });
+    const { data, isLoading, error, refetch } = useFetch({ 
+        url: `${apiRoutes.admin.seatAllRoom}/${id}`, 
+        key: `seatAllRoom-${id}` 
+    });
     
-    // Log the total number of seats when data is fetched
-    let totalSeats = 0; // Khởi tạo biến đếm ghế
-    if (data && Array.isArray(data.data)) {
-        totalSeats = data.data.length; // Đếm số ghế
-    }
+    // Đếm tổng số ghế
+    const totalSeats = Array.isArray(data?.data) ? data.data.length : 0;
 
-    return { data, totalSeats }; // Trả về dữ liệu và số ghế
+    return { data, totalSeats, isLoading, error, refetch };
 };
+
 
 // Mới: Bật bảo trì ghế
 export const useEnableMaintenanceSeat = () => {

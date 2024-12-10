@@ -11,10 +11,7 @@ import {
     Snackbar,
     Typography,
     Paper,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
+    Modal,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +22,12 @@ import ConfirmPrompt from '../../../layouts/Admin/components/ConfirmPrompt';
 
 const { Text } = Typography;
 
+// Hàm định dạng tiền tệ Việt Nam
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+};
+
+// Cột trong bảng
 const baseColumns = [
     {
         title: 'Ảnh',
@@ -33,13 +36,7 @@ const baseColumns = [
             <img
                 src={`http://localhost:8000${text}`}
                 alt="Movie Poster"
-                style={{
-                    width: '80px',
-                    height: '120px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                }}
+                style={{ width: '100px', borderRadius: '8px' }}
             />
         ),
     },
@@ -54,6 +51,7 @@ const baseColumns = [
     {
         title: 'Giá Vé',
         dataIndex: 'gia_ve',
+        render: (gia_ve) => formatCurrency(gia_ve),
     },
     {
         title: 'Thời Gian Phim',
@@ -81,52 +79,49 @@ const baseColumns = [
     {
         title: 'Xem Chi Tiết',
         dataIndex: 'view',
-        render: (text) => <Visibility fontSize="small" style={{ cursor: 'pointer' }} onClick={text} />,
+        render: (_, record) => (
+            <Visibility
+                fontSize="small"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleViewDetail(record.id)}
+            />
+        ),
     }
 ];
 
-function transformData(dt, navigate, setIsDisableOpen, setOpenDetailModal) {
-    return dt?.map((item) => ({
-        ten_phim: item.ten_phim,
-        dao_dien: item.dao_dien,
-        gia_ve: item.gia_ve,
-        thoi_gian_phim: item.thoi_gian_phim,
-        hinh_thuc_phim: item.hinh_thuc_phim,
-        anh_phim: item.anh_phim,
-        action: (
-            <div style={{ display: 'flex', gap: '8px' }}>
-                <Button
-                    variant="outlined"
-                    color="success"
-                    size="small"
-                    startIcon={<Edit />}
-                    style={{
-                        textTransform: 'none',
-                        borderRadius: '6px',
-                        fontWeight: '500',
-                    }}
-                    onClick={() => navigate(`${config.routes.admin.movies}/update/${item.id}`)}
-                >
-                    Sửa
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    style={{
-                        textTransform: 'none',
-                        borderRadius: '6px',
-                        fontWeight: '500',
-                    }}
-                    onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                >
-                    Xóa
-                </Button>
-            </div>
-        ),
-        view: () => setOpenDetailModal(item.id), // Open the detail modal when clicked
-    }));
+// Hàm transform dữ liệu
+function transformData(dt, navigate, setIsDisableOpen, setViewData) {
+    return dt?.map((item) => {
+        return {
+            ten_phim: item.ten_phim,
+            dao_dien: item.dao_dien,
+            dien_vien: item.dien_vien,
+            gia_ve: item.gia_ve,
+            anh_phim: item.anh_phim,
+            action: (
+                <div className="action-btn flex gap-3">
+                    <Button
+                        className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
+                        onClick={() => setViewData(item)}
+                    >
+                        <Visibility />
+                    </Button>
+                    <Button
+                        className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
+                        onClick={() => navigate(`${config.routes.admin.movies}/update/${item.id}`)}
+                    >
+                        <Edit />
+                    </Button>
+                    <Button
+                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
+                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
+                    >
+                        <Delete />
+                    </Button>
+                </div>
+            ),
+        };
+    });
 }
 
 function MovieData({ setParams, params }) {
@@ -142,7 +137,7 @@ function MovieData({ setParams, params }) {
 
     useEffect(() => {
         if (isLoading || !data) return;
-        const dt = transformData(data.data, navigate, setIsDisableOpen, setOpenDetailModal);
+        const dt = transformData(data.data, navigate, setIsDisableOpen, handleViewDetail);
         setTData(dt);
     }, [isLoading, data]);
 
@@ -168,7 +163,7 @@ function MovieData({ setParams, params }) {
         const filteredData = data.data.filter((item) =>
             item.ten_phim.toLowerCase().includes(value.toLowerCase())
         );
-        setTData(transformData(filteredData, navigate, setIsDisableOpen, setOpenDetailModal));
+        setTData(transformData(filteredData, navigate, setIsDisableOpen, handleViewDetail));
     };
 
     const handleCloseModal = () => setOpenDetailModal(false);
@@ -200,33 +195,21 @@ function MovieData({ setParams, params }) {
                     }}
                 />
             </div>
-            <TableContainer>
-                <Table aria-label="Movies Table">
+            <TableContainer component={Paper}>
+                <Table>
                     <TableHead>
                         <TableRow>
-                            {baseColumns.map((column) => (
-                                <TableCell
-                                    key={column.title}
-                                    sx={{ fontWeight: 'bold', color: '#34495e', backgroundColor: '#ecf0f1' }}
-                                >
-                                    {column.title}
-                                </TableCell>
+                            {baseColumns.map((col, index) => (
+                                <TableCell key={index}>{col.title}</TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {tdata.map((row, index) => (
-                            <TableRow
-                                key={index}
-                                sx={{
-                                    '&:hover': {
-                                        backgroundColor: '#f5f5f5',
-                                    },
-                                }}
-                            >
-                                {baseColumns.map((column) => (
-                                    <TableCell key={column.title}>
-                                        {column.render ? column.render(row[column.dataIndex]) : row[column.dataIndex]}
+                            <TableRow key={index}>
+                                {baseColumns.map((col, idx) => (
+                                    <TableCell key={idx}>
+                                        {col.render ? col.render(row[col.dataIndex], row) : row[col.dataIndex]}
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -244,41 +227,36 @@ function MovieData({ setParams, params }) {
                 />
             )}
 
+            <Modal
+                open={openDetailModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
+                <Paper sx={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+                    {movieDetailData && (
+                        <div>
+                            <img
+                                src={`http://localhost:8000${movieDetailData.anh_phim}`}
+                                alt="Movie Poster"
+                                style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }}
+                            />
+                            <Typography variant="h6">Thông tin phim</Typography>
+                            <p><strong>Tên phim:</strong> {movieDetailData.ten_phim}</p>
+                            <p><strong>Đạo diễn:</strong> {movieDetailData.dao_dien}</p>
+                            <p><strong>Diễn viên:</strong> {movieDetailData.dien_vien}</p>
+                            <p><strong>Giá vé:</strong> {formatCurrency(movieDetailData.gia_ve)}</p>
+                        </div>
+                    )}
+                </Paper>
+            </Modal>
+
             <Snackbar
                 open={openSnackbar}
-                autoHideDuration={3000}
                 onClose={() => setOpenSnackbar(false)}
                 message={snackbarMessage}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                autoHideDuration={4000}
             />
-
-            {/* Movie Detail Modal */}
-            <Dialog open={openDetailModal} onClose={handleCloseModal}>
-                <DialogTitle>Xem Chi Tiết Phim</DialogTitle>
-                <DialogContent>
-                    {isDetailLoading ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        <>
-                            <Typography variant="h6">{movieDetailData?.ten_phim}</Typography>
-                            <img
-                                src={`http://localhost:8000${movieDetailData?.anh_phim}`}
-                                alt="Movie Poster"
-                                style={{ width: '100%', height: 'auto', borderRadius: '8px', marginBottom: '16px' }}
-                            />
-                            <Typography variant="body1"><strong>Đạo diễn:</strong> {movieDetailData?.dao_dien}</Typography>
-                            <Typography variant="body1"><strong>Diễn viên:</strong> {movieDetailData?.dien_vien}</Typography>
-                            <Typography variant="body1"><strong>Nội dung:</strong> {movieDetailData?.noi_dung}</Typography>
-                            <Typography variant="body1"><strong>Trailer:</strong> <a href={movieDetailData?.trailer} target="_blank" rel="noopener noreferrer">Xem Trailer</a></Typography>
-                            <Typography variant="body1"><strong>Giá vé:</strong> {movieDetailData?.gia_ve} VNĐ</Typography>
-                            <Typography variant="body1"><strong>Thể loại phim:</strong> {movieDetailData?.movie_genres.map((genre) => genre.ten_loai_phim).join(', ')}</Typography>
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal}>Đóng</Button>
-                </DialogActions>
-            </Dialog>
         </Paper>
     );
 }
