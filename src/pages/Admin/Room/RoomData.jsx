@@ -197,7 +197,7 @@ function RoomData({ setParams, params }) {
     
         const getSeatClass = (loai_ghe_ngoi, trang_thai) => {
             if (trang_thai === 2) return 'selected';
-            if (loai_ghe_ngoi === 'VIP') return 'vip';
+            if (loai_ghe_ngoi === 'Vip') return 'vip';
             if (loai_ghe_ngoi === 'Đôi') return 'double';
             return 'regular';
         };

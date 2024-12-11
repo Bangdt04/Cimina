@@ -115,17 +115,6 @@ function ShowtimeFormPage() {
         form.setFieldsValue({ gio_chieu: updatedValues });
     };
 
-    const validateShowtime = (_, value) => {
-        if (isEdit && !value) {
-            return Promise.reject('Giờ chiếu không được để trống');
-        }
-        const currentTime = moment();
-        const showtimeMoment = moment(value, 'HH:mm');
-        if (showtimeMoment.isBefore(currentTime, 'minute')) {
-            return Promise.reject('Giờ chiếu không thể trước giờ hiện tại');
-        }
-        return Promise.resolve();
-    };
 
     return (
         <div className="form-container" style={{ padding: '20px', maxWidth: '1800px', margin: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
@@ -184,7 +173,6 @@ function ShowtimeFormPage() {
                             name="gio_chieu"
                             rules={[
                                 { required: !isEdit, message: 'Nhập giờ chiếu!' },
-                                { validator: validateShowtime }
                             ]}>
                             {isEdit ? (
                                 <Input

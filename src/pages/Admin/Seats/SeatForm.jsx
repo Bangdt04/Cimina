@@ -47,7 +47,7 @@ function SeatFormPage() {
                 message: 'Cập nhật thành công',
                 placement: 'topRight',
             });
-            navigate(config.routes.admin.seat);
+            navigate(config.routes.admin.room);
         },
         error: (error) => {
             const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại!";
@@ -80,7 +80,7 @@ function SeatFormPage() {
             priceValue = 5000;
         } else if (value === 'Đôi') {
             priceValue = 20000;
-        } else if (value === 'Víp') {
+        } else if (value === 'Vip') {
             priceValue = 12000;
         }
         setPrice(priceValue);
