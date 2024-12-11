@@ -87,7 +87,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         }
 
 
-        if (seat.trang_thai === "Đã đặt") {
+        if (seat.trang_thai === 1) {
             notification.error({
                 message: `Cảnh báo`,
                 description:
@@ -177,7 +177,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             seatClass += ' bg-red-700';
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
-                    🚨
+                   🛠️
                 </div>
             );
         }

@@ -74,6 +74,7 @@ const TicketHistory = () => {
                             <th className="py-2 text-center">Ghế</th>
                             <th className="py-2 text-center">Số tiền</th>
                             <th className="py-2 text-center">Trạng thái</th>
+                            <th className="py-2 text-center">Chi tiết vé</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,22 +82,21 @@ const TicketHistory = () => {
                             currentTickets?.map((ticket, index) => (
                                 <tr key={index}>
                                     <td className="py-4 text-center">{convertDateString(ticket.ngay_mua)}</td>
-                                    <td className="py-4 text-center cursor-pointer text-red-600" onClick={() => handleOpenModal(ticket)}>{ticket.ten_phim}</td>
+                                    <td className="py-4 text-center cursor-pointer" onClick={() => handleOpenModal(ticket)}>{ticket.ten_phim}</td>
                                     <td className="py-4 text-center">{ticket.so_luong}</td>
                                     <td className="py-4 text-center">{ticket.ghe_ngoi}</td>
                                     <td className="py-4 text-center">{Number(ticket.tong_tien_thanh_toan).toLocaleString()} VNĐ</td>
                                     <td className="py-4 text-center">
-                                        {
-                                            ticket.trang_thai ?
-                                                <>
-                                                    <span className="px-6 py-2 rounded-full bg-green-600">{ticket.trang_thai}</span>
-                                                </>
-                                                :
-                                                <>
-                                                    <span className="px-6 py-2 rounded-full bg-red-500">Chưa xử lý</span>
-                                                </>
-                                        }
+                                        {ticket.trang_thai === 0 ? (
+                                            <span className="px-6 py-2 rounded-full bg-blue-600">Đã thanh toán</span>
+                                        ) : ticket.trang_thai === 1 ? (
+                                            <span className="px-6 py-2 rounded-full bg-green-600">Đã thanh toán</span>
+                                        ) : (
+                                            <span className="px-6 py-2 rounded-full bg-red-500">Chưa xử lý</span>
+                                        )}
                                     </td>
+                                    <td className="py-4 text-center cursor-pointer text-red-600" onClick={() => handleOpenModal(ticket)}>{'Chi tiết vé'}</td>
+
                                 </tr>
                             ))
                         ) : (

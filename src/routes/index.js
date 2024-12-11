@@ -44,6 +44,7 @@ import BookingPage from "../pages/Admin/Booking";
 import ShowtimePage from "../pages/Admin/POS";
 import SeatChoosePage from "../pages/Admin/POS/seat";
 import Payment from "../pages/Client/Payment";
+import Checkin from "../pages/Admin/Check";
 
 const publicRoutes = [
     {
@@ -411,6 +412,13 @@ const privateRoutes = [
     {
         path: config.routes.admin.membership + '/update/:id',
         component: MembershipFormPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.checkin,
+        component: Checkin,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,

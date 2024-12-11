@@ -132,7 +132,7 @@ function FoodData() {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:8000/api/foods/${id}`);
+            await axios.delete(`http://localhost:8000/api/deleteFood/${id}`);
             notification.success({ message: 'Xóa món ăn thành công!', placement: 'topRight' });
             fetchFoods();
         } catch (error) {
