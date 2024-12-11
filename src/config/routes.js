@@ -22,7 +22,7 @@ const routes = {
         showTime: '/admin/showtime',
         login: '/admin/login',
         membership: '/admin/membership',
-        checking: '/admin/checking',
+        checkin: '/admin/checkin',
     },
     web: {
         home: '/',

@@ -14,7 +14,8 @@ import {
   IconArticle,
   IconTicket,
   IconMessageCircle2,
-  IconWheel
+  IconWheel,
+  IconCheck
 } from '@tabler/icons-react';
 import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
@@ -31,7 +32,7 @@ const menuItems = [
   { name: 'Food', icon: IconChefHat, path: '/admin/food' },
   { name: 'Membership', icon: IconUsers, path: '/admin/membership' },
   { name: 'Voucher', icon: IconTicket, path: '/admin/voucher' },
-  { name: 'Payments', icon: IconCreditCard, path: '/admin/payments' },
+  { name: 'Check', icon: IconCheck, path: '/admin/checkin' },
   { name: 'Contact', icon: IconAddressBook, path: '/admin/contact' },
   { name: 'Blog', icon: IconArticle, path: '/admin/blog' },
   { name: 'Feedback', icon: IconMessageCircle2, path: '/admin/feedback' },
