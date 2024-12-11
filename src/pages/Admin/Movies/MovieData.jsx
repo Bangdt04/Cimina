@@ -63,7 +63,7 @@ const baseColumns = [
         render: (value) => (
             <span
                 style={{
-                    color: value === 'Đang Chiếu' ? '#2ecc71' : value === 'Sắp Công Chiếu' ? '#e74c3c' : '#34495e',
+                    color: value === '0' ? '#2ecc71' : value === '1' ? '#e74c3c' : '#34495e',
                     fontWeight: 'bold',
                 }}
             >

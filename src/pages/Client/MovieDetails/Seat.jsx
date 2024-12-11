@@ -182,7 +182,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             );
         }
         switch (seat.loai_ghe_ngoi?.toLowerCase()) { // Chuyển tất cả về chữ thường
-            case 'vip': // Ghế VIP
+            case 'víp': // Ghế VIP
                 seatClass += ' bg-orange-400';
                 break;
             case 'thường': // Ghế thường

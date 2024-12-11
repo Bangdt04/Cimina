@@ -11,10 +11,10 @@ const MovieDetailsPage = () => {
     const { isLoading: isLoadingMovie, data: movie } = id
         ? useGetMovieById(id)
         : { isLoading: null, data: null };
-    console.log("Movie", movie)
-    
+    console.log("Movie", movie?.data?.hinh_thuc_phim)
+
     useEffect(() => {
-        if(!movie) return;
+        if (!movie) return;
     }, [movie]);
     const allMovieGenres = movie?.data?.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
     const closeTrailerModal = () => {
@@ -29,48 +29,50 @@ const MovieDetailsPage = () => {
         return <Spin size="large" className='flex items-center justify-center mt-20'></Spin>;
     }
 
+
     return (
         <>
-           <main className="main-content py-16 px-8 mt-20" 
-    style={{ 
-        backgroundImage: `linear-gradient(to bottom, rgba(72, 84, 96, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%), url(http://localhost:8000${movie.data.anh_phim})` 
-    }}
->
-    <div className="flex px-64">
-        <img alt="Movie Poster" className="mr-8 rounded-lg" height="450" src={`http://localhost:8000${movie.data.anh_phim}`} width="300" />
-        <div>
-            <h1 className="text-4xl font-bold mb-4">
-                {movie.data.ten_phim}
-            </h1>
-            <p className="mb-2">
-                {`${allMovieGenres} | ${movie.data.thoi_gian_phim} phút | Đạo diễn: ${movie.data.dao_dien}`}
-            </p>
-            <p className="mb-2">
-                Diễn viên: {movie.data.dien_vien}
-            </p>
-            <p className="mb-2">
-                Gía vé: {Number(movie.data.gia_ve).toLocaleString()} VNĐ
-            </p>
-            <p className="mb-4">
-                {movie.data.noi_dung}
-            </p>
-            <p className="mb-4 text-red-500">
-                Kiểm duyệt: T18: Phim được phổ biến đến khán giả từ đủ 18 tuổi trở lên.
-            </p>
-            <div className="flex space-x-4">
-                <button className="bg-gray-800 text-white py-2 px-4 rounded-full hover-zoom">
-                    Chi tiết nội dung
-                </button>
-                <button className="border border-yellow-500 rounded-full py-2 px-10 text-yellow-500 hover-zoom hover:scale-105" id="trailerBtn" onClick={openTrailerModal}>
-                    Xem Trailer
-                </button>
-            </div>
-        </div>
-    </div>
-</main>
+            <main className="main-content py-16 px-8 mt-20"
+                style={{
+                    backgroundImage: `linear-gradient(to bottom, rgba(72, 84, 96, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%), url(http://localhost:8000${movie.data.anh_phim})`
+                }}
+            >
+                <div className="flex px-64">
+                    <img alt="Movie Poster" className="mr-8 rounded-lg" height="450" src={`http://localhost:8000${movie.data.anh_phim}`} width="300" />
+                    <div>
+                        <h1 className="text-4xl font-bold mb-4">
+                            {movie.data.ten_phim}
+                        </h1>
+                        <p className="mb-2">
+                            {`${allMovieGenres} | ${movie.data.thoi_gian_phim} phút | Đạo diễn: ${movie.data.dao_dien}`}
+                        </p>
+                        <p className="mb-2">
+                            Diễn viên: {movie.data.dien_vien}
+                        </p>
+                        <p className="mb-2">
+                            Gía vé: {Number(movie.data.gia_ve).toLocaleString()} VNĐ
+                        </p>
+                        <p className="mb-4">
+                            {movie.data.noi_dung}
+                        </p>
+                        <p className="mb-4 text-red-500">
+                            Kiểm duyệt: T18: Phim được phổ biến đến khán giả từ đủ 18 tuổi trở lên.
+                        </p>
+                        <div className="flex space-x-4">
+                            <button className="bg-gray-800 text-white py-2 px-4 rounded-full hover-zoom">
+                                Chi tiết nội dung
+                            </button>
+                            <button className="border border-yellow-500 rounded-full py-2 px-10 text-yellow-500 hover-zoom hover:scale-105" id="trailerBtn" onClick={openTrailerModal}>
+                                Xem Trailer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
 
 
-            <Box detail={movie?.data} />
+            {movie?.data?.hinh_thuc_phim !== 1 && <Box detail={movie?.data} />}
+
             {showTrailerModal && (
                 <ModalTrailerPage
                     closeModal={closeTrailerModal}

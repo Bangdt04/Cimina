@@ -12,7 +12,7 @@ const MovieCommingSoon = () => {
             if (data.message === "Hiện thị dữ liệu phim thành công") {
                 // Lọc phim có hinh_thuc_phim là "Đang chiếu" và lấy 4 phim đầu tiên
                 const filteredMovies = data.data
-                    .filter(movie => movie.hinh_thuc_phim === "Sắp chiếu")
+                    .filter(movie => movie.hinh_thuc_phim === 1)
                     .slice(0, 4); // Lấy tối đa 4 bộ phim
                 setMovies(filteredMovies); // Lưu phim đã lọc vào state
             }
