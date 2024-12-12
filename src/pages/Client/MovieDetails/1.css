@@ -1,0 +1,10 @@
+.custom-trailer-modal .ant-modal-content {
+    background: transparent;
+    box-shadow: none;
+}
+
+.custom-trailer-modal .ant-modal-close {
+    color: white;
+    right: 20px;
+    top: 20px;
+}
