@@ -1,57 +1,74 @@
-import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import ImageMovie from "../../../assets/image/joker.webp";
+import { useGetMovies } from "../../../hooks/api/useMovieApi";
 import config from "../../../config";
 
-const MovieCommingSoon = () => {
-    const [movies, setMovies] = useState([]);
+const MovieComingSoon = () => {
+    const { data, isLoading } = useGetMovies();
 
-    useEffect(() => {
-        const fetchMovies = async () => {
-            const response = await fetch('http://127.0.0.1:8000/api/movies');
-            const data = await response.json();
-            if (data.message === "Hiện thị dữ liệu phim thành công") {
-                // Lọc phim có hinh_thuc_phim là "Đang chiếu" và lấy 4 phim đầu tiên
-                const filteredMovies = data.data
-                    .filter(movie => movie.hinh_thuc_phim === 1)
-                    .slice(0, 4); // Lấy tối đa 4 bộ phim
-                setMovies(filteredMovies); // Lưu phim đã lọc vào state
-            }
-        };
+    const groupMovies = (movies, groupSize) => {
+        const groups = [];
+        for (let i = 0; i < movies.length; i += groupSize) {
+            groups.push(movies.slice(i, i + groupSize));
+        }
+        return groups;
+    };
 
-        fetchMovies();
-    }, []);
+    // Find currently showing movies
+    const showingMovies = data?.data?.filter(movie => movie.hinh_thuc_phim === 1) || [];
+    const movieGroups = groupMovies(showingMovies.slice(0, 8) || [], 4) // Only take first 8 movies
 
     return (
-        <div className="w-3/4 mb">
+        <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold flex items-center">
+                <h2 className="text-lg md:text-xl font-bold flex items-center">
                     <span className="text-red-500 mr-2">●</span>
                     Phim sắp chiếu
                 </h2>
-                <a className="text-blue-400" href="http://localhost:5173/genre">
+                <NavLink 
+                    to={config.routes.web.genre} 
+                    className="text-blue-400 text-sm md:text-base"
+                >
                     Xem tất cả
-                </a>
+                </NavLink>
             </div>
-            <div className="flex space-x-4 mt-6 mb-5">
-                {/* Dùng map để hiển thị danh sách phim đã lọc */}
-                {movies.map((movie) => (
-                    <NavLink key={movie.id} className="w-1/4" to={config.routes.web.phim + `/${movie.id}`}>
-                        <div>
-                            <img
-                                alt={`Movie poster of ${movie.ten_phim}`}
-                                className="rounded-2xl hover-zoom mb-2"
-                                style={{ height: 350, width: '100%' }}
-                                src={`http://127.0.0.1:8000${movie.anh_phim}`} // Sử dụng URL ảnh từ API
-                            />
-                            <p className="text-gray-400">{movie.movie_genres[0]?.ten_loai_phim}</p> {/* Hiển thị thể loại phim */}
-                            <p className="text-gray-400">{movie.hinh_thuc_phim}</p> {/* Hiển thị trạng thái phim */}
-                            <p className="font-bold">{movie.ten_phim}</p> {/* Tên phim */}
-                        </div>
-                    </NavLink>
-                ))}
-            </div>
+
+            {movieGroups.map((group, groupIndex) => (
+                <div 
+                    key={groupIndex} 
+                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
+                >
+                    {group.map((item) => {
+                        const allMovieGenres = item.movie_genres.map((genre) => genre.ten_loai_phim).join(', ');
+                        return (
+                            <NavLink 
+                                key={item.id} 
+                                to={`${config.routes.web.phim}/${item.id}`}
+                                className="block"
+                            >
+                                <div>
+                                    <img
+                                        alt={`Movie poster of ${item.ten_phim}`}
+                                        className="rounded-2xl w-full h-auto object-cover mb-2"
+                                        src={`http://localhost:8000${item.anh_phim}` || ImageMovie}
+                                    />
+                                    <p className="text-xs md:text-sm text-gray-400 truncate">
+                                        {allMovieGenres}
+                                    </p>
+                                    <p className="text-xs md:text-sm text-gray-400">
+                                        04/10/2024
+                                    </p>
+                                    <p className="text-sm md:text-base font-bold truncate">
+                                        {item.ten_phim}
+                                    </p>
+                                </div>
+                            </NavLink>
+                        );
+                    })}
+                </div>
+            ))}
         </div>
     );
-};
+}
 
-export default MovieCommingSoon;
+export default MovieComingSoon;
