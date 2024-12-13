@@ -1,176 +1,361 @@
+import React, { useEffect, useState, useCallback } from "react";
 import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Row,
-    notification,
-    Typography,
-    DatePicker,
-    Tooltip,
-    Divider,
-  } from "antd";
-  import { useNavigate, useParams } from "react-router-dom";
-  import { useEffect } from "react";
-  import moment from "moment";
-  import config from "../../../config";
-  import { useCreateVoucher, useShowVoucher, useUpdateVoucher } from "../../../hooks/api/useVoucherApi";
-  
-  const { Title } = Typography;
-  
-  function VoucherFormPage() {
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const { isLoading, data: voucher } = id ? useShowVoucher(id) : { isLoading: null, data: null };
-  
-    const [form] = Form.useForm();
-    const mutateAdd = useCreateVoucher({
-      success: () => {
-        notification.success({ message: "Thêm mới voucher thành công!", placement: 'topRight' });
-        navigate(config.routes.admin.voucher);
-      },
-      error: () => {
-        notification.error({ message: "Thêm mới voucher thất bại!", placement: 'topRight' });
-      },
-    });
-  
-    const mutateEdit = useUpdateVoucher({
-      id,
-      success: () => {
-        notification.success({ message: "Cập nhật voucher thành công!", placement: 'topRight' });
-        navigate(config.routes.admin.voucher);
-      },
-      error: () => {
-        notification.error({ message: "Cập nhật voucher thất bại!", placement: 'topRight' });
-      },
-    });
-  
-    useEffect(() => {
-      if (!voucher) return;
-      form.setFieldsValue({
-        ma_giam_gia: voucher?.data?.ma_giam_gia,
-        muc_giam_gia: voucher?.data?.muc_giam_gia,
-        gia_don_toi_thieu: voucher?.data?.gia_don_toi_thieu,
-        mota: voucher?.data?.mota,
-        ngay_het_han: voucher?.data?.ngay_het_han ? moment(voucher.data.ngay_het_han) : null,
-        so_luong: voucher?.data?.so_luong,
-      });
-    }, [voucher]);
-  
-    const onFinish = async () => {
-      const formData = {
-        ma_giam_gia: form.getFieldValue("ma_giam_gia"),
-        muc_giam_gia: form.getFieldValue("muc_giam_gia"),
-        gia_don_toi_thieu: form.getFieldValue("gia_don_toi_thieu"),
-        mota: form.getFieldValue("mota"),
-        ngay_het_han: form.getFieldValue("ngay_het_han").format("YYYY-MM-DD"),
-        so_luong: form.getFieldValue("so_luong"),
-      };
-  
-      if (id) {
-        await mutateEdit.mutateAsync({ id, body: formData });
-      } else {
-        await mutateAdd.mutateAsync(formData);
-      }
+  Button,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  notification,
+  Typography,
+  DatePicker,
+  Tooltip,
+  Divider,
+  Spin,
+} from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment";
+import axios from "axios";
+import config from "../../../config";
+
+const { Title } = Typography;
+
+function VoucherFormPage() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (id) {
+      setIsLoading(true);
+      axios
+        .get(`http://127.0.0.1:8000/api/coupons/${id}`)
+        .then((response) => {
+          const data = response.data.data;
+          form.setFieldsValue({
+            ma_giam_gia: data.ma_giam_gia,
+            muc_giam_gia: data.muc_giam_gia,
+            gia_don_toi_thieu: Number(data.gia_don_toi_thieu),
+            Giam_max: Number(data.Giam_max),
+            mota: data.mota,
+            so_luong: data.so_luong,
+          });
+        })
+        .catch((error) => {
+          if (error.response && error.response.message) {
+            const errorMessage = error.response.message || 'Đã xảy ra lỗi không xác định';
+            notification.error({
+              message: 'Lỗi',
+              description: errorMessage,
+              placement: 'topRight',
+            });
+          } else {
+            notification.error({ message: 'Đã xảy ra lỗi không xác định', placement: 'topRight' });
+          }
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [id, form]);
+
+  const onFinish = (values) => {
+    const formData = {
+      ma_giam_gia: values.ma_giam_gia.trim(),
+      muc_giam_gia: values.muc_giam_gia,
+      gia_don_toi_thieu: values.gia_don_toi_thieu,
+      Giam_max: values.Giam_max, // Trường Giam_max
+      mota: values.mota ? values.mota.trim() : "",
+      so_luong: values.so_luong,
     };
-  
+
+    const request = id
+      ? axios.put(`http://127.0.0.1:8000/api/coupons/${id}`, formData)
+      : axios.post("http://127.0.0.1:8000/api/coupons", formData);
+
+    setIsLoading(true);
+    request
+      .then(() => {
+        notification.success({
+          message: id
+            ? "Cập nhật voucher thành công!"
+            : "Thêm mới voucher thành công!",
+          placement: "topRight",
+        });
+        navigate(config.routes.admin.voucher);
+      })
+      .catch((error) => {
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message || 'Đã xảy ra lỗi không xác định';
+          notification.error({
+            message: 'Lỗi',
+            description: errorMessage,
+            placement: 'topRight',
+          });
+        } else {
+          notification.error({ message: 'Đã xảy ra lỗi không xác định', placement: 'topRight' });
+        }
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const handleFormChange = () => {
+    setIsFormDirty(true);
+  };
+
+  const handleBeforeUnload = (e) => {
+    if (isFormDirty) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isFormDirty]);
+
+  if (isLoading) {
     return (
       <div
         style={{
-          padding: "30px",
-          maxWidth: "1800px",
-          margin: "auto",
-          backgroundColor: "#ffffff",
-          borderRadius: "8px",
-          boxShadow: "0 2px 15px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
         }}
       >
-        <Title level={2} style={{ textAlign: "center", marginBottom: "20px" }}>
-          {id ? "Cập nhật voucher" : "Thêm voucher mới"}
-        </Title>
-  
-        <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Mã giảm giá"
-                name="ma_giam_gia"
-                tooltip="Mã này sẽ dùng để áp dụng giảm giá cho đơn hàng."
-                rules={[{ required: true, message: "Vui lòng nhập mã giảm giá!" }]}
-              >
-                <Input placeholder="Ví dụ: SALE2024" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Mức giảm giá (%)"
-                name="muc_giam_gia"
-                tooltip="Nhập phần trăm giảm giá (VD: 10 cho 10%)."
-                rules={[{ required: true, message: "Vui lòng nhập mức giảm giá!" }]}
-              >
-                <Input type="number" placeholder="Nhập mức giảm giá" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Giá đơn tối thiểu"
-                name="gia_don_toi_thieu"
-                tooltip="Đơn hàng phải đạt mức giá này để áp dụng voucher."
-                rules={[{ required: true, message: "Vui lòng nhập giá đơn tối thiểu!" }]}
-              >
-                <Input type="number" placeholder="Nhập giá đơn tối thiểu" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Mô tả" name="mota">
-                <Input placeholder="Nhập mô tả ngắn về voucher" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Ngày hết hạn"
-                name="ngay_het_han"
-                tooltip="Chọn ngày cuối cùng voucher có hiệu lực."
-                rules={[{ required: true, message: "Vui lòng chọn ngày hết hạn!" }]}
-              >
-                <DatePicker style={{ width: "100%" }} placeholder="Chọn ngày" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Số lượng"
-                name="so_luong"
-                tooltip="Số lượng voucher có thể sử dụng."
-                rules={[{ required: true, message: "Vui lòng nhập số lượng!" }]}
-              >
-                <Input type="number" placeholder="Nhập số lượng" />
-              </Form.Item>
-            </Col>
-          </Row>
-  
-          <Divider />
-  
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              type="default"
-              danger
-              onClick={() => navigate(-1)}
-              style={{ width: "48%" }}
-            >
-              Hủy
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ width: "48%" }}
-            >
-              {id ? "Cập nhật" : "Thêm mới"}
-            </Button>
-          </div>
-        </Form>
+        <Spin size="large" tip="Đang tải dữ liệu..." />
       </div>
     );
   }
-  
-  export default VoucherFormPage;
-  
+
+  return (
+    <div
+      style={{
+        padding: "30px",
+        maxWidth: "800px",
+        margin: "auto",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 15px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Title level={2} style={{ textAlign: "center", marginBottom: "20px" }}>
+        {id ? "Cập nhật voucher" : "Thêm voucher mới"}
+      </Title>
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        onValuesChange={handleFormChange} // Đánh dấu form đã thay đổi
+      >
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <span>
+                  Mã giảm giá&nbsp;
+                  <Tooltip title="Mã này sẽ dùng để áp dụng giảm giá cho đơn hàng.">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="ma_giam_gia"
+              rules={[
+                { required: true, message: "Vui lòng nhập mã giảm giá!" },
+                {
+                  pattern: /^[A-Z0-9]{3,10}$/,
+                  message:
+                    "Mã giảm giá chỉ chứa chữ hoa và số, dài từ 3 đến 10 ký tự.",
+                },
+              ]}
+            >
+              <Input placeholder="Ví dụ: SALE2024" maxLength={10} />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <span>
+                  Mức giảm giá (%)&nbsp;
+                  <Tooltip title="Nhập phần trăm giảm giá (VD: 10 cho 10%).">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="muc_giam_gia"
+              rules={[
+                { required: true, message: "Vui lòng nhập mức giảm giá!" },
+                {
+                  type: "number",
+                  min: 1,
+                  max: 100,
+                  message: "Mức giảm giá phải từ 1% đến 100%.",
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập mức giảm giá"
+                style={{ width: "100%" }}
+                min={1}
+                max={100}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <span>
+                  Giá đơn tối thiểu&nbsp;
+                  <Tooltip title="Đơn hàng phải đạt mức giá này để áp dụng voucher.">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="gia_don_toi_thieu"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập giá đơn tối thiểu!",
+                },
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Giá đơn tối thiểu không thể nhỏ hơn 0.",
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập giá đơn tối thiểu"
+                style={{ width: "100%" }}
+                min={0}
+                formatter={(value) =>
+                  `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/\₫\s?|(,*)/g, "")}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <span>
+                  Giảm tối đa&nbsp;
+                  <Tooltip title="Giảm giá tối đa có thể áp dụng cho đơn hàng.">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="Giam_max"
+              rules={[
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Giảm tối đa không thể nhỏ hơn 0.",
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập giảm tối đa (tuỳ chọn)"
+                style={{ width: "100%" }}
+                min={0}
+                formatter={(value) =>
+                  value
+                    ? `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    : ""
+                }
+                parser={(value) => value.replace(/\₫\s?|(,*)/g, "")}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24}>
+            <Form.Item
+              label={
+                <span>
+                  Mô tả&nbsp;
+                  <Tooltip title="Nhập mô tả ngắn về voucher.">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="mota"
+              rules={[
+                {
+                  max: 200,
+                  message: "Mô tả không được vượt quá 200 ký tự.",
+                },
+              ]}
+            >
+              <Input.TextArea
+                placeholder="Nhập mô tả ngắn về voucher"
+                rows={3}
+                maxLength={200}
+                showCount
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <span>
+                  Số lượng&nbsp;
+                  <Tooltip title="Số lượng voucher có thể sử dụng.">
+                    <i className="fas fa-info-circle" />
+                  </Tooltip>
+                </span>
+              }
+              name="so_luong"
+              rules={[
+                { required: true, message: "Vui lòng nhập số lượng!" },
+                {
+                  type: "number",
+                  min: 1,
+                  message: "Số lượng phải ít nhất là 1.",
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập số lượng"
+                style={{ width: "100%" }}
+                min={1}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Divider />
+
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Button
+            type="default"
+            danger
+            onClick={() => navigate(-1)}
+            style={{ width: "48%" }}
+          >
+            Hủy
+          </Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: "48%" }}
+            loading={isLoading}
+          >
+            {id ? "Cập nhật" : "Thêm mới"}
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+}
+
+export default VoucherFormPage;
