@@ -413,6 +413,9 @@ function MovieData({ setParams, params }) {
                 overflowY: 'auto',
                 backgroundColor: '#ffffff',
                 position: 'relative',
+                '&::-webkit-scrollbar': {
+                    display: 'none',
+                },
             }}
         >
             {isDetailLoading ? (

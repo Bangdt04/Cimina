@@ -120,7 +120,7 @@ function UserData() {
                 ho_ten: updatedRow.ho_ten,
                 gioi_tinh: updatedRow.gioi_tinh,
                 vai_tro: updatedRow.vai_tro,
-                diem_thuong: updatedRow.diem_thuong,
+                so_luot_quay: updatedRow.so_luot_quay,
             });
             setEditingKey('');
         } catch (err) {
@@ -212,14 +212,14 @@ function UserData() {
             },
         },
         {
-            title: 'Điểm Thưởng',
-            dataIndex: 'diem_thuong',
-            key: 'diem_thuong',
+            title: 'Số Lượt Quay',
+            dataIndex: 'so_luot_quay',
+            key: 'so_luot_quay',
             render: (text, record) =>
                 isEditing(record) ? (
                     <InputNumber
                         defaultValue={text}
-                        onChange={(value) => handleChange(record.id, 'diem_thuong', value)}
+                        onChange={(value) => handleChange(record.id, 'so_luot_quay', value)}
                         min={0}
                         style={{ width: 100 }}
                     />

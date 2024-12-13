@@ -1,13 +1,13 @@
 import Head from '../../../layouts/Admin/components/Head';
 import config from '../../../config';
 
-function MembershipHead() {
+function MemberHead() {
     return (
         <Head
             title={'Quản lý hội viên'}
-            route={config.routes.admin.membership + '/create'}
+            route={config.routes.admin.member + '/create'}
         />
     );
 }
 
-export default MembershipHead;
+export default MemberHead;

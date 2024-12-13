@@ -22,8 +22,8 @@ import SeatPage from "../pages/Admin/Seats";
 import SeatFormPage from "../pages/Admin/Seats/SeatForm";
 import ShowTimePage from "../pages/Admin/ShowTime";
 import ShowTimeFormPage from "../pages/Admin/ShowTime/ShowTimeForm";
-import MembershipPage from "../pages/Admin/Membership";
-import MembershipFormPage from "../pages/Admin/Membership/MembershipForm";
+import MemberPage from "../pages/Admin/Member";
+import MemberFormPage from "../pages/Admin/Member/MemberForm";
 
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
@@ -396,22 +396,22 @@ const privateRoutes = [
         private: true,
     },
     {
-        path: config.routes.admin.membership,
-        component: MembershipPage,
+        path: config.routes.admin.member,
+        component: MemberPage,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
-        path: config.routes.admin.membership + '/create',
-        component: MembershipFormPage,
+        path: config.routes.admin.member + '/create',
+        component: MemberFormPage,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
     {
-        path: config.routes.admin.membership + '/update/:id',
-        component: MembershipFormPage,
+        path: config.routes.admin.member + '/update/:id',
+        component: MemberFormPage,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,

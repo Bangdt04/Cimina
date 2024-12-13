@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Col,
@@ -9,11 +10,18 @@ import {
     Select,
     Upload,
 } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import {
+    useNavigate,
+    useParams,
+} from 'react-router-dom';
 import axios from 'axios';
 import config from '../../../config';
-import { UploadOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+    UploadOutlined,
+    ExclamationCircleOutlined,
+    CheckCircleOutlined,
+    ArrowLeftOutlined,
+} from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -193,9 +201,28 @@ function MovieFormPage() {
                 fontFamily: 'Arial, sans-serif',
             }}
         >
-            <Title level={2} style={{ textAlign: 'center', color: '#333', marginBottom: '40px' }}>
-                {id ? 'Cập nhật thông tin phim' : 'Thêm phim mới'}
-            </Title>
+            {/* Header với nút quay lại và tiêu đề */}
+            <Row align="middle" gutter={16} style={{ marginBottom: '20px' }}>
+                <Col>
+                    <Button
+                        type="link"
+                        onClick={() => navigate(-1)}
+                        icon={<ArrowLeftOutlined />}
+                        style={{
+                            fontSize: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
+                        Quay lại
+                    </Button>
+                </Col>
+                <Col>
+                    <Title level={2} style={{ color: '#333', margin: 0 }}>
+                        {id ? 'Cập nhật thông tin phim' : 'Thêm phim mới'}
+                    </Title>
+                </Col>
+            </Row>
             <Form
                 form={form}
                 layout="vertical"
@@ -207,7 +234,7 @@ function MovieFormPage() {
                 }}
             >
                 <Row gutter={16}>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Tên Phim"
                             name="ten_phim"
@@ -224,7 +251,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Ảnh Phim"
                             name="anh_phim"
@@ -267,7 +294,7 @@ function MovieFormPage() {
                             </Upload>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Đạo Diễn"
                             name="dao_dien"
@@ -284,7 +311,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Diễn Viên"
                             name="dien_vien"
@@ -301,7 +328,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Quốc Gia"
                             name="quoc_gia"
@@ -318,7 +345,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Nội Dung"
                             name="noi_dung"
@@ -337,7 +364,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Trailer"
                             name="trailer"
@@ -354,7 +381,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Giá Vé"
                             name="gia_ve"
@@ -373,7 +400,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Hình Thức Phim"
                             name="hinh_thuc_phim"
@@ -393,7 +420,7 @@ function MovieFormPage() {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Thể Loại Phim"
                             name="loaiphim_ids"
@@ -421,7 +448,7 @@ function MovieFormPage() {
                             </Select>
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                             label="Thời Gian Phim"
                             name="thoi_gian_phim"
@@ -485,5 +512,6 @@ function MovieFormPage() {
             </Form>
         </div>
     );
+}
 
-    }    export default MovieFormPage;
+export default MovieFormPage;

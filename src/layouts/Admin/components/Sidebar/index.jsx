@@ -1,42 +1,49 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  IconDashboard,
-  IconMovie,
-  IconCalendar,
-  IconChefHat,
-  IconUsers,
-  IconCreditCard,
-  IconTags,
-  IconArmchair,
-  IconDoor,
-  IconAddressBook,
-  IconArticle,
-  IconTicket,
-  IconMessageCircle2,
-  IconWheel,
-  IconCheck
-} from '@tabler/icons-react';
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
+  Box,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+} from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 
+// Import MUI Icons thay thế
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MovieIcon from '@mui/icons-material/Movie';
+import CategoryIcon from '@mui/icons-material/Category';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import PeopleIcon from '@mui/icons-material/People';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import ArticleIcon from '@mui/icons-material/Article';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import CasinoIcon from '@mui/icons-material/Casino';
+
 const menuItems = [
-  { name: 'Dashboard', icon: IconDashboard, path: '/admin/dashboard' },
-  { name: 'Movies', icon: IconMovie, path: '/admin/movies' },
-  { name: 'Movie Genre', icon: IconTags, path: '/admin/genres' },
-  { name: 'Showtime', icon: IconCalendar, path: '/admin/showtime' },
-  { name: 'Room', icon: IconDoor, path: '/admin/room' },
-  // { name: 'Seat', icon: IconArmchair, path: '/admin/seats' },
-  { name: 'Users', icon: IconUsers, path: '/admin/users' },
-  { name: 'Bookings', icon: IconCalendar, path: '/admin/bookings' },
-  { name: 'Food', icon: IconChefHat, path: '/admin/food' },
-  { name: 'Membership', icon: IconUsers, path: '/admin/membership' },
-  { name: 'Voucher', icon: IconTicket, path: '/admin/voucher' },
-  { name: 'Check', icon: IconCheck, path: '/admin/checkin' },
-  { name: 'Contact', icon: IconAddressBook, path: '/admin/contact' },
-  { name: 'Blog', icon: IconArticle, path: '/admin/blog' },
-  { name: 'Feedback', icon: IconMessageCircle2, path: '/admin/feedback' },
-  { name: 'Lucky Wheel', icon: IconWheel, path: '/admin/lucky-wheel' },
+  { name: 'Dashboard', icon: DashboardIcon, path: '/admin/dashboard' },
+  { name: 'Movies', icon: MovieIcon, path: '/admin/movies' },
+  { name: 'Movie Genre', icon: CategoryIcon, path: '/admin/genres' },
+  { name: 'Showtime', icon: EventNoteIcon, path: '/admin/showtime' },
+  { name: 'Room', icon: MeetingRoomIcon, path: '/admin/room' },
+  { name: 'Users', icon: PeopleIcon, path: '/admin/users' },
+  { name: 'Bookings', icon: BookOnlineIcon, path: '/admin/bookings' },
+  { name: 'Food', icon: FastfoodIcon, path: '/admin/food' },
+  { name: 'Member', icon: CardMembershipIcon, path: '/admin/member' },
+  { name: 'Voucher', icon: ConfirmationNumberIcon, path: '/admin/voucher' },
+  { name: 'Check', icon: CheckCircleIcon, path: '/admin/checkin' },
+  { name: 'Contact', icon: ContactMailIcon, path: '/admin/contact' },
+  { name: 'Blog', icon: ArticleIcon, path: '/admin/blog' },
+  { name: 'Feedback', icon: FeedbackIcon, path: '/admin/feedback' },
+  { name: 'Lucky Wheel', icon: CasinoIcon, path: '/admin/lucky-wheel' },
 ];
 
 function Sidebar({ toggleNavbar, isCollapsed }) {
@@ -44,56 +51,85 @@ function Sidebar({ toggleNavbar, isCollapsed }) {
 
   return (
     <nav className="sidebar fixed">
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: isCollapsed ? 60 : 240,
-        height: '100vh',
-        bgcolor: '#000', // Set default background color to black
-        color: '#fff', // Set text color to white
-        boxShadow: 2,
-        marginTop: '80px', // Adjust margin-top to avoid overlap with header (assuming header is 80px)
-        transition: 'width 0.3s ease', // Smooth transition for sidebar width
-        overflowY: 'auto', // Added overflow to enable scrolling
-        zIndex: 999, // Ensure sidebar appears below the header
-      }}>
-        {/* Menu Button - Move it to the right */}
-        <IconButton color="primary" onClick={toggleNavbar} sx={{ alignSelf: 'flex-end', marginRight: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: isCollapsed ? 60 : 240,
+          height: '100vh',
+          bgcolor: '#ffffff', // Nền trắng
+          color: '#000', // Chữ đen
+          boxShadow: 2,
+          marginTop: '80px', // Giả sử header cao 80px
+          transition: 'width 0.3s ease',
+          overflowY: 'auto', // Cho phép cuộn
+          // Ẩn thanh cuộn cho Firefox
+          scrollbarWidth: 'none',
+          // Ẩn thanh cuộn cho Webkit (Chrome, Safari)
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          // Ẩn thanh cuộn cho IE 10+
+          '-ms-overflow-style': 'none',
+          zIndex: 999,
+          position: 'fixed',
+        }}
+      >
+        {/* Nút Menu */}
+        <IconButton
+          onClick={toggleNavbar}
+          sx={{
+            alignSelf: isCollapsed ? 'center' : 'flex-end',
+            margin: '8px',
+            color: '#000',
+          }}
+        >
           <MenuIcon />
         </IconButton>
 
-        {/* Sidebar List */}
-        <List>
+        {/* Danh sách Sidebar */}
+        <List sx={{ padding: 0 }}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link to={item.path} key={item.name} style={{ textDecoration: 'none' }}>
-                <ListItem button sx={{
-                  padding: '12px 0',
-                  backgroundColor: isActive ? 'primary.main' : 'transparent',
-                  color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)', // Lighten inactive text
-                  '&:hover': {
-                    backgroundColor: isActive ? 'primary.main' : 'rgba(255, 255, 255, 0.08)',
-                    transition: 'background-color 0.5s ease', // Smooth hover effect
-                  },
-                  transition: 'background-color 0.3s ease', // Smooth background change
-                }}>
-                  <ListItemIcon sx={{
-                    color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)', // Lighten inactive icons
-                    transition: 'color 0.3s ease', // Smooth icon color transition
-                  }}>
-                    <item.icon size={24} />
+                <ListItemButton
+                  sx={{
+                    paddingY: '10px',
+                    paddingX: isCollapsed ? '8px' : '16px',
+                    backgroundColor: isActive ? 'green' : 'transparent',
+                    borderRadius: '4px',
+                    marginX: isCollapsed ? '4px' : '8px',
+                    marginY: '4px',
+                    transition: 'background-color 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: isActive
+                        ? 'rgba(0, 0, 0, 0.1)'
+                        : 'rgba(0, 0, 0, 0.05)',
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: '#000',
+                      minWidth: '40px',
+                      justifyContent: isCollapsed ? 'center' : 'flex-start',
+                    }}
+                  >
+                    <item.icon />
                   </ListItemIcon>
                   <ListItemText
                     primary={item.name}
                     sx={{
+                      color: '#000',
                       opacity: isCollapsed ? 0 : 1,
-                      color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)', // Lighten inactive text
-                      fontWeight: isActive ? 'bold' : 'normal', // Make active item bold
-                      transition: 'opacity 0.3s ease, font-weight 0.3s ease', // Smooth text transition
+                      transition: 'opacity 0.3s ease',
+                      fontWeight: isActive ? 'bold' : 'normal',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
                     }}
                   />
-                </ListItem>
+                </ListItemButton>
               </Link>
             );
           })}

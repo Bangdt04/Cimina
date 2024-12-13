@@ -31,6 +31,10 @@ const AdminLayout = ({ children }) => {
             height: 'calc(100vh - 80px)', // Giữ cho phần content không bị tràn
             overflowY: 'auto',
             transition: 'margin-left 0.3s ease', // Smooth transition khi Sidebar mở/đóng
+            // Ẩn thanh cuộn cho Webkit (Chrome, Safari)
+          '&::-webkit-scrollbar': {
+              display: 'none',
+            },
           }}
         >
           {children}

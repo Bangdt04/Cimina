@@ -21,7 +21,7 @@ const routes = {
         seat: '/admin/seats',
         showTime: '/admin/showtime',
         login: '/admin/login',
-        membership: '/admin/membership',
+        member: '/admin/member',
         checkin: '/admin/checkin',
     },
     web: {

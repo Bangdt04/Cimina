@@ -13,7 +13,7 @@ import {
   useTheme,
   Tooltip,
 } from '@mui/material';
-import { Search, Notifications, ExpandMore, Settings, DarkMode, LightMode, Clear } from '@mui/icons-material';
+import { Search, Notifications, ExpandMore, Settings, Clear } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Flag from 'react-world-flags'; // Import thư viện flag
 
@@ -21,7 +21,6 @@ function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false); // Dark mode state
   const userMenuRef = useRef(null);
   const languageMenuRef = useRef(null);
   const theme = useTheme();
@@ -29,10 +28,6 @@ function Header() {
 
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
   const toggleLanguageMenu = () => setIsLanguageMenuOpen(!isLanguageMenuOpen);
-  const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
-    document.body.classList.toggle('dark-mode', !isDarkMode);
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -58,24 +53,24 @@ function Header() {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          padding: '0 30px', // Increased padding for better spacing
-          bgcolor: isDarkMode ? '#333' : '#2C2C2C', // Darker background for contrast
-          color: '#fff',
+          padding: '0 30px', // Tăng padding cho khoảng cách tốt hơn
+          bgcolor: '#ffffff', // Đặt nền màu trắng
+          color: '#000000', // Đặt màu chữ màu đen
           alignItems: 'center',
-          height: '80px', // Increased height for a spacious header
+          height: '80px', // Tăng chiều cao cho header rộng rãi hơn
           boxSizing: 'border-box',
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)', // More prominent shadow for depth
-          borderBottom: '2px solid #444', // Subtle separation from content
+          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // Đổ bóng nhẹ để tạo chiều sâu
+          borderBottom: '1px solid #e0e0e0', // Tách biệt nhẹ với nội dung
         }}
       >
         {/* Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold', fontSize: '24px', color: '#fff' }}>
+          <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold', fontSize: '24px', color: '#000' }}>
             ADMIN
           </Link>
         </Box>
 
-        {/* Search and user menu */}
+        {/* Search và menu người dùng */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           {/* Search */}
           <TextField
@@ -86,12 +81,12 @@ function Header() {
             placeholder="Search..."
             sx={{
               width: '400px',
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: '#f5f5f5', // Nền nhẹ cho ô tìm kiếm
               borderRadius: 6,
               '& .MuiOutlinedInput-root': {
                 borderRadius: 6,
               },
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
             }}
             InputProps={{
               startAdornment: (
@@ -111,16 +106,16 @@ function Header() {
             }}
           />
 
-          {/* Notification Icon */}
-          <Tooltip title="Notifications">
-            <IconButton color="primary">
+          {/* Icon Thông báo */}
+          <Tooltip title="Thông báo">
+            <IconButton color="inherit">
               <Badge badgeContent={3} color="error">
                 <Notifications />
               </Badge>
             </IconButton>
           </Tooltip>
 
-          {/* Language Dropdown */}
+          {/* Dropdown Ngôn ngữ */}
           <Box ref={languageMenuRef}>
             <Button
               endIcon={<ExpandMore />}
@@ -128,11 +123,12 @@ function Header() {
               sx={{
                 textTransform: 'none',
                 padding: '8px 16px',
-                bgcolor: theme.palette.background.paper,
+                bgcolor: '#f5f5f5',
                 borderRadius: 6,
                 '&:hover': {
-                  backgroundColor: theme.palette.grey[200],
+                  backgroundColor: '#e0e0e0',
                 },
+                color: '#000',
               }}
             >
               <Flag code="VN" style={{ width: 20, marginRight: 8 }} />
@@ -154,21 +150,14 @@ function Header() {
             </Menu>
           </Box>
 
-          {/* Settings Icon */}
-          <Tooltip title="Settings">
-            <IconButton color="primary">
+          {/* Icon Cài đặt */}
+          <Tooltip title="Cài đặt">
+            <IconButton color="inherit">
               <Settings />
             </IconButton>
           </Tooltip>
 
-          {/* Dark Mode Toggle */}
-          <Tooltip title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-            <IconButton onClick={toggleDarkMode} color="primary">
-              {isDarkMode ? <LightMode /> : <DarkMode />}
-            </IconButton>
-          </Tooltip>
-
-          {/* User Dropdown */}
+          {/* Dropdown Người dùng */}
           <Box ref={userMenuRef}>
             <Button
               endIcon={<ExpandMore />}
@@ -176,11 +165,12 @@ function Header() {
               sx={{
                 textTransform: 'none',
                 padding: '8px 16px',
-                bgcolor: theme.palette.background.paper,
+                bgcolor: '#f5f5f5',
                 borderRadius: 6,
                 '&:hover': {
-                  backgroundColor: theme.palette.grey[200],
+                  backgroundColor: '#e0e0e0',
                 },
+                color: '#000',
               }}
             >
               <Avatar alt="User Avatar" src="https://i.pravatar.cc/300" sx={{ width: 36, height: 36, marginRight: 1 }} />
@@ -203,4 +193,3 @@ function Header() {
 }
 
 export default Header;
-  
