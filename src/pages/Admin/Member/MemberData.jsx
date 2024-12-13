@@ -112,6 +112,7 @@ const baseColumns = [
     },
 ];
 
+// Định nghĩa các cột của bảng (Đã thêm cột 'Hành động')
 function MembershipData() {
     const [data, setData] = useState([]); // Đảm bảo data luôn là mảng
     const [loading, setLoading] = useState(false);
@@ -130,6 +131,7 @@ function MembershipData() {
     const navigate = useNavigate();
     const tokenData = localStorage.getItem('token');
     const token = tokenData ? JSON.parse(tokenData)['access-token'] : null;
+    const [hasError, setHasError] = useState(false); // Thêm trạng thái để theo dõi lỗi
 
     // Sử dụng useCallback để tối ưu hóa debounce
     const debouncedSearch = useCallback(
@@ -167,12 +169,28 @@ function MembershipData() {
                 ...prev,
                 total: response.data.total || 0,
             }));
+            // Nếu fetch thành công, reset trạng thái lỗi
+            if (hasError) {
+                setHasError(false);
+            }
         } catch (error) {
-            notification.error({
-                message: 'Lỗi',
-                description: 'Không thể tải dữ liệu!',
-                placement: 'topRight',
-            });
+            if (!hasError) { // Chỉ thông báo nếu chưa có lỗi nào được thông báo
+                if (error.response && error.response.data.message) {
+                    const errorMessage = error.response.data.message || 'Đã xảy ra lỗi không xác định';
+                    notification.error({
+                        message: 'Lỗi',
+                        description: errorMessage,
+                        placement: 'topRight',
+                    });
+                } else {
+                    notification.error({
+                        message: 'Lỗi',
+                        description: 'Đã xảy ra lỗi không xác định.',
+                        placement: 'topRight',
+                    });
+                }
+                setHasError(true); // Đánh dấu đã có lỗi được thông báo
+            }
         } finally {
             setLoading(false);
         }
@@ -200,7 +218,6 @@ function MembershipData() {
         setFilters(newFilters);
     };
 
-
     // Hàm xử lý khi form được gửi
     const handleAddMember = async (values) => {
         try {
@@ -213,20 +230,66 @@ function MembershipData() {
                 description: response.data.message || 'Thêm mới hội viên thành công!',
                 placement: 'topRight',
             });
+            // Reset trạng thái lỗi sau khi thành công
+            setHasError(false);
             // Cập nhật bảng dữ liệu
             setIsModalVisible(false);
             form.resetFields();
             // Tải lại dữ liệu
             fetchMembers();
         } catch (error) {
-            notification.error({
-                message: 'Lỗi',
-                description: error.response?.data?.message || 'Thêm mới hội viên thất bại!',
-                placement: 'topRight',
-            });
+            if (!hasError) {
+                const errorMessage = error.response?.data?.message || 'Thêm mới hội viên thất bại!';
+                notification.error({
+                    message: 'Lỗi',
+                    description: errorMessage,
+                    placement: 'topRight',
+                });
+                setHasError(true);
+            }
         } finally {
             setLoading(false);
         }
+    };
+
+    // Hàm xử lý khi xóa hội viên
+    const handleDeleteMember = (id) => {
+        console.log("Deleting member with ID:", id); // Logging
+        confirm({
+            title: 'Bạn có chắc chắn muốn xóa hội viên này?',
+            icon: <DeleteOutlined />,
+            content: 'Thao tác này không thể hoàn tác.',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk() {
+                setLoading(true); // Bắt đầu loading khi xóa
+                axios.delete(`http://localhost:8000/api/members/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                    .then((response) => {
+                        notification.success({
+                            message: 'Thành công',
+                            description: response.data.message || 'Xóa hội viên thành công!',
+                            placement: 'topRight',
+                        });
+                        fetchMembers();
+                        setHasError(false); // Reset trạng thái lỗi sau khi thành công
+                    })
+                    .catch((error) => {
+                        if (!hasError) {
+                            const errorMessage = error.response?.data?.message || 'Xóa hội viên thất bại!';
+                            notification.error({
+                                message: 'Lỗi',
+                                description: errorMessage,
+                                placement: 'topRight',
+                            });
+                            setHasError(true);
+                        }
+                    })
+                    .finally(() => setLoading(false)); // Kết thúc loading
+            },
+        });
     };
 
     // Sử dụng useEffect để tự động gọi fetchMembers định kỳ
@@ -258,30 +321,37 @@ function MembershipData() {
         ghi_chu: item.ghi_chu,
         created_at: item.created_at,
         anh_hoi_vien: item.anh_hoi_vien,
-        action: (
-            <Space size="middle">
-                <Tooltip title="Sửa">
-                    <Button
-                        type="primary"
-                        icon={<EditOutlined />}
-                        size="small"
-                        onClick={() => handleEdit(item.id)}
-                    />
-                </Tooltip>
-            </Space>
-        ),
     }));
 
-    // Định nghĩa các cột của bảng (Đã loại bỏ cột 'Ngày cập nhật')
-    const columns = [
+    // Định nghĩa các cột của bảng (Đã thêm cột 'Hành động')
+    const columnsWithActions = [
         ...baseColumns,
         {
             title: 'Hành động',
             dataIndex: 'action',
             align: 'center',
             fixed: 'right',
-            width: 120,
-            render: (_, record) => record.action,
+            width: 150,
+            render: (_, record) => (
+                <Space size="middle">
+                    <Tooltip title="Sửa">
+                        <Button
+                            type="primary"
+                            icon={<EditOutlined />}
+                            size="small"
+                            onClick={() => handleEdit(record.key)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <Button
+                            type="danger"
+                            icon={<DeleteOutlined />}
+                            size="small"
+                            onClick={() => handleDeleteMember(record.key)}
+                        />
+                    </Tooltip>
+                </Space>
+            ),
         },
     ];
 
@@ -295,28 +365,29 @@ function MembershipData() {
             >
                 <Col xs={24} sm={12} md={16}>
                     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                        {/* Thêm các bộ lọc nếu cần */}
-                        {/* <Row gutter={[16, 16]} justify="end">
-                            <Col>
-                                <Select
-                                    mode="multiple"
-                                    allowClear
-                                    placeholder="Chọn loại hội viên"
-                                    style={{ width: 200 }}
-                                    onChange={(values) => setFilters((prev) => ({ ...prev, loai_hoi_vien: values }))}
-                                >
-                                    <Option value="thường">Thường</Option>
-                                    <Option value="vip">VIP</Option>
-                                    <Option value="vàng">Vàng</Option>
-                                </Select>
-                            </Col>
-                        </Row> */}
+                        <Input
+                            placeholder="Tìm kiếm hội viên..."
+                            prefix={<SearchOutlined />}
+                            allowClear
+                            onChange={handleSearch}
+                            style={{ width: '100%' }}
+                        />
                     </Space>
+                </Col>
+                <Col xs={24} sm={12} md={8} style={{ textAlign: 'right' }}>
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setIsModalVisible(true)}
+                        style={{ marginBottom: 16 }}
+                    >
+                        Thêm mới hội viên
+                    </Button>
                 </Col>
             </Row>
             <Table
                 loading={loading}
-                columns={columns}
+                columns={columnsWithActions}
                 dataSource={transformedData}
                 pagination={pagination}
                 onChange={handleTableChange}
@@ -328,9 +399,131 @@ function MembershipData() {
                 scroll={{ x: 'max-content' }}
                 size="middle"
             />
+            {/* Modal Thêm Mới Hội Viên */}
+            <Modal
+                title="Thêm Mới Hội Viên"
+                visible={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={null}
+                destroyOnClose
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleAddMember}
+                >
+                    <Form.Item
+                        label="Loại hội viên"
+                        name="loai_hoi_vien"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại hội viên!' }]}
+                    >
+                        <Select placeholder="Chọn loại hội viên">
+                            <Option value="thường">Thường</Option>
+                            <Option value="vip">VIP</Option>
+                            <Option value="vàng">Vàng</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        label="Ưu đãi (%)"
+                        name="uu_dai"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập ưu đãi!' },
+                            {
+                                type: 'number',
+                                min: 0,
+                                max: 100,
+                                message: 'Ưu đãi phải từ 0% đến 100%.',
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                            placeholder="Nhập ưu đãi"
+                            style={{ width: '100%' }}
+                            min={0}
+                            max={100}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Thời gian (tháng)"
+                        name="thoi_gian"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập thời gian!' },
+                            {
+                                type: 'number',
+                                min: 1,
+                                message: 'Thời gian phải ít nhất là 1 tháng.',
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                            placeholder="Nhập thời gian"
+                            style={{ width: '100%' }}
+                            min={1}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Giá (VND)"
+                        name="gia"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập giá!' },
+                            {
+                                type: 'number',
+                                min: 0,
+                                message: 'Giá không thể nhỏ hơn 0.',
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                            placeholder="Nhập giá"
+                            style={{ width: '100%' }}
+                            min={0}
+                            formatter={(value) =>
+                                `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
+                            parser={(value) => value.replace(/\₫\s?|(,*)/g, "")}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Trạng thái"
+                        name="trang_thai"
+                        rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+                    >
+                        <Select placeholder="Chọn trạng thái">
+                            <Option value={0}>Hoạt động</Option>
+                            <Option value={1}>Không hoạt động</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        label="Ghi chú"
+                        name="ghi_chu"
+                        rules={[
+                            {
+                                max: 200,
+                                message: 'Ghi chú không được vượt quá 200 ký tự.',
+                            },
+                        ]}
+                    >
+                        <Input.TextArea
+                            placeholder="Nhập ghi chú"
+                            rows={3}
+                            maxLength={200}
+                            showCount
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button onClick={() => setIsModalVisible(false)}>
+                                Hủy
+                            </Button>
+                            <Button type="primary" htmlType="submit" loading={loading}>
+                                Thêm Mới
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
-
 }
 
 export default MembershipData;
