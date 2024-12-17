@@ -139,8 +139,8 @@ const Payment = () => {
         case "Thanh toán tại quầy":
           payment = 'thanh_toan_tien_tai_quay';
           break;
-        case "NCB":
-          payment = 'ncb';
+        case "vnpay":
+          payment = 'vnpay';
           break;
         case "Visa":
           payment = 'visa';
@@ -154,7 +154,7 @@ const Payment = () => {
 
       console.log("METHOD", payment)
 
-      const result = await axios.post(`http://127.0.0.1:8000/api/${pathPayment}/${data?.data.id}/${payment}`, data, {
+      const result = await axios.post(`http://127.0.0.1:8000/api/${pathPayment}/${data?.data.id}/vnpay`, data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`, // Add the bearer token here
           'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ const Payment = () => {
             <div className="space-y-4 mb-6">
               {(info['vai_tro'] === 'admin' ?
                 [ "Thanh toán tại quầy"] :
-                ["Visa", "NCB", "Master card", "Momo"]
+                ["VnPay"]
               ).map((method) => (
                 <label key={method} className={`flex items-center space-x-3 p-3 ${selectedPaymentMethod === method ? 'bg-red-600' : 'bg-gray-700'} rounded-lg cursor-pointer transition duration-300 hover:bg-red-600`}>
                   <input
@@ -297,7 +297,7 @@ const Payment = () => {
       <PromoCodeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        promoCodes={savedVouchers}
+        promoCodes={savedVouchers}f
         onSelectPromoCode={handleSelectPromoCode}
       />
     </div >
