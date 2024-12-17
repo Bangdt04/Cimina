@@ -47,6 +47,7 @@ import Payment from "../pages/Client/Payment";
 import Checkin from "../pages/Admin/Check";
 import AddRoom from "../pages/Admin/Seats/AddRoom";
 import Lucky from "../pages/Client/Lucky";
+import Membership from "../pages/Client/Membership";
 
 const publicRoutes = [
     {
@@ -59,6 +60,13 @@ const publicRoutes = [
     {
         path: config.routes.web.lucky,
         component: Lucky,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.membership,
+        component: Membership,
         layout: ClientLayout,
         roles: ['user'],
         private: false,
