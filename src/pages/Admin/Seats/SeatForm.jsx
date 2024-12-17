@@ -226,7 +226,7 @@ function SeatFormPage() {
                             <Select placeholder="Chọn loại ghế ngồi" style={{ borderRadius: '4px' }} onChange={onChangeLoạiGhế}>
                                 <Option value="Thường">Thường</Option>
                                 <Option value="Đôi">Đôi</Option>
-                                <Option value="Víp">Víp</Option>
+                                <Option value="vip">Vip</Option>
                             </Select>
                         </Form.Item>
                     </Col>

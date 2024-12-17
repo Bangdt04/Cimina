@@ -107,8 +107,9 @@ const FoodMenu = () => {
 
                     <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
                         <td className="py-2">
-                            <img src={`http://127.0.0.1:8000${item?.anh_do_an}`} alt={item.ten_do_an} />
-
+                            <img src={`http://127.0.0.1:8000${item?.anh_do_an}`} alt={item.ten_do_an} 
+                            style={{ width: '500px', height: '300px' }} />
+                            
                         </td>
                         <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                         <div className="p-4">
