@@ -46,11 +46,19 @@ import SeatChoosePage from "../pages/Admin/POS/seat";
 import Payment from "../pages/Client/Payment";
 import Checkin from "../pages/Admin/Check";
 import AddRoom from "../pages/Admin/Seats/AddRoom";
+import Lucky from "../pages/Client/Lucky";
 
 const publicRoutes = [
     {
         path: config.routes.web.home,
         component: HomePage,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.lucky,
+        component: Lucky,
         layout: ClientLayout,
         roles: ['user'],
         private: false,
