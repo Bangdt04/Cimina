@@ -19,6 +19,8 @@ const FoodMenu = () => {
     const [selectedItems, setSelectedItems] = useState({});
     const { data, isLoading } = useGetFoods();
 
+    console.log(data)
+
     useEffect(() => {
         if (location.state) {
             const {
@@ -102,7 +104,12 @@ const FoodMenu = () => {
             <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {data?.data?.map(item => (
+
                     <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
+                        <td className="py-2">
+                            <img src={`http://127.0.0.1:8000${item?.anh_do_an}`} alt={item.ten_do_an} />
+
+                        </td>
                         <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                         <div className="p-4">
                             <p className="font-bold text-lg text-green-400">Giá: {Number(item.gia).toLocaleString()}đ</p>
@@ -157,7 +164,9 @@ const FoodMenu = () => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
+                                <td className="py-2">
+                                    Ghế ({[...new Set(selectedSeatIds)].join(', ')})
+                                </td>
                                 <td className="py-2">{selectedSeats.length}</td>
                                 <td className="text-right py-2">{ticketPrice.toLocaleString()}đ</td>
                                 <td className="py-2"></td>
@@ -166,6 +175,7 @@ const FoodMenu = () => {
                                 const item = selectedItems[key];
                                 return (
                                     <tr key={index}>
+
                                         <td className="py-2">{item.ten_do_an}</td>
                                         <td className="py-2">{item.quantity}</td>
                                         <td className="text-right py-2">
