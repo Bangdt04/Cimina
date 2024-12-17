@@ -46,6 +46,7 @@ const MovieShowing = () => {
                                 <div>
                                     <img
                                         alt={`Movie poster of ${item.ten_phim}`}
+                                        style={{ height:500}}
                                         className="rounded-2xl w-full h-auto object-cover mb-2"
                                         src={`http://localhost:8000${item.anh_phim}` || ImageMovie}
                                     />

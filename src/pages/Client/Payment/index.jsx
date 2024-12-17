@@ -66,7 +66,7 @@ const Payment = () => {
     }
 
     try {
-      const path = info['vai_tro'] === 'admin' ? `http://127.0.0.1:8000/api/countdown_vouchers` : `http://127.0.0.1:8000/api/auth/user/voucher-codes`;
+      const path = info['vai_tro'] === 'admin' ? `http://127.0.0.1:8000/api/auth/user/voucher-codes` : `http://127.0.0.1:8000/api/auth/user/voucher-codes`;
       const response = await fetch(path, {
         method: 'GET',
         headers: {
@@ -142,14 +142,6 @@ const Payment = () => {
         case "vnpay":
           payment = 'vnpay';
           break;
-        case "Visa":
-          payment = 'visa';
-          break;
-        case "Master card":
-          payment = 'mastercard';
-          break;
-        default:
-            payment = 'phuong_thuc_khong_hop_le';
       }
 
       console.log("METHOD", payment)
@@ -255,8 +247,8 @@ const Payment = () => {
               <p className="flex justify-between font-bold text-xl"><span>Tổng cộng</span><span>{finalAmount.toLocaleString()}đ</span></p> {/* Hiển thị tổng cộng sau khi giảm giá */}
             </div>
 
-            {/* Input mã khuyến mãi */}
-            {/* <div className="mb-4">
+           
+            <div className="mb-4">
               <input
                 type="text"
                 value={promoCode}
@@ -271,8 +263,8 @@ const Payment = () => {
               >
                 Áp dụng
               </button>
-            </div> */}
-          {/* chưa có voucher */}
+            </div>
+     
             <button
               className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-full transition duration-300 mb-4"
               onClick={handlePayment}

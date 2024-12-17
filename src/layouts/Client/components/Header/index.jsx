@@ -128,7 +128,7 @@ function Header() {
                             }
                             to={config.routes.web.khuyenMai}
                         >
-                            Tin tức
+                            Săn Voucher
                         </NavLink>
                         <NavLink
                             className={({ isActive }) =>

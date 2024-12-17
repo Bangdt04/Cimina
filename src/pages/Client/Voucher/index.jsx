@@ -16,11 +16,13 @@ const VoucherPage = () => {
 
     const fetchVouchers = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/countdown_vouchers');
+            const response = await fetch('http://127.0.0.1:8000/api/today-discounts');
+
             if (!response.ok) {
                 throw new Error('Vui lòng đăng nhập để có thể săn vé!');
             }
             const data = await response.json();
+            console.log (data)
             setVouchers(data);
         } catch (error) {
             setError(error.message);
@@ -39,13 +41,19 @@ const VoucherPage = () => {
             },
         });
         const data = await response.json();
+        if (data) {
+            setLoadingSavedVouchers(false);
+        } else {
+            // Xử lý trường hợp data không tồn tại (nếu cần)
+            console.error('Data không tồn tại');
+        }
         setSavedVouchers(data); // Adjust according to your API response structure
 
     };
 
     const handleSaveVoucher = async (voucher) => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/auth/spin-voucher', {
+            const response = await fetch('http://127.0.0.1:8000/api/spin-voucher', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,7 +64,7 @@ const VoucherPage = () => {
             if (!response.ok) {
                 throw new Error('Bạn đã lưu voucher này.');
             }
-            alert(`Saved voucher: ${voucher.voucher.mota}`);
+            alert(`Saved voucher: ${voucher.coupon.mota}`);
             fetchSavedVouchers();
         } catch (error) {
             alert(error.message);
@@ -77,10 +85,10 @@ const VoucherPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {vouchers.map((voucher) => (
                     <div key={voucher.id} className="bg-[#fff0] border text-white rounded-lg overflow-hidden shadow-lg">
-                        <img alt={`Promotion image for ${voucher.voucher.mota}`} className="w-full" height="200" src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/valentines-gift-voucher-design-template-a4076087e8938721205d868bbc555dac_screen.jpg?ts=1664394224" width="600" />
+                        <img alt={`Promotion image for ${voucher.coupon.mota}`} className="w-full" height="200" src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/valentines-gift-voucher-design-template-a4076087e8938721205d868bbc555dac_screen.jpg?ts=1664394224" width="600" />
                         <div className="p-4">
                             <p className="text-sm">Bắt đầu: {voucher.thoi_gian_bat_dau} - {voucher.thoi_gian_ket_thuc} <br /> Ngày: {voucher.ngay}</p>
-                            <p className="font-bold">{voucher.voucher.mota}</p>
+                            {/* <p className="font-bold">{voucher.coupon.mota}</p> */}
                             {accessToken ?
                                 <button
                                     className="mt-2 bg-red-600 text-white rounded-full px-4 py-2"
@@ -108,9 +116,9 @@ const VoucherPage = () => {
                         {savedVouchers.map((savedVoucher) => (
                             <div className="bg-gray-800 border border-gray-700 text-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105 mt-4">
                                 <div className="p-4">
-                                    <p className="text-sm text-gray-400">{savedVoucher.mota}</p>
-                                    <p className="font-bold text-lg">Mã: {savedVoucher.ma_giam_gia}</p>
-                                    <p className="font-bold text-lg">Giá Đơn Tối Thiểu: {Number(savedVoucher.gia_don_toi_thieu).toLocaleString()} VNĐ</p>
+                                    <p className="text-sm text-gray-400">{savedVoucher?.mota}</p>
+                                    <p className="font-bold text-lg">Mã: {savedVoucher?.ma_giam_gia}</p>
+                                    <p className="font-bold text-lg">Giá Đơn Tối Thiểu: {Number(savedVoucher?.gia_don_toi_thieu).toLocaleString()} VNĐ</p>
                                 </div>
                             </div>
                         ))}
