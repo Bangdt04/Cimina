@@ -73,6 +73,7 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAl
                         Xóa toàn bộ ghế
                     </Button>
                 </Tooltip>
+                <Tooltip title="Thêm ghế"></Tooltip>
             </div>
         ),
     }));

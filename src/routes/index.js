@@ -45,6 +45,7 @@ import ShowtimePage from "../pages/Admin/POS";
 import SeatChoosePage from "../pages/Admin/POS/seat";
 import Payment from "../pages/Client/Payment";
 import Checkin from "../pages/Admin/Check";
+import AddRoom from "../pages/Admin/Seats/AddRoom";
 
 const publicRoutes = [
     {
@@ -419,6 +420,13 @@ const privateRoutes = [
     {
         path: config.routes.admin.checkin,
         component: Checkin,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.addRoom,
+        component: AddRoom,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,

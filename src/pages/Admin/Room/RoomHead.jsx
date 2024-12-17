@@ -5,7 +5,7 @@ function RoomHead() {
     return (
         <Head
             title={'Quản lý phòng'}
-            route={config.routes.admin.room + '/create'}
+            route={config.routes.admin.addRoom}
         />
     );
 }

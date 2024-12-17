@@ -23,6 +23,7 @@ const routes = {
         login: '/admin/login',
         member: '/admin/member',
         checkin: '/admin/checkin',
+        addRoom: '/admin/room/add',
     },
     web: {
         home: '/',
