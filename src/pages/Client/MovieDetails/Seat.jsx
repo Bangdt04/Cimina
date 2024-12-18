@@ -7,7 +7,7 @@ import axios from 'axios';
 
 
 const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }) => {
-    const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
+    const [remainingTime, setRemainingTime] = useState(360); // 10 minutes in seconds
     const { id } = useParams();
     const [data, setData] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
