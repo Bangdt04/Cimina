@@ -80,14 +80,6 @@ function transformData(data, navigate, handleStop, handleOpen, handleDelete) {
                         Mở bán
                     </Button>
                 )}
-                <Button
-                    icon={<DeleteOutlined />}
-                    type="primary"
-                    danger
-                    onClick={() => handleDelete(item.id)}
-                >
-                    Xóa
-                </Button>
             </div>
         ),
     }));

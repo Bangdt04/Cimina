@@ -59,7 +59,7 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAl
                     </Button>
                 </Tooltip>
 
-                <Tooltip title="Xóa toàn bộ ghế trong phòng">
+                <Tooltip title="Xóa phòng">
                     <Button
                         type="danger"
                         icon={<DeleteOutlined />}
@@ -70,7 +70,7 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAl
                             borderColor: '#ffcdd2',
                         }}
                     >
-                        Xóa toàn bộ ghế
+                        Xóa phòng ghế
                     </Button>
                 </Tooltip>
                 <Tooltip title="Thêm ghế"></Tooltip>
@@ -95,14 +95,14 @@ function RoomData({ setParams, params }) {
 
     const handleDeleteAllSeats = async (roomId) => {
         Modal.confirm({
-            title: 'Xác nhận xóa toàn bộ ghế',
-            content: `Bạn có chắc chắn muốn xóa toàn bộ ghế của phòng chiếu này không?`,
+            title: 'Xác nhận xóa phòng',
+            content: `Bạn có chắc chắn muốn xóa phòng của phòng chiếu này không?`,
             okText: 'Xóa',
             okType: 'danger',
             cancelText: 'Hủy',
             onOk: async () => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:8000/api/delete-all-seatbyroom/${roomId}`, {
+                    const response = await fetch(`http://127.0.0.1:8000/api/deleteRoom/${roomId}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -114,10 +114,10 @@ function RoomData({ setParams, params }) {
                         throw new Error(errorData.message || 'Phản hồi mạng không hợp lệ');
                     }
 
-                    notification.success({ message: 'Xóa toàn bộ ghế thành công', placement: 'topRight' });
+                    notification.success({ message: 'Xóa phòng thành công', placement: 'topRight' });
                     refetch(); // Refetch to update the list of rooms
                 } catch (error) {
-                    notification.error({ message: `Xóa toàn bộ ghế thất bại: ${error.message}`, placement: 'topRight' });
+                    notification.error({ message: `Xóa phòng thất bại: ${error.message}`, placement: 'topRight' });
                 }
             },
         });

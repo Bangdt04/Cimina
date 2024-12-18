@@ -259,15 +259,6 @@ function MovieData({ setParams, params }) {
                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                     Danh Sách Phim
                 </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => navigate(`${config.routes.admin.movies}/create`)}
-                    startIcon={<Edit />}
-                    sx={{ textTransform: 'none' }}
-                >
-                    Thêm Phim Mới
-                </Button>
             </Box>
 
             <Divider sx={{ mb: 3 }} />

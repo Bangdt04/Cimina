@@ -250,13 +250,6 @@ function UserData() {
                         <Button type="link" onClick={() => edit(record)}>
                             Sửa
                         </Button>
-                        <Button
-                            type="link"
-                            onClick={() => deleteUser(record.id)}
-                            style={{ color: 'red', fontWeight: 'bold' }}
-                        >
-                            Xóa
-                        </Button>
                     </>
                 );
             },
