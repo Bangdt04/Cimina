@@ -27,6 +27,7 @@ import MemberFormPage from "../pages/Admin/Member/MemberForm";
 import SanVoucher from "../pages/Admin/SanVoucher";
 import SanVoucherFormPage from "../pages/Admin/SanVoucher/SanVoucherForm";
 
+
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
 import AboutPage from "../pages/Client/About";
@@ -51,6 +52,9 @@ import AddRoom from "../pages/Admin/Seats/AddRoom";
 import Lucky from "../pages/Client/Lucky";
 import Membership from "../pages/Client/Membership";
 import Contact from "../pages/Client/Contact";
+import SeatPricePage from "../pages/Admin/SeatPrice";
+import SeatPriceForm from "../pages/Admin/SeatPrice/SeatPriceForm";
+import ChiTietPage from "../pages/Admin/ChiTiet";
 
 const publicRoutes = [
     {
@@ -478,7 +482,35 @@ const privateRoutes = [
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
     },
-
+    {
+        path: config.routes.admin.seatprice,
+        component: SeatPricePage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.seatprice + '/create',
+        component: SeatPriceForm,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.seatprice + '/update/:id',
+        component: SeatPriceForm,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.chitiet + '/update/:id',
+        component: ChiTietPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    
 ];
 
 const routes = [...publicRoutes, ...privateRoutes];

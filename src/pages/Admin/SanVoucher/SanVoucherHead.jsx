@@ -4,7 +4,7 @@ import config from '../../../config';
 function SanVoucherHead() {
     return (
         <Head
-            title={'Quản lý SanVoucher'}
+            title={'Quản lý Săn Voucher'}
             route={config.routes.admin.sanvoucher + '/create'}
         />
     );

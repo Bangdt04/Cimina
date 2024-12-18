@@ -25,6 +25,7 @@ const routes = {
         checkin: '/admin/checkin',
         addRoom: '/admin/room/add',
         sanvoucher: '/admin/sanvoucher',
+        seatprice: '/admin/seatprice',
         
     },
     web: {
