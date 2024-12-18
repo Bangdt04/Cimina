@@ -45,7 +45,8 @@ const routes = {
         test: '/test',
         search: '/search',
         transaction: '/transaction/success',
-        lucky: '/lucky'
+        lucky: '/lucky',
+        membership :'/membership'
     },
 };
 export default routes;

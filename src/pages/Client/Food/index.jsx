@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import './food.scss';
 import { useGetFoods } from '../../../hooks/api/useFoodApi';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -99,6 +99,39 @@ const FoodMenu = () => {
         });
     };
 
+    // Helper function to process selectedSeatIds based on the specified rules
+    const processSelectedSeats = (seats) => {
+        const seatCount = seats.reduce((acc, seat) => {
+            acc[seat] = (acc[seat] || 0) + 1;
+            return acc;
+        }, {});
+
+        const processedSeats = seats.filter(seat => {
+            const count = seatCount[seat];
+            if (count === 2) {
+                // Exclude seats appearing exactly twice
+                return false;
+            }
+            // Include seats appearing once or three/more times
+            return true;
+        });
+
+        // To ensure seats appearing three or more times are shown once
+        const uniqueSeats = [];
+        const seen = new Set();
+        processedSeats.forEach(seat => {
+            if (!seen.has(seat)) {
+                uniqueSeats.push(seat);
+                seen.add(seat);
+            }
+        });
+
+        return uniqueSeats;
+    };
+
+    // Memoize the processed seats for performance optimization
+    const displayedSeats = useMemo(() => processSelectedSeats(selectedSeatIds), [selectedSeatIds]);
+
     return (
         <div className="container mx-auto py-8 mt-16 px-32">
             <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
@@ -165,9 +198,7 @@ const FoodMenu = () => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td className="py-2">
-                                    Ghế ({[...new Set(selectedSeatIds)].join(', ')})
-                                </td>
+                                <td className="py-2">Ghế ({displayedSeats.join(', ')})</td>
                                 <td className="py-2">{selectedSeats.length}</td>
                                 <td className="text-right py-2">{ticketPrice.toLocaleString()}đ</td>
                                 <td className="py-2"></td>
