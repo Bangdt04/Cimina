@@ -87,12 +87,6 @@ const baseColumns = (navigate, showDeleteConfirm) => [
     },
   },
   {
-    title: "Số Lượng",
-    dataIndex: "so_luong",
-    sorter: (a, b) => a.so_luong - b.so_luong,
-    ellipsis: true,
-  },
-  {
     title: "Đã Sử Dụng",
     dataIndex: "so_luong_da_su_dung",
     sorter: (a, b) => a.so_luong_da_su_dung - b.so_luong_da_su_dung,
