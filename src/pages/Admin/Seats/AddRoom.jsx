@@ -164,11 +164,11 @@ const AddRoom = () => {
   const getSeatColor = (seat) => {
     if (selectedSeats.includes(seat.id)) return '#ff9800'; 
     switch (seat.type) {
-      case 'Ghế Thường':
+      case 'Thường':
         return '#9e9e9e'; 
-      case 'Ghế Đôi':
+      case 'Đôi':
         return '#4caf50'; 
-      case 'Ghế VIP':
+      case 'Vip':
         return '#ffeb3b'; 
       default:
         return '#e0e0e0'; 
@@ -434,28 +434,16 @@ const AddRoom = () => {
               value={seatType}
               onChange={e => setSeatType(e.target.value)}
             >
-              <MenuItem value="Ghế Thường">Ghế Thường</MenuItem>
-              <MenuItem value="Ghế Đôi">Ghế Đôi</MenuItem>
-              <MenuItem value="Ghế VIP">Ghế VIP</MenuItem>
+              <MenuItem value="Thường">Ghế Thường</MenuItem>
+              <MenuItem value="Đôi">Ghế Đôi</MenuItem>
+              <MenuItem value="Vip">Ghế VIP</MenuItem>
             </Select>
           </FormControl>
-          <TextField
-            label="Giá Ghế (VNĐ)"
-            type="number"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={seatPrice}
-            onChange={e => setSeatPrice(e.target.value)}
-            InputProps={{
-              startAdornment: <Typography sx={{ mr:1 }}>₫</Typography>,
-              inputProps: { min: 0 }
-            }}
-          />
+        
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!seatType || !seatPrice}>
+          <Button variant="contained" onClick={handleSave} disabled={!seatType}>
             Lưu
           </Button>
         </DialogActions>

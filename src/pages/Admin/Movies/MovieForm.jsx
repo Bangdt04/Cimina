@@ -87,7 +87,6 @@ function MovieFormPage() {
                         dien_vien: movieData.dien_vien,
                         noi_dung: movieData.noi_dung,
                         trailer: movieData.trailer,
-                        gia_ve: movieData.gia_ve,
                         thoi_gian_phim: movieData.thoi_gian_phim,
                         quoc_gia: movieData.quoc_gia,
                         hinh_thuc_phim: movieData.hinh_thuc_phim,
@@ -378,25 +377,6 @@ function MovieFormPage() {
                                     fontSize: '14px',
                                     border: '1px solid #d9d9d9',
                                 }}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={12}>
-                        <Form.Item
-                            label="Giá Vé"
-                            name="gia_ve"
-                            rules={[{ required: true, message: 'Nhập giá vé!' }]}
-                        >
-                            <Input
-                                type="number"
-                                placeholder="Nhập giá vé"
-                                style={{
-                                    borderRadius: '8px',
-                                    padding: '12px',
-                                    fontSize: '14px',
-                                    border: '1px solid #d9d9d9',
-                                }}
-                                min={0}
                             />
                         </Form.Item>
                     </Col>
