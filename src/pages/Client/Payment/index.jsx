@@ -6,6 +6,7 @@ import { getInfoAuth, getTokenOfUser } from "../../../utils/storage";
 import PromoCodeModal from "./modal";
 
 const Payment = () => {
+  const [remainingTime, setRemainingTime] = useState(360); 
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [selectedTime, setSelectedTime] = useState("");
@@ -35,7 +36,7 @@ const Payment = () => {
 
   const handleApplyPromoCode = () => {
     const voucher = savedVouchers.find(voucher => promoCode === voucher.ma_giam_gia);
-    
+
     if (voucher) {
       const minOrderValue = parseInt(voucher.gia_don_toi_thieu, 10);
       const maxDiscount = parseInt(voucher.Giam_max, 10);
@@ -81,6 +82,32 @@ const Payment = () => {
     }
   }, [location.state]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRemainingTime((prevTime) => {
+        if (prevTime > 0) {
+          return prevTime - 1;
+        } else {
+          clearInterval(timer);
+          notification.error({
+            message: `Cảnh báo`,
+            description:
+              `Quý khách đã hết thời gian chọn ghế vui lòng thử lại`,
+            placement: "topRight",
+          });
+          navigate('/')
+          return 0;
+        }
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
   const fetchSavedVouchers = async () => {
     if (!accessToken) {
       console.error('Access token is missing');
@@ -202,7 +229,11 @@ const Payment = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white mt-10">
       <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold mb-8 text-center">Thanh toán</h1>
+      
+        <div className="flex justify-between mb-6 text-lg">
+          <div><h1 className="text-4xl font-bold text-center">Thanh toán</h1></div>
+          <div className="bg-red-600 px-3 py-1 rounded-full">Thời gian chọn ghế: <span className="font-bold">{formatTime(remainingTime)}</span></div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-8">
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg transition duration-300 hover:shadow-xl">

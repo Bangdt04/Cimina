@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getInfoAuth } from '../../../utils/storage';
 
 const FoodMenu = () => {
+    const [remainingTime, setRemainingTime] = useState(360);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [selectedTime, setSelectedTime] = useState("");
@@ -47,10 +48,10 @@ const FoodMenu = () => {
 
     const handlePurchase = (item, action) => {
         const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10);
-    
+
         setSelectedItems((prevItems) => {
             const newItems = { ...prevItems };
-    
+
             if (action === 'add') {
                 if (!newItems[item.id]) {
                     newItems[item.id] = { ...item, quantity: 1 };
@@ -73,7 +74,7 @@ const FoodMenu = () => {
             return newItems;
         });
     };
-    
+
 
     // Recalculate totalAmount when selectedItems or ticketPrice changes
     useEffect(() => {
@@ -83,6 +84,33 @@ const FoodMenu = () => {
         }, ticketPrice); // Include ticket price in the calculation
         setTotalAmount(updatedTotal);
     }, [selectedItems, ticketPrice]);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setRemainingTime((prevTime) => {
+                if (prevTime > 0) {
+                    return prevTime - 1;
+                } else {
+                    clearInterval(timer);
+                    notification.error({
+                        message: `Cảnh báo`,
+                        description:
+                            `Quý khách đã hết thời gian chọn ghế vui lòng thử lại`,
+                        placement: "topRight",
+                    });
+                    navigate('/')
+                    return 0;
+                }
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
 
     const handlePayment = () => {
         const path = info['vai_tro'] === 'admin' ? `/admin/bookings/payment/${id}` : `/payment`;
@@ -120,8 +148,12 @@ const FoodMenu = () => {
     const displayedSeats = useMemo(() => processSelectedSeats(selectedSeatIds), [selectedSeatIds]);
 
     return (
+
         <div className="container mx-auto py-8 mt-16 px-32">
-            <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
+            <div className="flex justify-between mb-6 text-lg">
+                <div><h1 className="text-center text-3xl font-bold text-white">Thực Đơn</h1></div>
+                <div className="bg-red-600 px-3 py-1 rounded-full">Thời gian chọn ghế: <span className="font-bold">{formatTime(remainingTime)}</span></div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {data?.data?.map(item => (
                     <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
