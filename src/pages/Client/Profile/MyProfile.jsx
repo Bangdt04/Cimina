@@ -54,14 +54,6 @@ const MyProfile = () => {
                 >
                     <Input className=" text-black rounded-full" />
                 </Form.Item>
-                <Form.Item
-                    className="mb-16"
-                    label={<label style={{ color: "while" }}>Email</label>} 
-                    layout="vertical"
-                    name="email"
-                >
-                    <Input className=" w-full p-2 bg-black text-white rounded-full" disabled />
-                </Form.Item>
             </Form>
             <div className="flex justify-end space-x-4 mt-6 w-1/2">
                 <button class="bg-gray-800 text-white py-2 px-4 rounded-full">
