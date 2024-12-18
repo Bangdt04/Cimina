@@ -24,6 +24,8 @@ const routes = {
         member: '/admin/member',
         checkin: '/admin/checkin',
         addRoom: '/admin/room/add',
+        sanvoucher: '/admin/sanvoucher',
+        
     },
     web: {
         home: '/',

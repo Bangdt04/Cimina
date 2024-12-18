@@ -24,6 +24,8 @@ import ShowTimePage from "../pages/Admin/ShowTime";
 import ShowTimeFormPage from "../pages/Admin/ShowTime/ShowTimeForm";
 import MemberPage from "../pages/Admin/Member";
 import MemberFormPage from "../pages/Admin/Member/MemberForm";
+import SanVoucher from "../pages/Admin/SanVoucher";
+import SanVoucherFormPage from "../pages/Admin/SanVoucher/SanVoucherForm";
 
 import TicketPricePage from "../pages/Client/TicketPrice";
 import PaymentPage from "../pages/Client/Payment";
@@ -451,6 +453,27 @@ const privateRoutes = [
     {
         path: config.routes.admin.addRoom,
         component: AddRoom,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.sanvoucher,
+        component: SanVoucher,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.sanvoucher + '/create',
+        component: SanVoucherFormPage,
+        layout: AdminLayout,
+        roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
+        private: true,
+    },
+    {
+        path: config.routes.admin.sanvoucher + '/update/:id',
+        component: SanVoucherFormPage,
         layout: AdminLayout,
         roles: ['admin', 'nhan_vien'], // Thêm 'nhan_vien'
         private: true,
