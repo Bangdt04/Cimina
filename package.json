@@ -48,13 +48,14 @@
     "react-qr-barcode-scanner": "^2.0.0",
     "react-router-dom": "^6.26.2",
     "react-selectable-fast": "^3.4.0",
+    "react-slick": "^0.30.3",
     "react-spinners": "^0.15.0",
     "react-toastify": "^10.0.6",
     "react-webcam": "^7.2.0",
     "react-world-flags": "^1.6.0",
     "recharts": "^2.14.0",
     "sass": "^1.80.6",
-    "swiper": "^11.1.14",
+    "swiper": "^11.1.15",
     "vite-plugin-require": "^1.1.11"
   },
   "devDependencies": {
