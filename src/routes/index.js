@@ -48,6 +48,7 @@ import Checkin from "../pages/Admin/Check";
 import AddRoom from "../pages/Admin/Seats/AddRoom";
 import Lucky from "../pages/Client/Lucky";
 import Membership from "../pages/Client/Membership";
+import Contact from "../pages/Client/Contact";
 
 const publicRoutes = [
     {
@@ -67,6 +68,13 @@ const publicRoutes = [
     {
         path: config.routes.web.membership,
         component: Membership,
+        layout: ClientLayout,
+        roles: ['user'],
+        private: false,
+    },
+    {
+        path: config.routes.web.contact,
+        component: Contact,
         layout: ClientLayout,
         roles: ['user'],
         private: false,
