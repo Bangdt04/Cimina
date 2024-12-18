@@ -40,7 +40,7 @@ const menuItems = [
   { name: 'Member', icon: CardMembershipIcon, path: '/admin/member' },
   { name: 'Voucher', icon: ConfirmationNumberIcon, path: '/admin/voucher' },
   { name: 'Check', icon: CheckCircleIcon, path: '/admin/checkin' },
-  { name: 'Contact', icon: ContactMailIcon, path: '/admin/contact' },
+  { name: 'CouponVoucher', icon: ContactMailIcon, path: '/admin/sanvoucher' },
   { name: 'Blog', icon: ArticleIcon, path: '/admin/blog' },
   { name: 'Feedback', icon: FeedbackIcon, path: '/admin/feedback' },
   { name: 'Lucky Wheel', icon: CasinoIcon, path: '/admin/lucky-wheel' },

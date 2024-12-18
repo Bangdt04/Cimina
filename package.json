@@ -20,8 +20,10 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@headlessui/react": "^2.2.0",
     "@mui/icons-material": "^6.2.0",
+    "@mui/lab": "^6.0.0-beta.20",
     "@mui/material": "^6.1.10",
     "@mui/x-data-grid": "^7.23.1",
+    "@mui/x-date-pickers": "^7.23.2",
     "@tabler/icons-react": "^2.38.0",
     "@tanstack/react-query": "^4.36.1",
     "@tanstack/react-query-devtools": "^4.9.0",
@@ -56,7 +58,8 @@
     "recharts": "^2.14.0",
     "sass": "^1.80.6",
     "swiper": "^11.1.15",
-    "vite-plugin-require": "^1.1.11"
+    "vite-plugin-require": "^1.1.11",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
