@@ -154,7 +154,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
         setSelectedRoom(room);
         let seatClass = 'flex items-center justify-center text-white font-bold cursor-pointer';
 
-        if (seat.trang_thai === "Đã đặt" || seat?.user_id === info?.id) {
+        if (seat.trang_thai === "Đã đặt" ) {
             seatClass += ' bg-gray-700';
             return (
                 <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
@@ -199,8 +199,8 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
 
 
 
-        if (selectedSeats.includes(seat.id)) {
-            seatClass = seatClass.replace(/bg-\w+-\d+/, 'bg-blue-500');
+        if (selectedSeats.includes(seat.id)|| seat?.user_id === info?.id) {
+            seatClass = seatClass.replace(/bg-\w+-\d+/, 'bg-blue-500 ');
         }
 
         return (
