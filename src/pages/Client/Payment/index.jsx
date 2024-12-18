@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
 import axios from "axios";
 import { getInfoAuth, getTokenOfUser } from "../../../utils/storage";
 import PromoCodeModal from "./modal";
@@ -12,7 +12,7 @@ const Payment = () => {
   const [selectedSeatIds, setSelectedSeatIds] = useState([]);
   const [movieDetail, setMovieDetail] = useState();
   const [selectedItems, setSelectedItems] = useState([]);
-  const [ticketPrice, setTicketPrice] = useState();
+  const [ticketPrice, setTicketPrice] = useState(0);
   const [showtime, setShowtime] = useState();
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,6 +23,7 @@ const Payment = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedVouchers, setSavedVouchers] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+  const [promoError, setPromoError] = useState('');
 
   if (!accessToken) {
     window.location.href = '/';
@@ -37,15 +38,22 @@ const Payment = () => {
     
     if (voucher) {
       const minOrderValue = parseInt(voucher.gia_don_toi_thieu, 10);
+      const maxDiscount = parseInt(voucher.Giam_max, 10);
       if (totalAmount >= minOrderValue) {
-        setDiscount(totalAmount * (voucher.muc_giam_gia / 100));
+        const calculatedDiscount = totalAmount * (voucher.muc_giam_gia / 100);
+        const finalDiscount = Math.min(calculatedDiscount, maxDiscount);
+        setDiscount(finalDiscount);
+        setPromoError('');
+        message.success(`Mã giảm giá "${promoCode}" đã được áp dụng. Giảm giá: ${finalDiscount.toLocaleString()}đ`);
       } else {
         setDiscount(0);
-        alert(`Mã khuyến mãi không hợp lệ. Tổng tiền phải trả tối thiểu là ${minOrderValue.toLocaleString()}đ.`);
+        setPromoError(`Tổng tiền phải trả tối thiểu là ${minOrderValue.toLocaleString()}đ để sử dụng mã này.`);
+        message.error(`Mã khuyến mãi không hợp lệ. Tổng tiền phải trả tối thiểu là ${minOrderValue.toLocaleString()}đ.`);
       }
     } else {
       setDiscount(0);
-      alert('Mã khuyến mãi không hợp lệ.');
+      setPromoError('Mã khuyến mãi không hợp lệ.');
+      message.error('Mã khuyến mãi không hợp lệ.');
     }
   };
 
@@ -54,15 +62,22 @@ const Payment = () => {
   useEffect(() => {
     fetchSavedVouchers();
     if (location.state) {
-      setSelectedSeats(location.state.selectedSeats);
-      setTotalAmount(location.state.totalAmount);
-      setTicketPrice(location.state.totalAmount);
-      setSelectedTime(location.state.selectedTime);
-      setSelectedSeatIds(location.state.selectedSeatIds);
-      setMovieDetail(location.state.movieDetail);
-      setShowtime(location.state.showtimeState);
-      setSelectedItems(location.state.items);
-      setTicketPrice(location.state.ticketPrice);
+      setSelectedSeats(location.state.selectedSeats || []);
+      setTotalAmount(location.state.totalAmount || 0);
+      setTicketPrice(location.state.ticketPrice || 0);
+      setSelectedTime(location.state.selectedTime || "");
+      setSelectedSeatIds(location.state.selectedSeatIds || []);
+      setMovieDetail(location.state.movieDetail || {});
+      setShowtime(location.state.showtimeState || {});
+      // Ensure selectedItems is an array
+      const items = location.state.items;
+      if (Array.isArray(items)) {
+        setSelectedItems(items);
+      } else if (items && typeof items === 'object') {
+        setSelectedItems(Object.values(items));
+      } else {
+        setSelectedItems([]);
+      }
     }
   }, [location.state]);
 
@@ -92,14 +107,14 @@ const Payment = () => {
   };
 
   const processDoan = () => {
-    return Object.keys(selectedItems).map((key) => ({
-      doan_id: selectedItems[key].id,
-      so_luong_do_an: selectedItems[key].quantity,
+    return selectedItems.map((item) => ({
+      doan_id: item.id,
+      so_luong_do_an: item.quantity,
     }));
   };
 
   const data = {
-    thongtinchieu_id: location.state.timeId,
+    thongtinchieu_id: location.state?.timeId || "",
     ghe_ngoi: selectedSeats,
     doan: processDoan(),
     ma_giam_gia: promoCode || null,
@@ -107,6 +122,11 @@ const Payment = () => {
   };
 
   const handlePayment = async () => {
+    if (!selectedPaymentMethod) {
+      message.error('Vui lòng chọn phương thức thanh toán.');
+      return;
+    }
+
     const sendData = async () => {
       try {
         const path = info['vai_tro'] === 'admin' ? `book-ticket` : `booking`;
@@ -119,6 +139,7 @@ const Payment = () => {
         callPaymentMethod(result?.data);
       } catch (error) {
         console.error('Error:', error);
+        message.error('Thanh toán thất bại. Vui lòng thử lại sau.');
       }
     };
 
@@ -131,13 +152,22 @@ const Payment = () => {
     const voucher = savedVouchers.find(voucher => code === voucher.ma_giam_gia);
     if (voucher) {
       const minOrderValue = parseInt(voucher.gia_don_toi_thieu, 10);
+      const maxDiscount = parseInt(voucher.Giam_max, 10);
       if (totalAmount >= minOrderValue) {
-        setDiscount(totalAmount * (voucher.muc_giam_gia / 100));
+        const calculatedDiscount = totalAmount * (voucher.muc_giam_gia / 100);
+        const finalDiscount = Math.min(calculatedDiscount, maxDiscount);
+        setDiscount(finalDiscount);
+        setPromoError('');
+        message.success(`Mã giảm giá "${promoCode}" đã được áp dụng. Giảm giá: ${finalDiscount.toLocaleString()}đ`);
       } else {
         setDiscount(0);
+        setPromoError(`Tổng tiền phải trả tối thiểu là ${minOrderValue.toLocaleString()}đ để sử dụng mã này.`);
+        message.error(`Tổng tiền phải trả tối thiểu là ${minOrderValue.toLocaleString()}đ để sử dụng mã này.`);
       }
     } else {
       setDiscount(0);
+      setPromoError('Mã khuyến mãi không hợp lệ.');
+      message.error('Mã khuyến mãi không hợp lệ.');
     }
   };
 
@@ -161,6 +191,7 @@ const Payment = () => {
 
     } catch (error) {
       console.error('Error:', error);
+      message.error('Xử lý thanh toán thất bại.');
     }
   };
 
@@ -179,7 +210,7 @@ const Payment = () => {
               <div className="space-y-2">
                 <p><strong>Phim:</strong> {movieDetail?.ten_phim}</p>
                 <p><strong>Giờ chiếu:</strong> {selectedTime}</p>
-                <p><strong>Ngày chiếu:</strong> {location.state.date}</p>
+                <p><strong>Ngày chiếu:</strong> {location.state?.date}</p>
                 <p><strong>Phòng chiếu:</strong> {showtime?.room?.ten_phong_chieu}</p>
               </div>
             </div>
@@ -198,22 +229,31 @@ const Payment = () => {
                   <tr>
                     <td className="py-2">Ghế ({selectedSeatIds.join(', ')})</td>
                     <td className="py-2">{selectedSeats.length}</td>
-                    <td className="text-right py-2">{ticketPrice}đ</td>
+                    <td className="text-right py-2">{ticketPrice.toLocaleString()}đ</td>
                   </tr>
-                  {Object.keys(selectedItems).map((key, index) => {
-                    const item = selectedItems[key];
-                    return (
-                      <tr key={index}>
-                        <td className="py-2">{item.ten_do_an}</td>
-                        <td className="py-2">{item.quantity}</td>
-                        <td className="text-right py-2">{item.quantity * item.gia}đ</td>
-                      </tr>
-                    );
-                  })}
+                  {selectedItems.map((item, index) => (
+                    <tr key={index}>
+                      <td className="py-2">{item.ten_do_an}</td>
+                      <td className="py-2">{item.quantity}</td>
+                      <td className="text-right py-2">{(item.quantity * item.gia).toLocaleString()}đ</td>
+                    </tr>
+                  ))}
                   <tr>
                     <td className="py-2 font-bold">Tổng cộng</td>
                     <td className="py-2"></td>
                     <td className="text-right py-2 font-bold">{totalAmount.toLocaleString()}đ</td>
+                  </tr>
+                  {discount > 0 && (
+                    <tr>
+                      <td className="py-2 font-bold">Giảm giá</td>
+                      <td className="py-2"></td>
+                      <td className="text-right py-2 font-bold">- {discount.toLocaleString()}đ</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td className="py-2 font-bold">Tổng cộng</td>
+                    <td className="py-2"></td>
+                    <td className="text-right py-2 font-bold">{finalAmount.toLocaleString()}đ</td>
                   </tr>
                 </tbody>
               </table>
@@ -251,12 +291,20 @@ const Payment = () => {
               <input
                 type="text"
                 value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
+                onChange={(e) => {
+                  setPromoCode(e.target.value);
+                  setPromoError('');
+                }}
                 onClick={() => setIsModalOpen(true)}
                 placeholder="Nhập mã khuyến mãi"
                 className="w-full p-3 bg-gray-700 rounded-lg text-white placeholder-gray-400"
               />
-              {promoCode && (
+              {promoError && (
+                <div className="text-red-500 mt-2">
+                  {promoError}
+                </div>
+              )}
+              {promoCode && !promoError && (
                 <div className="flex items-center justify-between bg-gray-700 p-3 rounded-lg mt-2">
                   <span>Mã giảm giá đã áp dụng: <strong>{promoCode}</strong></span>
                   <button
@@ -264,6 +312,7 @@ const Payment = () => {
                     onClick={() => {
                       setPromoCode('');
                       setDiscount(0);
+                      setPromoError('');
                     }}
                   >
                     Bỏ chọn
@@ -273,8 +322,9 @@ const Payment = () => {
             </div>
 
             <button
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-full transition duration-300 mb-4"
+              className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-full transition duration-300 mb-4 ${selectedPaymentMethod && (promoCode ? (discount > 0 ? '' : 'opacity-50 cursor-not-allowed') : '')}`}
               onClick={handlePayment}
+              disabled={!selectedPaymentMethod || (promoCode && discount === 0)}
             >
               Thanh toán
             </button>
