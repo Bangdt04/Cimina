@@ -61,11 +61,6 @@ const baseColumns = [
         dataIndex: 'dao_dien',
     },
     {
-        title: 'Giá Vé',
-        dataIndex: 'gia_ve',
-        render: (gia_ve) => formatCurrency(gia_ve),
-    },
-    {
         title: 'Thời Gian Phim',
         dataIndex: 'thoi_gian_phim',
         render: (value) => `${value} phút`,
@@ -444,7 +439,6 @@ function MovieData({ setParams, params }) {
                         <Typography variant="subtitle1"><strong>Tên phim:</strong> {movieDetailData.ten_phim}</Typography>
                         <Typography variant="subtitle1"><strong>Đạo diễn:</strong> {movieDetailData.dao_dien}</Typography>
                         <Typography variant="subtitle1"><strong>Diễn viên:</strong> {movieDetailData.dien_vien}</Typography>
-                        <Typography variant="subtitle1"><strong>Giá vé:</strong> {formatCurrency(parseInt(movieDetailData.gia_ve))}</Typography>
                         <Typography variant="subtitle1"><strong>Thời gian:</strong> {movieDetailData.thoi_gian_phim} phút</Typography>
                         {/* Sử dụng ánh xạ để chuyển đổi hinh_thuc_phim */}
                         <Typography variant="subtitle1"><strong>Hình thức:</strong> {hinhThucPhimMap[movieDetailData.hinh_thuc_phim] || 'Unknown'}</Typography>
