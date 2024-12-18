@@ -103,6 +103,28 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             thongtinchieu_id: timeId
         };
         console.log(seatData);
+        setSelectedSeats((prev) => {
+            const isSelected = prev.includes(seat.id);
+            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
+
+            const seatPrice = Number(movieDetail.gia_ve) || 0;
+            const seatAdditionalPrice = Number(seat.gia_ghe) || 0;
+            const priceChange = isSelected ? -(seatPrice + seatAdditionalPrice) : (seatPrice + seatAdditionalPrice);
+
+            console.log("TICKET PRICE", priceChange);
+
+            setTotalPrice(prevPrice => prevPrice + priceChange);
+
+            return updatedSeats;
+        });
+
+
+        setSelectedSeatIds((prev) => {
+            const isSelected = prev.includes(seat.id);
+            const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.ten_ghe_ngoi];
+
+            return updatedSeats;
+        });
 
         try {
 
@@ -114,28 +136,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             });
 
 
-            setSelectedSeats((prev) => {
-                const isSelected = prev.includes(seat.id);
-                const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.id];
-
-                const seatPrice = Number(movieDetail.gia_ve) || 0;
-                const seatAdditionalPrice = Number(seat.gia_ghe) || 0;
-                const priceChange = isSelected ? -(seatPrice + seatAdditionalPrice) : (seatPrice + seatAdditionalPrice);
-
-                console.log("TICKET PRICE", priceChange);
-
-                setTotalPrice(prevPrice => prevPrice + priceChange);
-
-                return updatedSeats;
-            });
-
-
-            setSelectedSeatIds((prev) => {
-                const isSelected = prev.includes(seat.id);
-                const updatedSeats = isSelected ? prev.filter(id => id !== seat.id) : [...prev, seat.ten_ghe_ngoi];
-
-                return updatedSeats;
-            });
+           
         } catch (error) {
             console.error("Error selecting seat:", error);
             notification.error({
@@ -167,7 +168,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                 seatClass += ' bg-gray-700';
                 return (
                     <div key={seat.id} className={`w-10 h-10 m-1 text-xs font-bold rounded  ${seatClass}`}>
-                        O
+                        ...
                     </div>
                 );
             }
@@ -182,7 +183,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
             );
         }
         switch (seat.loai_ghe_ngoi?.toLowerCase()) { // Chuyển tất cả về chữ thường
-            case 'víp': // Ghế VIP
+            case 'vip': // Ghế VIP
                 seatClass += ' bg-orange-400';
                 break;
             case 'thường': // Ghế thường
@@ -215,7 +216,7 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
     };
     const handleFood = () => {
         const path = info['vai_tro'] === 'admin' ? `/admin/bookings/food/${id}` : `/food/${id}`;
-
+   
         navigate(path, {
             state: {
                 selectedSeats,
@@ -253,6 +254,10 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                         <span>Đã đặt</span>
                     </div>
                     <div className="flex items-center">
+                        <div className="w-6 h-6 bg-gray-700 mr-2 flex items-center justify-center text-white font-bold">...</div>
+                        <span>Đang được đặt</span>
+                    </div>
+                    <div className="flex items-center">
                         <div className="w-6 h-6 bg-blue-500 mr-2"></div>
                         <span>Ghế bạn chọn</span>
                     </div>
@@ -269,9 +274,10 @@ const Seat = ({ timeId, availableShowtimes, selectedDate, selectedTime, detail }
                         <span>Ghế đôi</span>
                     </div>
                     <div className="flex items-center">
-                        <div className="w-6 h-6 bg-red-700 mr-2"></div>
+                        <div className="w-6 h-6 bg-red-700 mr-2 text-white font-bold"  >🛠️</div>
                         <span>Ghế bảo trì</span>
                     </div>
+                    
                 </div>
                 <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
                     <div className="flex flex-col md:flex-row justify-between items-center">

@@ -32,6 +32,7 @@ const Box = ({ detail }) => {
         };
     };
 
+
     const handleDateSelect = (date) => {
         setSelectedDate(date);
         setShowTime(true);

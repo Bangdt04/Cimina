@@ -4,6 +4,7 @@ import { useGetShowtimeById } from "../../../hooks/api/useMovieApi";
 const Time = ({ selectedDate, onTimeSelect, selectedTime, availableShowtimes }) => {
     const { id } = useParams();
     const { data, isLoading } = useGetShowtimeById(id, availableShowtimes);
+    console.log(data)
     
     // Function to format time to HH:MM
     const formatTime = (fullTime) => {
