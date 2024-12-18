@@ -19,8 +19,6 @@ const FoodMenu = () => {
     const [selectedItems, setSelectedItems] = useState({});
     const { data, isLoading } = useGetFoods();
 
-    console.log(data)
-
     useEffect(() => {
         if (location.state) {
             const {
@@ -48,38 +46,43 @@ const FoodMenu = () => {
     }
 
     const handlePurchase = (item, action) => {
-        console.log(`Action: ${action}, Item ID: ${item.id}`);
         const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10);
-
-        setSelectedItems(prevItems => {
+    
+        setSelectedItems((prevItems) => {
             const newItems = { ...prevItems };
+    
             if (action === 'add') {
                 if (!newItems[item.id]) {
                     newItems[item.id] = { ...item, quantity: 1 };
                 } else {
-                    newItems[item.id] = { ...newItems[item.id], quantity: newItems[item.id].quantity + 1 };
+                    newItems[item.id] = {
+                        ...newItems[item.id],
+                        quantity: newItems[item.id].quantity + 1,
+                    };
                 }
             } else if (action === 'remove' && newItems[item.id]) {
                 if (newItems[item.id].quantity > 1) {
-                    newItems[item.id].quantity -= 1;
+                    newItems[item.id] = {
+                        ...newItems[item.id],
+                        quantity: newItems[item.id].quantity - 1,
+                    };
                 } else {
                     delete newItems[item.id];
                 }
             }
-            console.log("New Items:", newItems);
             return newItems;
         });
-
-        setTotalAmount(prevTotal => {
-            const currentTotal = typeof prevTotal === 'string' ? parseInt(prevTotal.replace(/\./g, ''), 10) : prevTotal;
-
-            if (isNaN(currentTotal)) {
-                return action === 'add' ? itemPrice : 0;
-            }
-
-            return action === 'add' ? currentTotal + itemPrice : Math.max(currentTotal - itemPrice, 0);
-        });
     };
+    
+
+    // Recalculate totalAmount when selectedItems or ticketPrice changes
+    useEffect(() => {
+        const updatedTotal = Object.values(selectedItems).reduce((total, item) => {
+            const itemPrice = parseInt(item.gia.replace(/\./g, ''), 10);
+            return total + item.quantity * itemPrice;
+        }, ticketPrice); // Include ticket price in the calculation
+        setTotalAmount(updatedTotal);
+    }, [selectedItems, ticketPrice]);
 
     const handlePayment = () => {
         const path = info['vai_tro'] === 'admin' ? `/admin/bookings/payment/${id}` : `/payment`;
@@ -99,7 +102,6 @@ const FoodMenu = () => {
         });
     };
 
-    // Helper function to process selectedSeatIds based on the specified rules
     const processSelectedSeats = (seats) => {
         const seatCount = seats.reduce((acc, seat) => {
             acc[seat] = (acc[seat] || 0) + 1;
@@ -108,28 +110,13 @@ const FoodMenu = () => {
 
         const processedSeats = seats.filter(seat => {
             const count = seatCount[seat];
-            if (count === 2) {
-                // Exclude seats appearing exactly twice
-                return false;
-            }
-            // Include seats appearing once or three/more times
-            return true;
+            return count % 2 !== 0; // Loại bỏ ghế có số lần xuất hiện chia hết cho 2
         });
 
-        // To ensure seats appearing three or more times are shown once
-        const uniqueSeats = [];
-        const seen = new Set();
-        processedSeats.forEach(seat => {
-            if (!seen.has(seat)) {
-                uniqueSeats.push(seat);
-                seen.add(seat);
-            }
-        });
-
+        const uniqueSeats = Array.from(new Set(processedSeats)); // Ensure unique seat list
         return uniqueSeats;
     };
 
-    // Memoize the processed seats for performance optimization
     const displayedSeats = useMemo(() => processSelectedSeats(selectedSeatIds), [selectedSeatIds]);
 
     return (
@@ -137,13 +124,8 @@ const FoodMenu = () => {
             <h1 className="text-center text-3xl font-bold mb-8 text-white">Thực Đơn</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {data?.data?.map(item => (
-
                     <div key={item.ten_do_an} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden shadow-lg relative transition-transform transform hover:scale-105">
-                        <td className="py-2">
-                            <img src={`http://127.0.0.1:8000${item?.anh_do_an}`} alt={item.ten_do_an} 
-                            style={{ width: '500px', height: '300px' }} />
-                            
-                        </td>
+                        <img src={`http://127.0.0.1:8000${item?.anh_do_an}`} alt={item.ten_do_an} style={{ width: '500px', height: '300px' }} />
                         <div className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded">-20%</div>
                         <div className="p-4">
                             <p className="font-bold text-lg text-green-400">Giá: {Number(item.gia).toLocaleString()}đ</p>
@@ -153,12 +135,11 @@ const FoodMenu = () => {
                                 <span className="text-sm ml-2 text-gray-400">(100 lượt đánh giá)</span>
                             </div>
                             <p className="text-sm text-gray-400">Đã bán: 200</p>
-
                             <div className="flex items-center mt-4">
                                 <button
                                     onClick={() => handlePurchase(item, 'remove')}
-                                    className={`px-2 py-1 bg-gray-600 text-white rounded ${!selectedItems[item.id] || selectedItems[item.id].quantity === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}`}
-                                    disabled={!selectedItems[item.id] || selectedItems[item.id].quantity === 0}
+                                    className={`px-2 py-1 bg-gray-600 text-white rounded ${!selectedItems[item.id]?.quantity ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}`}
+                                    disabled={!selectedItems[item.id]?.quantity}
                                 >
                                     -
                                 </button>
@@ -193,7 +174,6 @@ const FoodMenu = () => {
                                 <th className="text-left py-2">Danh mục</th>
                                 <th className="text-left py-2">Số lượng</th>
                                 <th className="text-right py-2">Tổng tiền</th>
-                                <th className="text-right py-2">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -201,19 +181,14 @@ const FoodMenu = () => {
                                 <td className="py-2">Ghế ({displayedSeats.join(', ')})</td>
                                 <td className="py-2">{selectedSeats.length}</td>
                                 <td className="text-right py-2">{ticketPrice.toLocaleString()}đ</td>
-                                <td className="py-2"></td>
                             </tr>
                             {Object.keys(selectedItems).map((key, index) => {
                                 const item = selectedItems[key];
                                 return (
                                     <tr key={index}>
-
                                         <td className="py-2">{item.ten_do_an}</td>
                                         <td className="py-2">{item.quantity}</td>
-                                        <td className="text-right py-2">
-                                            {(item.quantity * parseInt(item.gia.replace(/\./g, ''), 10)).toLocaleString()}đ
-                                        </td>
-                                        <td className="py-2"></td>
+                                        <td className="text-right py-2">{(item.quantity * parseInt(item.gia.replace(/\./g, ''), 10)).toLocaleString()}đ</td>
                                     </tr>
                                 );
                             })}
@@ -221,7 +196,6 @@ const FoodMenu = () => {
                                 <td className="py-2 font-bold">Tổng cộng</td>
                                 <td className="py-2"></td>
                                 <td className="text-right py-2 font-bold">{totalAmount.toLocaleString()}đ</td>
-                                <td className="py-2"></td>
                             </tr>
                         </tbody>
                     </table>
