@@ -54,8 +54,8 @@ const CountdownVoucherData = () => {
       key: 'thoi_gian_ket_thuc',
     },
     {
-      title: 'Số Lượng',
-      dataIndex: 'so_luong',
+      title: 'Số Lượng Còn Lại',
+      dataIndex: 'so_luong_con_lai',
       key: 'so_luong',
     },
     {

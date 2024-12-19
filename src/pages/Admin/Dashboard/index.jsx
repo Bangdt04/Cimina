@@ -82,10 +82,12 @@
     const [paymentMethodData, setPaymentMethodData] = useState([]);
 
     useEffect(() => {
+
       const fetchTotalMovies = async () => {
         try {
           const response = await axios.get('http://127.0.0.1:8000/api/getCountMovie');
           setTotalMovies(response.data.data.data);
+          setTotalShowings(response.data.data.so_xuat_chieu)
         } catch (error) {
           console.error('Error fetching total movies:', error);
         }
@@ -268,8 +270,6 @@
       ]);
 
       // Static Assignments for other stats
-      setTotalShowings(50);
-      setTotalTicketsSold(50);
     }, []);
 
     return (
@@ -472,8 +472,8 @@
                       type="monotone"
                       dataKey="revenue"
                       stroke="url(#colorRevenue)"
-                      strokeWidth={3}
-                      dot={{ r: 6 }}
+                      strokeWidth={9}
+                      dot={{ r: 10 }}
                       activeDot={{ r: 8 }}
                     />
                   </LineChart>
@@ -498,7 +498,7 @@
                     }}
                   >
                     <Typography variant="h6" gutterBottom color="text.primary">
-                      Tỷ Lệ Đặt Hàng
+                      Tỷ Lệ Đặt Vé
                     </Typography>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -582,7 +582,7 @@
                 }}
               >
                 <Typography variant="h6" gutterBottom color="text.primary" sx={{ fontWeight: 'bold' }}>
-                  Top 5 Người Mua Vé Nhiều Nhất
+                  Top 5 Người Đặt Vé Nhiều Nhất
                 </Typography>
                 <Table>
                   <TableHead>
@@ -651,7 +651,9 @@
                   </TableBody>
                 </Table>
               </Card>
-              <Grid item xs={12}>
+            </Grid>
+
+            <Grid item xs={12}>
     <Card sx={{ p: 3, backgroundColor: 'white', boxShadow: 5, borderRadius: 3 }}>
       <Typography variant="h6" gutterBottom color="text.primary">
         Doanh Thu Phim Theo Ngày
@@ -678,8 +680,6 @@
       </Table>
     </Card>
   </Grid>
-
-            </Grid>
           </Grid>
         </Box>
       </ThemeProvider>

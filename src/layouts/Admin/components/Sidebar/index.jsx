@@ -41,9 +41,6 @@ const menuItems = [
   { name: 'Voucher', icon: ConfirmationNumberIcon, path: '/admin/voucher' },
   { name: 'Check', icon: CheckCircleIcon, path: '/admin/checkin' },
   { name: 'CouponVoucher', icon: ContactMailIcon, path: '/admin/sanvoucher' },
-  { name: 'Blog', icon: ArticleIcon, path: '/admin/blog' },
-  { name: 'Feedback', icon: FeedbackIcon, path: '/admin/feedback' },
-  { name: 'Lucky Wheel', icon: CasinoIcon, path: '/admin/lucky-wheel' },
 ];
 
 function Sidebar({ toggleNavbar, isCollapsed }) {

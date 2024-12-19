@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Form, InputNumber, DatePicker, TimePicker, Button, notification, Spin } from 'antd';
+import { Form, Select, DatePicker, TimePicker, InputNumber, Button, notification, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
+
+const { Option } = Select;
 
 const CountdownVoucherForm = () => {
   const [form] = Form.useForm();
@@ -10,8 +12,25 @@ const CountdownVoucherForm = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coupons, setCoupons] = useState([]);
 
-  // Fetch data nếu có `id` (chế độ cập nhật)
+  // Fetch available discount codes
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:8000/api/show/coupons')
+      .then((response) => {
+        setCoupons(response.data);
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Lỗi',
+          description: 'Không thể tải danh sách mã giảm giá.',
+          placement: 'topRight',
+        });
+      });
+  }, []);
+
+  // Fetch data if updating (edit mode)
   useEffect(() => {
     if (id) {
       setIsLoading(true);
@@ -39,7 +58,6 @@ const CountdownVoucherForm = () => {
     }
   }, [id, form]);
 
-  // Xử lý khi submit form
   const onFinish = (values) => {
     if (values.thoi_gian_bat_dau >= values.thoi_gian_ket_thuc) {
       notification.error({
@@ -75,21 +93,30 @@ const CountdownVoucherForm = () => {
       })
       .catch((error) => {
         const apiErrors = error.response?.data?.errors || {};
-        Object.keys(apiErrors).forEach((field) => {
-          form.setFields([
-            {
-              name: field,
-              errors: apiErrors[field],
-            },
-          ]);
-        });
-        notification.error({
-          message: 'Lỗi',
-          description: 'Không thể lưu dữ liệu voucher.',
-          placement: 'topRight',
-        });
-      })
-      .finally(() => setIsSubmitting(false));
+        // Map API field errors to form fields if available
+        if (Object.keys(apiErrors).length > 0) {
+            Object.keys(apiErrors).forEach((field) => {
+                form.setFields([
+                    {
+                        name: field,
+                        errors: apiErrors[field], // Assuming errors are an array of messages
+                    },
+                ]);
+            });
+        } else {
+            // General error message handling
+            const errorMessage = error.response?.data?.error || 
+                                 error.response?.data?.message || 
+                                 'Đã xảy ra lỗi không xác định';
+            notification.error({
+                message: 'Lỗi',
+                description: errorMessage,
+                placement: 'topRight',
+            });
+        }
+    })
+    .finally(() => setIsSubmitting(false));
+    
   };
 
   if (isLoading) {
@@ -125,11 +152,17 @@ const CountdownVoucherForm = () => {
         }}
       >
         <Form.Item
-          label="Mã giảm giá ID"
+          label="Chọn mã giảm giá"
           name="magiamgia_id"
-          rules={[{ required: true, message: 'Vui lòng nhập mã giảm giá ID!' }]}
+          rules={[{ required: true, message: 'Vui lòng chọn mã giảm giá!' }]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} placeholder="Nhập ID mã giảm giá" />
+          <Select placeholder="Chọn mã giảm giá">
+            {coupons.map((coupon) => (
+              <Option key={coupon.id} value={coupon.id}>
+                {coupon.ma_giam_gia}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           label="Ngày áp dụng"
@@ -155,23 +188,11 @@ const CountdownVoucherForm = () => {
         <Form.Item
           label="Số lượng"
           name="so_luong"
-          rules={[
-            { required: true, message: 'Vui lòng nhập số lượng!' },
-            { type: 'number', min: 1, message: 'Số lượng phải lớn hơn 0.' },
-          ]}
+          rules={[{ required: true, message: 'Vui lòng nhập số lượng!' }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} placeholder="Nhập số lượng" />
         </Form.Item>
-        <Form.Item
-          label="Số lượng còn lại"
-          name="so_luong_con_lai"
-          rules={[
-            { required: true, message: 'Vui lòng nhập số lượng còn lại!' },
-            { type: 'number', min: 0, message: 'Số lượng còn lại phải lớn hơn hoặc bằng 0.' },
-          ]}
-        >
-          <InputNumber min={0} style={{ width: '100%' }} placeholder="Nhập số lượng còn lại" />
-        </Form.Item>
+        
         <Form.Item>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button type="default" danger onClick={() => navigate(-1)}>

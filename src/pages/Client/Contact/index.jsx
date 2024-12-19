@@ -189,8 +189,8 @@ const Contact = () => {
 // Các kiểu CSS cơ bản cải tiến
 const styles = {
     container: {
-        maxWidth: '600px',
-        margin: '50px auto',
+        maxWidth: '800px',
+        margin: '80px auto',
         padding: '40px',
         backgroundColor: '#fffbe6', // Màu vàng nhạt cho nền
         borderRadius: '12px',

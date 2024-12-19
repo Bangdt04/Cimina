@@ -156,6 +156,16 @@ function Header() {
                                     ? 'text-white font-semibold'
                                     : 'text-gray-400 hover:text-white transition-colors duration-300'
                             }
+                            to={config.routes.web.contact}
+                        >
+                            Liên Hệ
+                        </NavLink>
+                        <NavLink
+                            className={({ isActive }) =>
+                                isActive
+                                    ? 'text-white font-semibold'
+                                    : 'text-gray-400 hover:text-white transition-colors duration-300'
+                            }
                             to={config.routes.web.lucky}
                         >
                             Quay Thưởng
