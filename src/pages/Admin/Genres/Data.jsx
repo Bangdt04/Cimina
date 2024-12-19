@@ -39,14 +39,14 @@ function transformData(dt, navigate, setIsDisableOpen) {
                             <FontAwesomeIcon icon={faEdit} />
                         </Button>
                     </Tooltip>
-                    <Tooltip title="Xóa">
+                    {/* <Tooltip title="Xóa">
                         <Button
                             className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
                             onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                         >
                             <FontAwesomeIcon icon={faTrash} />
                         </Button>
-                    </Tooltip>
+                    </Tooltip> */}
                 </div>
             ),
         };

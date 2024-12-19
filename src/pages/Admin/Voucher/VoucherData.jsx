@@ -114,7 +114,7 @@ const baseColumns = (navigate, showDeleteConfirm) => [
             Sửa
           </Button>
         </Tooltip>
-        <Tooltip title="Xóa voucher">
+        {/* <Tooltip title="Xóa voucher">
           <Button
             type="danger"
             size="small"
@@ -122,7 +122,7 @@ const baseColumns = (navigate, showDeleteConfirm) => [
           >
             Xóa
           </Button>
-        </Tooltip>
+        </Tooltip> */}
       </Space>
     ),
   },

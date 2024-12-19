@@ -342,14 +342,14 @@ function MembershipData() {
                             onClick={() => handleEdit(record.key)}
                         />
                     </Tooltip>
-                    <Tooltip title="Xóa">
+                    {/* <Tooltip title="Xóa">
                         <Button
                             type="danger"
                             icon={<DeleteOutlined />}
                             size="small"
                             onClick={() => handleDeleteMember(record.key)}
                         />
-                    </Tooltip>
+                    </Tooltip> */}
                 </Space>
             ),
         },

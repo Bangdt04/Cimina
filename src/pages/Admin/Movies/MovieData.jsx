@@ -122,7 +122,7 @@ function transformData(dt, navigate, setIsDisableOpen, handleViewDetail) {
                             Sửa
                         </Button>
                     </Tooltip>
-                    <Tooltip title="Xóa phim">
+                    {/* <Tooltip title="Xóa phim">
                         <Button
                             onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
                             variant="contained"
@@ -132,7 +132,7 @@ function transformData(dt, navigate, setIsDisableOpen, handleViewDetail) {
                         >
                             Xóa
                         </Button>
-                    </Tooltip>
+                    </Tooltip> */}
                 </div>
             ),
         };

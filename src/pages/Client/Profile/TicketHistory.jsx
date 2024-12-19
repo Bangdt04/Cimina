@@ -88,9 +88,9 @@ const TicketHistory = () => {
                                     <td className="py-4 text-center">{Number(ticket.tong_tien_thanh_toan).toLocaleString()} VNĐ</td>
                                     <td className="py-4 text-center">
                                         {ticket.trang_thai === 0 ? (
-                                            <span className="px-6 py-2 rounded-full bg-blue-600">Đang xử lý</span>
+                                            <span className="px-6 py-2 rounded-full bg-blue-600">Đã thanh toán</span>
                                         ) : ticket.trang_thai === 1 ? (
-                                            <span className="px-6 py-2 rounded-full bg-green-600">Đã thanh toán</span>
+                                            <span className="px-6 py-2 rounded-full bg-green-600">Đã check in</span>
                                         ) : (
                                             <span className="px-6 py-2 rounded-full bg-red-500">Chưa xử lý</span>
                                         )}

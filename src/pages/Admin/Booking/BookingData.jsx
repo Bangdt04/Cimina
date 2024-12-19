@@ -66,19 +66,15 @@ function transformData(dt, navigate, setIsDisableOpen, handleModal, handleConfir
                         className="text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white transition"
                         onClick={() => handleModal(item)}
                     />
-                    <Tooltip title="Xác nhận khách đến!" arrow={mergedArrow}>
+                    {/* <Tooltip title="Xác nhận khách đến!" arrow={mergedArrow}>
                         <Button
                             icon={<StarOutlined />}
                             className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white transition"
                             onClick={() => handleConfirmBookingDetail(item.id)}
                         />
-                    </Tooltip>
+                    </Tooltip> */}
 
-                    <Button
-                        icon={<DeleteOutlined />}
-                        className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white transition"
-                        onClick={() => setIsDisableOpen({ id: item.id, isOpen: true })}
-                    />
+                  
                 </div>
             ),
         };
@@ -178,14 +174,7 @@ function BookingData({ setParams, params }) {
                 bordered
                 size="middle"
             />
-            {isDisableOpen.isOpen && (
-                <ConfirmPrompt
-                    content="Bạn có muốn xóa phim này?"
-                    isDisableOpen={isDisableOpen}
-                    setIsDisableOpen={setIsDisableOpen}
-                    handleConfirm={onDelete}
-                />
-            )}
+            
 
             <Modal isOpen={isModalOpen} onClose={handleViewClose} ticket={viewData} />
         </div>

@@ -406,7 +406,7 @@
             </Grid>
 
             {/* Tổng Vé Bán Ra */}
-            <Grid item xs={12} md={6} lg={3}>
+            {/* <Grid item xs={12} md={6} lg={3}>
               <Card
                 sx={{
                   p: 3,
@@ -435,7 +435,7 @@
                 </Box>
                 <ConfirmationNumberIcon sx={{ fontSize: 50 }} />
               </Card>
-            </Grid>
+            </Grid> */}
           </Grid>
 
           <Grid container spacing={3} mt={2}>

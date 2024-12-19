@@ -59,7 +59,7 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAl
                     </Button>
                 </Tooltip>
 
-                <Tooltip title="Xóa phòng">
+                {/* <Tooltip title="Xóa phòng">
                     <Button
                         type="danger"
                         icon={<DeleteOutlined />}
@@ -72,7 +72,7 @@ function transformData(dt, navigate, setIsDisableOpen, showSeats, handleDeleteAl
                     >
                         Xóa phòng ghế
                     </Button>
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip title="Thêm ghế"></Tooltip>
             </div>
         ),
@@ -303,9 +303,9 @@ function RoomData({ setParams, params }) {
                 <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleEditSeat(seat.id)}>
                     Sửa ghế
                 </Menu.Item>
-                <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleDeleteSeat(seat.id)}>
+                {/* <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleDeleteSeat(seat.id)}>
                     Xóa ghế
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item key="maintenance" icon={<SettingOutlined />} onClick={() => handleToggleMaintenance(seat)}>
                     {seat.trang_thai === 2 ? 'Tắt bảo trì' : 'Bảo trì ghế'}
                 </Menu.Item>

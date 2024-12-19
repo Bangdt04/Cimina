@@ -57,10 +57,11 @@ const ScoreHistory = () => {
                 <table className="w-full text-left table-auto border-collapse">
                     <thead className="border-b border-gray-700 bg-gray-800">
                         <tr>
-                            <th className="py-2 px-4 text-white">Ngày quay</th>
-                            <th className="py-2 px-4 text-white">Phần thưởng</th>
-                            <th className="py-2 px-4 text-white">Ngày hết hạn</th>
-                            <th className="py-2 px-4 text-white">Trạng thái</th>
+                            <th className="py-2 px-4 text-white text-center align-middle">Ngày quay</th>
+                            <th className="py-2 px-4 text-white text-center align-middle">Phần thưởng</th>
+                            <th className="py-2 px-4 text-white text-center align-middle">Ngày hết hạn</th>
+                            <th className="py-2 px-4 text-white text-center align-middle">Điều kiện</th>
+                            <th className="py-2 px-4 text-white text-center align-middle">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,14 +69,15 @@ const ScoreHistory = () => {
                             data.map((item) => (
                                 item.ket_qua !== "Chúc bạn may mắn" && (
                                     <tr key={item.id} className="hover:bg-gray-700 transition duration-200">
-                                        <td className="py-4 px-4 text-white">{item.ngay_quay}</td>
-                                        <td className="py-4 px-4 text-white">{item.ket_qua}</td>
-                                        <td className="py-4 px-4 text-white">{item.ngay_het_han}</td>
+                                        <td className="py-4 px-4 text-white text-center align-middle">{item.ngay_quay}</td>
+                                        <td className="py-4 px-4 text-white text-center align-middle">{item.ket_qua}</td>
+                                        <td className="py-4 px-4 text-white text-center align-middle">{item.ngay_het_han}</td>
+                                        <td className="py-4 px-4 text-white text-center align-middle">{item.dieu_kien}</td>
                                         <td className="py-4 px-4">
-                                            {item.trang_thai === 1 ? (
-                                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">Active</span>
+                                            {item.trang_thai === 0 ? (
+                                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm text-center align-middle">Còn sử dụng</span>
                                             ) : (
-                                                <span className="bg-gray-500 text-white px-3 py-1 rounded-full text-sm">Inactive</span>
+                                                <span className="bg-gray-500 text-white px-3 py-1 rounded-full text-sm text-center align-middle">Đã hết hạn</span>
                                             )}
                                         </td>
                                     </tr>

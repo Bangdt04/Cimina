@@ -19,7 +19,6 @@ const Modal = ({ isOpen, onClose, ticket }) => {
         doc.text(`Mã giảm giá: ${ticket.ma_giam_gia || "Không có mã giảm giá"}`, 20, 100);
         doc.text(`Đồ ăn: ${ticket.do_an || "Không có đồ ăn"}`, 20, 110);
         doc.text(`Phương thức thanh toán: ${ticket.phuong_thuc_thanh_toan}`, 20, 120);
-        doc.save('bill.pdf');
     };
 
     return (
@@ -36,8 +35,17 @@ const Modal = ({ isOpen, onClose, ticket }) => {
                     </div>
                     <div className="modal-section">
                         <span className="icon">💺</span>
-                        <h3>Trạng thái</h3>
-                        <p><strong>Trạng thái:</strong> {ticket.trang_thai}</p>
+                        {ticket.trang_thai === 0 || ticket.trang_thai === 1 ? (
+                            <div>
+                                <h3>Trạng thái</h3>
+                                <p>
+                                    <strong>Trạng thái:</strong>{' '}
+                                    {ticket.trang_thai === 0 ? 'Đã thanh toán' : 'Đã check in'}
+                                </p>
+                            </div>
+                        ) : (
+                            <span className="px-6 py-2 rounded-full bg-red-500">Chưa xử lý</span>
+                        )}
                         <p><strong>Số lượng:</strong> {ticket.so_luong}</p>
                         <p><strong>Ghế ngồi:</strong> {ticket.ghe_ngoi}</p>
                     </div>
@@ -56,7 +64,6 @@ const Modal = ({ isOpen, onClose, ticket }) => {
                     </div>
                 </div>
                 <div className="modal-footer">
-                    <button className="btn btn-primary" onClick={handlePrintBill}>In hóa đơn PDF</button>
                     <button className="btn btn-secondary" onClick={onClose}>Đóng</button>
                 </div>
             </div>
